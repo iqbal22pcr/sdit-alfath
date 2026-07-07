@@ -5,6 +5,7 @@ use App\Http\Controllers\KategoriSiswaController;
 use App\Http\Controllers\KuotaKategoriController;
 use App\Http\Controllers\PendaftaranPpdbController;
 use App\Http\Controllers\Staf\DashboardPpdbController;
+use App\Http\Controllers\Staf\PendaftaranPpdbController as StafPendaftaranPpdbController;
 use App\Http\Controllers\TahunAjaranController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -34,6 +35,10 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
 Route::middleware(['auth', 'staf-ppdb'])->group(function () {
     Route::get('staf/ppdb-dashboard', [DashboardPpdbController::class, 'index'])->name('staf.ppdb-dashboard');
+
+    Route::get('staf/ppdb/{pendaftaran_ppdb}/verifikasi', [StafPendaftaranPpdbController::class, 'show'])->name('staf.ppdb.verifikasi');
+    Route::post('staf/ppdb/{pendaftaran_ppdb}/verifikasi', [StafPendaftaranPpdbController::class, 'verifikasi'])->name('staf.ppdb.verifikasi.store');
+    Route::post('staf/ppdb/{pendaftaran_ppdb}/konversi', [StafPendaftaranPpdbController::class, 'konversi'])->name('staf.ppdb.konversi');
 });
 
 require __DIR__.'/settings.php';

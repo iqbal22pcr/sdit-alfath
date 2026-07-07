@@ -1,11 +1,12 @@
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import AppLayout from '@/layouts/app-layout';
 import { cn } from '@/lib/utils';
 import { type BreadcrumbItem } from '@/types';
-import { Head } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
 import { useMemo, useState } from 'react';
 
 type Status = 'draft' | 'diajukan' | 'diverifikasi' | 'perlu_perbaikan' | 'diterima' | 'ditolak';
@@ -136,12 +137,13 @@ export default function StafPpdbDashboard({
                                     <TableHead>Kategori</TableHead>
                                     <TableHead>Status</TableHead>
                                     <TableHead>Tanggal Daftar</TableHead>
+                                    <TableHead className="text-right">Aksi</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
                                 {filteredPendaftaran.length === 0 && (
                                     <TableRow>
-                                        <TableCell colSpan={6} className="text-center text-muted-foreground">
+                                        <TableCell colSpan={7} className="text-center text-muted-foreground">
                                             Tidak ada pendaftar.
                                         </TableCell>
                                     </TableRow>
@@ -159,6 +161,11 @@ export default function StafPpdbDashboard({
                                             <Badge variant={STATUS_BADGE_VARIANT[p.status]}>{STATUS_LABEL[p.status]}</Badge>
                                         </TableCell>
                                         <TableCell>{formatTanggal(p.created_at)}</TableCell>
+                                        <TableCell className="text-right">
+                                            <Button variant="outline" size="sm" asChild>
+                                                <Link href={route('staf.ppdb.verifikasi', p.id)}>Verifikasi</Link>
+                                            </Button>
+                                        </TableCell>
                                     </TableRow>
                                 ))}
                             </TableBody>

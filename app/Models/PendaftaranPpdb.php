@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Facades\DB;
 
 class PendaftaranPpdb extends Model
 {
@@ -97,5 +99,46 @@ class PendaftaranPpdb extends Model
     public function dokumenPpdb(): HasMany
     {
         return $this->hasMany(DokumenPpdb::class);
+    }
+
+    /**
+     * Get the siswa this registration was converted into, if any.
+     */
+    public function siswa(): HasOne
+    {
+        return $this->hasOne(Siswa::class);
+    }
+
+    /**
+     * Convert this registration into a siswa row.
+     *
+     * Only allowed once the registration has been accepted. Idempotent:
+     * calling this more than once (e.g. a double-clicked button) never
+     * creates a duplicate siswa, it just returns the existing one.
+     */
+    public function konversiJadiSiswa(): Siswa
+    {
+        abort_unless($this->status === 'diterima', 422, 'Pendaftaran belum diterima, tidak bisa dikonversi menjadi siswa.');
+
+        return DB::transaction(function () {
+            if ($existing = $this->siswa) {
+                return $existing;
+            }
+
+            $siswa = $this->siswa()->create([
+                'nama' => $this->nama_pendaftar,
+                // Placeholder sementara -- format NIS asli masih menunggu
+                // kebijakan sekolah, belum ditetapkan.
+                'nis' => "TEMP-{$this->id}",
+                // NISN berasal dari data Kemendikbud, belum ada sumber
+                // datanya di sistem ini.
+                'nisn' => null,
+                'status' => 'aktif',
+            ]);
+
+            $siswa->buatTagihanDaftarUlang();
+
+            return $siswa;
+        });
     }
 }
