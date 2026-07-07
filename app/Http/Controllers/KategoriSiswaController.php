@@ -45,6 +45,10 @@ class KategoriSiswaController extends Controller
      */
     public function destroy(KategoriSiswa $kategoriSiswa): RedirectResponse
     {
+        if ($kategoriSiswa->kuotaKategori()->exists()) {
+            return back()->with('error', 'Kategori ini masih digunakan di pengaturan kuota, tidak bisa dihapus.');
+        }
+
         $kategoriSiswa->delete();
 
         return to_route('kategori-siswa.index');

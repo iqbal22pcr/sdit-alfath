@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class KategoriSiswa extends Model
 {
@@ -33,5 +34,13 @@ class KategoriSiswa extends Model
         return [
             'persentase_diskon' => 'integer',
         ];
+    }
+
+    /**
+     * Get the kuota rows set for this kategori across all gelombang.
+     */
+    public function kuotaKategori(): HasMany
+    {
+        return $this->hasMany(KuotaKategori::class);
     }
 }

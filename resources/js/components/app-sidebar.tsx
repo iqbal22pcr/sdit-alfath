@@ -4,7 +4,7 @@ import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem, type SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
-import { BookOpen, Folder, LayoutGrid, Tags } from 'lucide-react';
+import { BookOpen, CalendarRange, Folder, LayoutGrid, Tags } from 'lucide-react';
 import AppLogo from './app-logo';
 
 const footerNavItems: NavItem[] = [
@@ -35,6 +35,11 @@ export function AppSidebar() {
                       title: 'Kategori Siswa',
                       url: route('kategori-siswa.index'),
                       icon: Tags,
+                  },
+                  {
+                      title: 'Gelombang PPDB',
+                      url: route('gelombang-ppdb.index'),
+                      icon: CalendarRange,
                   },
               ]
             : []),
