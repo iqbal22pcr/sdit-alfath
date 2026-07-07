@@ -3,6 +3,7 @@
 use App\Http\Controllers\GelombangPpdbController;
 use App\Http\Controllers\KategoriSiswaController;
 use App\Http\Controllers\KuotaKategoriController;
+use App\Http\Controllers\TahunAjaranController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -21,6 +22,8 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
     Route::resource('gelombang-ppdb', GelombangPpdbController::class)->only(['index', 'store', 'update', 'destroy', 'show']);
     Route::post('gelombang-ppdb/{gelombang_ppdb}/kuota', [KuotaKategoriController::class, 'store'])->name('gelombang-ppdb.kuota.store');
+
+    Route::resource('tahun-ajaran', TahunAjaranController::class)->only(['index', 'store', 'update', 'destroy']);
 });
 
 require __DIR__.'/settings.php';

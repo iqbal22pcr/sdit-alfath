@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\DB;
 
 class TahunAjaran extends Model
@@ -33,6 +34,14 @@ class TahunAjaran extends Model
         return [
             'status_aktif' => 'boolean',
         ];
+    }
+
+    /**
+     * Get the gelombang PPDB rows that belong to this tahun ajaran.
+     */
+    public function gelombangPpdb(): HasMany
+    {
+        return $this->hasMany(GelombangPpdb::class);
     }
 
     /**
