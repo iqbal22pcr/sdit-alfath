@@ -28,12 +28,15 @@ export interface SharedData {
     [key: string]: unknown;
 }
 
+export type Role = 'admin' | 'kepala_sekolah' | 'guru' | 'staf_keuangan' | 'staf_ppdb' | 'wali_murid';
+
 export interface User {
     id: number;
     name: string;
     email: string;
     avatar?: string;
     email_verified_at: string | null;
+    role: Role;
     created_at: string;
     updated_at: string;
     [key: string]: unknown; // This allows for additional properties...
