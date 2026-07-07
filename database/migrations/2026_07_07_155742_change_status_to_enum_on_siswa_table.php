@@ -1,22 +1,30 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
     /**
      * Run the migrations.
      *
-     * Raw SQL is used instead of Schema::table()->enum() because
-     * altering an existing column's type (string -> enum) isn't
-     * something Laravel's fluent Blueprint can express as a change;
-     * doctrine/dbal (used for ->change()) also doesn't model MySQL
-     * enums correctly.
+     * Drop-then-add via the Schema Builder instead of raw "ALTER ...
+     * MODIFY" SQL, so Laravel translates this to whatever syntax each
+     * database driver needs (the CI test suite runs against SQLite,
+     * which doesn't support MODIFY).
      */
     public function up(): void
     {
-        DB::statement("ALTER TABLE siswa MODIFY status ENUM('aktif', 'alumni', 'keluar') NOT NULL DEFAULT 'aktif'");
+        Schema::table('siswa', function (Blueprint $table) {
+            $table->dropColumn('status');
+        });
+
+        Schema::table('siswa', function (Blueprint $table) {
+            $table->enum('status', ['aktif', 'alumni', 'keluar'])
+                ->default('aktif')
+                ->after('nisn');
+        });
     }
 
     /**
@@ -24,6 +32,12 @@ return new class extends Migration
      */
     public function down(): void
     {
-        DB::statement("ALTER TABLE siswa MODIFY status VARCHAR(255) NOT NULL DEFAULT 'aktif'");
+        Schema::table('siswa', function (Blueprint $table) {
+            $table->dropColumn('status');
+        });
+
+        Schema::table('siswa', function (Blueprint $table) {
+            $table->string('status')->default('aktif')->after('nisn');
+        });
     }
 };
