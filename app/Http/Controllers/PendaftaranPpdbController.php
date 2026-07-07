@@ -126,10 +126,6 @@ class PendaftaranPpdbController extends Controller
      */
     private function resolveOpenGelombang(): ?GelombangPpdb
     {
-        return GelombangPpdb::where('status_buka', true)
-            ->whereDate('tanggal_mulai', '<=', now())
-            ->whereDate('tanggal_selesai', '>=', now())
-            ->orderBy('tanggal_mulai')
-            ->first();
+        return GelombangPpdb::openNow()->orderBy('tanggal_mulai')->first();
     }
 }
