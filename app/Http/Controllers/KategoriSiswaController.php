@@ -49,6 +49,10 @@ class KategoriSiswaController extends Controller
             return back()->with('error', 'Kategori ini masih digunakan di pengaturan kuota, tidak bisa dihapus.');
         }
 
+        if ($kategoriSiswa->pendaftaranPpdb()->exists()) {
+            return back()->with('error', 'Kategori ini masih digunakan oleh pendaftar PPDB, tidak bisa dihapus.');
+        }
+
         $kategoriSiswa->delete();
 
         return to_route('kategori-siswa.index');

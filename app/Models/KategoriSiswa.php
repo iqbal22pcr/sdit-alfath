@@ -43,4 +43,12 @@ class KategoriSiswa extends Model
     {
         return $this->hasMany(KuotaKategori::class);
     }
+
+    /**
+     * Get the PPDB registrations assigned to this kategori.
+     */
+    public function pendaftaranPpdb(): HasMany
+    {
+        return $this->hasMany(PendaftaranPpdb::class);
+    }
 }
