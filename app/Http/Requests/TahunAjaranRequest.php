@@ -23,6 +23,7 @@ class TahunAjaranRequest extends FormRequest
                 'max:255',
                 Rule::unique(TahunAjaran::class, 'nama')->ignore($this->route('tahun_ajaran')),
             ],
+            'tahun_mulai' => ['required', 'integer', 'digits:4'],
             'status_aktif' => ['boolean'],
         ];
     }

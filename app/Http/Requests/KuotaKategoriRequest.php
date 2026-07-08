@@ -16,8 +16,9 @@ class KuotaKategoriRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'kategori_siswa_id' => ['required', Rule::exists('kategori_siswa', 'id')],
-            'kuota' => ['required', 'integer', 'min:0'],
+            'kuota' => ['required', 'array', 'min:1'],
+            'kuota.*.kategori_siswa_id' => ['required', Rule::exists('kategori_siswa', 'id')],
+            'kuota.*.kuota' => ['required', 'integer', 'min:0'],
         ];
     }
 }

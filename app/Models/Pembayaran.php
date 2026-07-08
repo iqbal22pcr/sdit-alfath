@@ -20,12 +20,12 @@ class Pembayaran extends Model
      */
     protected $fillable = [
         'tagihan_id',
-        'item_cicilan_id',
         'diterima_oleh',
         'nomor_pembayaran',
         'nominal',
         'tanggal_bayar',
         'metode',
+        'bukti_transfer',
     ];
 
     /**
@@ -47,14 +47,6 @@ class Pembayaran extends Model
     public function tagihan(): BelongsTo
     {
         return $this->belongsTo(Tagihan::class);
-    }
-
-    /**
-     * Get the item cicilan this pembayaran settled, if any.
-     */
-    public function itemCicilan(): BelongsTo
-    {
-        return $this->belongsTo(ItemCicilan::class);
     }
 
     /**

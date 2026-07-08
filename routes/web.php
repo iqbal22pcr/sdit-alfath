@@ -6,6 +6,7 @@ use App\Http\Controllers\KuotaKategoriController;
 use App\Http\Controllers\PendaftaranPpdbController;
 use App\Http\Controllers\Staf\DashboardPpdbController;
 use App\Http\Controllers\Staf\PendaftaranPpdbController as StafPendaftaranPpdbController;
+use App\Http\Controllers\Staf\SiswaController as StafSiswaController;
 use App\Http\Controllers\Staf\TagihanController;
 use App\Http\Controllers\TahunAjaranController;
 use App\Http\Controllers\Wali\SiswaController as WaliSiswaController;
@@ -24,6 +25,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('ppdb/daftar', [PendaftaranPpdbController::class, 'create'])->name('ppdb.create');
     Route::post('ppdb/daftar', [PendaftaranPpdbController::class, 'store'])->name('ppdb.store');
     Route::get('ppdb/konfirmasi/{pendaftaran_ppdb}', [PendaftaranPpdbController::class, 'konfirmasi'])->name('ppdb.konfirmasi');
+    Route::get('ppdb/riwayat', [PendaftaranPpdbController::class, 'riwayat'])->name('ppdb.riwayat');
 
     Route::get('wali/siswa', [WaliSiswaController::class, 'index'])->name('wali.siswa.index');
     Route::get('wali/siswa/{siswa}', [WaliSiswaController::class, 'show'])->name('wali.siswa.show');
@@ -43,15 +45,14 @@ Route::middleware(['auth', 'staf-ppdb'])->group(function () {
 
     Route::get('staf/ppdb/{pendaftaran_ppdb}/verifikasi', [StafPendaftaranPpdbController::class, 'show'])->name('staf.ppdb.verifikasi');
     Route::post('staf/ppdb/{pendaftaran_ppdb}/verifikasi', [StafPendaftaranPpdbController::class, 'verifikasi'])->name('staf.ppdb.verifikasi.store');
-    Route::post('staf/ppdb/{pendaftaran_ppdb}/konversi', [StafPendaftaranPpdbController::class, 'konversi'])->name('staf.ppdb.konversi');
+
+    Route::post('staf/siswa/{siswa}/finalisasi', [StafSiswaController::class, 'finalisasi'])->name('staf.siswa.finalisasi');
 });
 
 Route::middleware(['auth', 'staf-keuangan'])->group(function () {
     Route::get('staf/tagihan', [TagihanController::class, 'index'])->name('staf.tagihan.index');
     Route::get('staf/tagihan/{tagihan}', [TagihanController::class, 'show'])->name('staf.tagihan.show');
-    Route::post('staf/tagihan/{tagihan}/cicilan', [TagihanController::class, 'aturCicilan'])->name('staf.tagihan.cicilan.store');
     Route::post('staf/tagihan/{tagihan}/bayar-langsung', [TagihanController::class, 'bayarLangsung'])->name('staf.tagihan.bayar-langsung.store');
-    Route::post('staf/item-cicilan/{item_cicilan}/bayar', [TagihanController::class, 'bayarCicilan'])->name('staf.item-cicilan.bayar.store');
 });
 
 require __DIR__.'/settings.php';

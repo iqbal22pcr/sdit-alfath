@@ -60,6 +60,13 @@ interface VerifikasiForm {
     [key: string]: string;
 }
 
+interface FinalisasiInfo {
+    siswa_id: number;
+    status_siswa: 'calon' | 'aktif' | 'alumni' | 'keluar';
+    bisa: boolean;
+    alasan: string | null;
+}
+
 const STATUS_LABEL: Record<Status, string> = {
     draft: 'Draft',
     diajukan: 'Diajukan',
@@ -114,30 +121,31 @@ const breadcrumbs: BreadcrumbItem[] = [
 export default function StafPpdbVerifikasi({
     pendaftaran,
     kuotaKategori,
-    sudahJadiSiswa,
+    finalisasi,
 }: {
     pendaftaran: PendaftaranDetail;
     kuotaKategori: KuotaKategoriOption[];
-    sudahJadiSiswa: boolean;
+    finalisasi: FinalisasiInfo | null;
 }) {
     const form = useForm<VerifikasiForm>({
         status: '',
         kategori_siswa_id: pendaftaran.kategori_siswa_id ? String(pendaftaran.kategori_siswa_id) : '',
     });
 
-    const konversiForm = useForm({});
+    const finalisasiForm = useForm({});
 
     const submitVerifikasi = (status: 'diterima' | 'ditolak' | 'perlu_perbaikan') => {
         form.transform((data) => ({ ...data, status }));
         form.post(route('staf.ppdb.verifikasi.store', pendaftaran.id), { preserveScroll: true });
     };
 
-    const konversi = () => {
-        konversiForm.post(route('staf.ppdb.konversi', pendaftaran.id), { preserveScroll: true });
+    const submitFinalisasi = () => {
+        if (! finalisasi) return;
+        finalisasiForm.post(route('staf.siswa.finalisasi', finalisasi.siswa_id), { preserveScroll: true });
     };
 
     const kategoriDipilih = form.data.kategori_siswa_id !== '';
-    const bisaKonversi = pendaftaran.status === 'diterima' && ! sudahJadiSiswa;
+    const statusFinal = pendaftaran.status === 'diterima' || pendaftaran.status === 'ditolak';
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -214,65 +222,83 @@ export default function StafPpdbVerifikasi({
                     </CardContent>
                 </Card>
 
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Aksi Verifikasi</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        <div className="grid gap-2">
-                            <Label htmlFor="kategori_siswa_id">Kategori (wajib dipilih untuk menerima)</Label>
-                            <Select
-                                value={form.data.kategori_siswa_id}
-                                onValueChange={(value) => form.setData('kategori_siswa_id', value)}
-                            >
-                                <SelectTrigger id="kategori_siswa_id">
-                                    <SelectValue placeholder="Pilih kategori" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {kuotaKategori.map((k) => (
-                                        <SelectItem key={k.kategori_siswa_id} value={String(k.kategori_siswa_id)} disabled={k.penuh}>
-                                            {k.nama} ({k.terpakai}/{k.kuota}){k.penuh ? ' — Penuh' : ''}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                            {form.errors.kategori_siswa_id && <p className="text-sm text-red-600 dark:text-red-400">{form.errors.kategori_siswa_id}</p>}
-                            {form.errors.status && <p className="text-sm text-red-600 dark:text-red-400">{form.errors.status}</p>}
-                        </div>
-
-                        <div className="flex flex-wrap gap-2">
-                            <Button
-                                type="button"
-                                disabled={form.processing || ! kategoriDipilih}
-                                onClick={() => submitVerifikasi('diterima')}
-                            >
-                                Terima
-                            </Button>
-                            <Button type="button" variant="destructive" disabled={form.processing} onClick={() => submitVerifikasi('ditolak')}>
-                                Tolak
-                            </Button>
-                            <Button type="button" variant="outline" disabled={form.processing} onClick={() => submitVerifikasi('perlu_perbaikan')}>
-                                Minta Perbaikan
-                            </Button>
-                        </div>
-                    </CardContent>
-                </Card>
-
-                {bisaKonversi && (
+                {statusFinal ? (
                     <Card>
                         <CardHeader>
-                            <CardTitle>Konversi Jadi Siswa</CardTitle>
+                            <CardTitle>Status Verifikasi</CardTitle>
                         </CardHeader>
-                        <CardContent>
-                            <Button type="button" disabled={konversiForm.processing} onClick={konversi}>
-                                Konversi Jadi Siswa
-                            </Button>
+                        <CardContent className="space-y-2 text-sm text-muted-foreground">
+                            <p>
+                                Pendaftaran ini sudah final dengan status{' '}
+                                <Badge variant={STATUS_BADGE_VARIANT[pendaftaran.status]}>{STATUS_LABEL[pendaftaran.status]}</Badge>, tidak bisa
+                                diverifikasi ulang lewat form ini.
+                            </p>
+                            <p>
+                                Diverifikasi oleh: <span className="font-medium text-foreground">{pendaftaran.verifikator?.name ?? '-'}</span>
+                            </p>
+                        </CardContent>
+                    </Card>
+                ) : (
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Aksi Verifikasi</CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <div className="grid gap-2">
+                                <Label htmlFor="kategori_siswa_id">Kategori (wajib dipilih untuk menerima)</Label>
+                                <Select
+                                    value={form.data.kategori_siswa_id}
+                                    onValueChange={(value) => form.setData('kategori_siswa_id', value)}
+                                >
+                                    <SelectTrigger id="kategori_siswa_id">
+                                        <SelectValue placeholder="Pilih kategori" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {kuotaKategori.map((k) => (
+                                            <SelectItem key={k.kategori_siswa_id} value={String(k.kategori_siswa_id)} disabled={k.penuh}>
+                                                {k.nama} ({k.terpakai}/{k.kuota}){k.penuh ? ' — Penuh' : ''}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                                {form.errors.kategori_siswa_id && <p className="text-sm text-red-600 dark:text-red-400">{form.errors.kategori_siswa_id}</p>}
+                                {form.errors.status && <p className="text-sm text-red-600 dark:text-red-400">{form.errors.status}</p>}
+                            </div>
+
+                            <div className="flex flex-wrap gap-2">
+                                <Button
+                                    type="button"
+                                    disabled={form.processing || ! kategoriDipilih}
+                                    onClick={() => submitVerifikasi('diterima')}
+                                >
+                                    Terima
+                                </Button>
+                                <Button type="button" variant="destructive" disabled={form.processing} onClick={() => submitVerifikasi('ditolak')}>
+                                    Tolak
+                                </Button>
+                                <Button type="button" variant="outline" disabled={form.processing} onClick={() => submitVerifikasi('perlu_perbaikan')}>
+                                    Minta Perbaikan
+                                </Button>
+                            </div>
                         </CardContent>
                     </Card>
                 )}
 
-                {sudahJadiSiswa && (
-                    <p className="text-sm text-muted-foreground">Pendaftaran ini sudah dikonversi menjadi siswa.</p>
+                {finalisasi && (
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Finalisasi Siswa</CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-3">
+                            <p className="text-sm text-muted-foreground">
+                                Status siswa saat ini: <span className="font-medium">{finalisasi.status_siswa}</span>
+                            </p>
+                            <Button type="button" disabled={! finalisasi.bisa || finalisasiForm.processing} onClick={submitFinalisasi}>
+                                Finalisasi Siswa
+                            </Button>
+                            {finalisasi.alasan && <p className="text-sm text-muted-foreground">{finalisasi.alasan}</p>}
+                        </CardContent>
+                    </Card>
                 )}
             </div>
         </AppLayout>

@@ -122,6 +122,20 @@ class PendaftaranPpdbController extends Controller
     }
 
     /**
+     * List every registration the logged-in user has ever submitted.
+     */
+    public function riwayat(): Response
+    {
+        $pendaftaran = PendaftaranPpdb::where('user_id', request()->user()->id)
+            ->latest()
+            ->get(['id', 'nomor_pendaftaran', 'nama_pendaftar', 'status', 'created_at']);
+
+        return Inertia::render('ppdb/riwayat', [
+            'pendaftaran' => $pendaftaran,
+        ]);
+    }
+
+    /**
      * Find the gelombang currently open for registration, if any.
      */
     private function resolveOpenGelombang(): ?GelombangPpdb

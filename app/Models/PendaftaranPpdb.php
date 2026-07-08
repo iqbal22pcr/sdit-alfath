@@ -134,10 +134,13 @@ class PendaftaranPpdb extends Model
                 // NISN berasal dari data Kemendikbud, belum ada sumber
                 // datanya di sistem ini.
                 'nisn' => null,
-                'status' => 'aktif',
+                // Baru berstatus "calon" -- jadi "aktif" hanya setelah
+                // difinalisasi lewat Siswa::finalisasi(), begitu tagihan
+                // uang buku dan uang seragam-nya lunas.
+                'status' => 'calon',
             ]);
 
-            $siswa->buatTagihanDaftarUlang();
+            $siswa->buatTagihanAwal();
 
             return $siswa;
         });

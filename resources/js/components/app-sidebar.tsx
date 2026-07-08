@@ -4,7 +4,7 @@ import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem, type SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
-import { BookOpen, Calendar, CalendarRange, ClipboardList, Folder, GraduationCap, LayoutGrid, Receipt, Tags } from 'lucide-react';
+import { BookOpen, Calendar, CalendarRange, ClipboardList, FileText, Folder, GraduationCap, History, LayoutGrid, Receipt, Tags } from 'lucide-react';
 import AppLogo from './app-logo';
 
 const footerNavItems: NavItem[] = [
@@ -20,15 +20,23 @@ const footerNavItems: NavItem[] = [
     },
 ];
 
+// Roles that land on their own dedicated dashboard after login don't
+// need the generic starter-kit "Dashboard" link cluttering the sidebar.
+const ROLES_WITH_OWN_DASHBOARD = ['staf_ppdb', 'staf_keuangan', 'wali_murid'];
+
 export function AppSidebar() {
     const { auth } = usePage<SharedData>().props;
 
     const mainNavItems: NavItem[] = [
-        {
-            title: 'Dashboard',
-            url: '/dashboard',
-            icon: LayoutGrid,
-        },
+        ...(! ROLES_WITH_OWN_DASHBOARD.includes(auth.user.role)
+            ? [
+                  {
+                      title: 'Dashboard',
+                      url: '/dashboard',
+                      icon: LayoutGrid,
+                  },
+              ]
+            : []),
         ...(auth.user.role === 'admin'
             ? [
                   {
@@ -72,6 +80,16 @@ export function AppSidebar() {
                       title: 'Anak Saya',
                       url: route('wali.siswa.index'),
                       icon: GraduationCap,
+                  },
+                  {
+                      title: 'Daftar PPDB',
+                      url: route('ppdb.create'),
+                      icon: FileText,
+                  },
+                  {
+                      title: 'Riwayat Pendaftaran PPDB',
+                      url: route('ppdb.riwayat'),
+                      icon: History,
                   },
               ]
             : []),

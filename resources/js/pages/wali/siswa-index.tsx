@@ -4,7 +4,7 @@ import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link } from '@inertiajs/react';
 
-type StatusSiswa = 'aktif' | 'alumni' | 'keluar';
+type StatusSiswa = 'calon' | 'aktif' | 'alumni' | 'keluar';
 
 interface SiswaRow {
     id: number;
@@ -15,12 +15,14 @@ interface SiswaRow {
 }
 
 const STATUS_LABEL: Record<StatusSiswa, string> = {
+    calon: 'Calon Siswa',
     aktif: 'Aktif',
     alumni: 'Alumni',
     keluar: 'Keluar',
 };
 
 const STATUS_BADGE_VARIANT: Record<StatusSiswa, 'default' | 'secondary' | 'destructive' | 'outline'> = {
+    calon: 'outline',
     aktif: 'default',
     alumni: 'secondary',
     keluar: 'destructive',

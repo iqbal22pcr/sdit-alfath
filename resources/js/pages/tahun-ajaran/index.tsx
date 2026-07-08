@@ -14,18 +14,20 @@ import { FormEventHandler, useState } from 'react';
 interface TahunAjaran {
     id: number;
     nama: string;
+    tahun_mulai: number;
     status_aktif: boolean;
 }
 
 interface TahunAjaranForm {
     nama: string;
+    tahun_mulai: number | string;
     status_aktif: boolean;
-    [key: string]: string | boolean;
+    [key: string]: string | number | boolean;
 }
 
 const breadcrumbs: BreadcrumbItem[] = [{ title: 'Tahun Ajaran', href: '/tahun-ajaran' }];
 
-const emptyForm: TahunAjaranForm = { nama: '', status_aktif: false };
+const emptyForm: TahunAjaranForm = { nama: '', tahun_mulai: '', status_aktif: false };
 
 export default function TahunAjaranIndex({ tahunAjaran }: { tahunAjaran: TahunAjaran[] }) {
     const [addOpen, setAddOpen] = useState(false);
@@ -52,6 +54,7 @@ export default function TahunAjaranIndex({ tahunAjaran }: { tahunAjaran: TahunAj
         editForm.clearErrors();
         editForm.setData({
             nama: tahun.nama,
+            tahun_mulai: tahun.tahun_mulai,
             status_aktif: tahun.status_aktif,
         });
         setEditing(tahun);
@@ -116,6 +119,19 @@ export default function TahunAjaranIndex({ tahunAjaran }: { tahunAjaran: TahunAj
                                     <InputError message={addForm.errors.nama} />
                                 </div>
 
+                                <div className="grid gap-2">
+                                    <Label htmlFor="add-tahun-mulai">Tahun Mulai</Label>
+                                    <Input
+                                        id="add-tahun-mulai"
+                                        type="number"
+                                        maxLength={4}
+                                        value={addForm.data.tahun_mulai}
+                                        onChange={(e) => addForm.setData('tahun_mulai', e.target.value)}
+                                        placeholder="mis. 2026"
+                                    />
+                                    <InputError message={addForm.errors.tahun_mulai} />
+                                </div>
+
                                 <div className="flex items-center gap-2">
                                     <Checkbox
                                         id="add-status-aktif"
@@ -146,6 +162,7 @@ export default function TahunAjaranIndex({ tahunAjaran }: { tahunAjaran: TahunAj
                         <TableHeader>
                             <TableRow>
                                 <TableHead>Nama</TableHead>
+                                <TableHead>Tahun Mulai</TableHead>
                                 <TableHead>Status</TableHead>
                                 <TableHead className="text-right">Aksi</TableHead>
                             </TableRow>
@@ -153,7 +170,7 @@ export default function TahunAjaranIndex({ tahunAjaran }: { tahunAjaran: TahunAj
                         <TableBody>
                             {tahunAjaran.length === 0 && (
                                 <TableRow>
-                                    <TableCell colSpan={3} className="text-center text-muted-foreground">
+                                    <TableCell colSpan={4} className="text-center text-muted-foreground">
                                         Belum ada tahun ajaran.
                                     </TableCell>
                                 </TableRow>
@@ -162,6 +179,7 @@ export default function TahunAjaranIndex({ tahunAjaran }: { tahunAjaran: TahunAj
                             {tahunAjaran.map((tahun) => (
                                 <TableRow key={tahun.id}>
                                     <TableCell className="font-medium">{tahun.nama}</TableCell>
+                                    <TableCell>{tahun.tahun_mulai}</TableCell>
                                     <TableCell>
                                         <Badge variant={tahun.status_aktif ? 'default' : 'secondary'}>
                                             {tahun.status_aktif ? 'Aktif' : 'Tidak Aktif'}
@@ -205,6 +223,18 @@ export default function TahunAjaranIndex({ tahunAjaran }: { tahunAjaran: TahunAj
                             <Label htmlFor="edit-nama">Nama</Label>
                             <Input id="edit-nama" value={editForm.data.nama} onChange={(e) => editForm.setData('nama', e.target.value)} />
                             <InputError message={editForm.errors.nama} />
+                        </div>
+
+                        <div className="grid gap-2">
+                            <Label htmlFor="edit-tahun-mulai">Tahun Mulai</Label>
+                            <Input
+                                id="edit-tahun-mulai"
+                                type="number"
+                                maxLength={4}
+                                value={editForm.data.tahun_mulai}
+                                onChange={(e) => editForm.setData('tahun_mulai', e.target.value)}
+                            />
+                            <InputError message={editForm.errors.tahun_mulai} />
                         </div>
 
                         <div className="flex items-center gap-2">

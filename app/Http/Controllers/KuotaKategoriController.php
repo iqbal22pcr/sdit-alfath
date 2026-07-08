@@ -6,24 +6,30 @@ use App\Http\Requests\KuotaKategoriRequest;
 use App\Models\GelombangPpdb;
 use App\Models\KuotaKategori;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\DB;
 
 class KuotaKategoriController extends Controller
 {
     /**
-     * Create or update the kuota for a kategori_siswa within a gelombang_ppdb.
+     * Create or update the kuota for every kategori_siswa within a
+     * gelombang_ppdb in one request, all in a single transaction.
      */
     public function store(KuotaKategoriRequest $request, GelombangPpdb $gelombangPpdb): RedirectResponse
     {
-        KuotaKategori::updateOrCreate(
-            [
-                'gelombang_ppdb_id' => $gelombangPpdb->id,
-                'kategori_siswa_id' => $request->validated('kategori_siswa_id'),
-            ],
-            [
-                'kuota' => $request->validated('kuota'),
-            ]
-        );
+        DB::transaction(function () use ($request, $gelombangPpdb) {
+            foreach ($request->validated('kuota') as $baris) {
+                KuotaKategori::updateOrCreate(
+                    [
+                        'gelombang_ppdb_id' => $gelombangPpdb->id,
+                        'kategori_siswa_id' => $baris['kategori_siswa_id'],
+                    ],
+                    [
+                        'kuota' => $baris['kuota'],
+                    ]
+                );
+            }
+        });
 
-        return to_route('gelombang-ppdb.show', $gelombangPpdb);
+        return to_route('gelombang-ppdb.show', $gelombangPpdb)->with('success', 'Kuota berhasil disimpan.');
     }
 }

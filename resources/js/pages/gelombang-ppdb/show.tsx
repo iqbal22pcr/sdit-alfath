@@ -4,8 +4,9 @@ import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
+import { type FormDataConvertible } from '@inertiajs/core';
 import { Head, Link, useForm } from '@inertiajs/react';
-import { FormEventHandler, useState } from 'react';
+import { FormEventHandler } from 'react';
 
 interface GelombangPpdbDetail {
     id: number;
@@ -24,10 +25,15 @@ interface KategoriDenganKuota {
     kuota: number | null;
 }
 
-interface KuotaForm {
+interface KuotaBarisForm {
     kategori_siswa_id: number;
     kuota: number | string;
-    [key: string]: string | number;
+    [key: string]: FormDataConvertible;
+}
+
+interface KuotaBatchForm {
+    kuota: KuotaBarisForm[];
+    [key: string]: FormDataConvertible;
 }
 
 const toDateInput = (value: string) => value.slice(0, 10);
@@ -44,11 +50,30 @@ export default function GelombangPpdbShow({
         { title: gelombangPpdb.nama, href: `/gelombang-ppdb/${gelombangPpdb.id}` },
     ];
 
+    const form = useForm<KuotaBatchForm>({
+        kuota: kategoriDenganKuota.map((kategori) => ({
+            kategori_siswa_id: kategori.kategori_siswa_id,
+            kuota: kategori.kuota ?? 0,
+        })),
+    });
+
+    const updateKuota = (index: number, value: string) => {
+        form.setData(
+            'kuota',
+            form.data.kuota.map((baris, i) => (i === index ? { ...baris, kuota: value } : baris)),
+        );
+    };
+
+    const submit: FormEventHandler = (e) => {
+        e.preventDefault();
+        form.post(route('gelombang-ppdb.kuota.store', gelombangPpdb.id), { preserveScroll: true });
+    };
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title={`Kelola Kuota - ${gelombangPpdb.nama}`} />
 
-            <div className="flex flex-col gap-4 p-4">
+            <form onSubmit={submit} className="flex flex-col gap-4 p-4">
                 <div>
                     <Link href={route('gelombang-ppdb.index')} className="text-sm text-muted-foreground hover:underline">
                         &larr; Kembali ke daftar gelombang
@@ -78,59 +103,34 @@ export default function GelombangPpdbShow({
                                 </TableRow>
                             )}
 
-                            {kategoriDenganKuota.map((kategori) => (
-                                <KuotaRow key={kategori.kategori_siswa_id} gelombangId={gelombangPpdb.id} kategori={kategori} />
+                            {kategoriDenganKuota.map((kategori, index) => (
+                                <TableRow key={kategori.kategori_siswa_id}>
+                                    <TableCell className="font-medium">{kategori.nama}</TableCell>
+                                    <TableCell>{kategori.persentase_diskon}%</TableCell>
+                                    <TableCell>
+                                        <Input
+                                            type="number"
+                                            min={0}
+                                            className="w-28"
+                                            value={form.data.kuota[index].kuota}
+                                            onChange={(e) => updateKuota(index, e.target.value)}
+                                        />
+                                        <InputError message={form.errors[`kuota.${index}.kuota`]} />
+                                    </TableCell>
+                                </TableRow>
                             ))}
                         </TableBody>
                     </Table>
                 </div>
-            </div>
+
+                {kategoriDenganKuota.length > 0 && (
+                    <div className="flex justify-end">
+                        <Button type="submit" disabled={form.processing}>
+                            Simpan Semua Kuota
+                        </Button>
+                    </div>
+                )}
+            </form>
         </AppLayout>
-    );
-}
-
-function KuotaRow({ gelombangId, kategori }: { gelombangId: number; kategori: KategoriDenganKuota }) {
-    const [saved, setSaved] = useState(false);
-
-    const form = useForm<KuotaForm>({
-        kategori_siswa_id: kategori.kategori_siswa_id,
-        kuota: kategori.kuota ?? 0,
-    });
-
-    const submit: FormEventHandler = (e) => {
-        e.preventDefault();
-        setSaved(false);
-
-        form.post(route('gelombang-ppdb.kuota.store', gelombangId), {
-            preserveScroll: true,
-            preserveState: true,
-            onSuccess: () => setSaved(true),
-        });
-    };
-
-    return (
-        <TableRow>
-            <TableCell className="font-medium">{kategori.nama}</TableCell>
-            <TableCell>{kategori.persentase_diskon}%</TableCell>
-            <TableCell>
-                <form onSubmit={submit} className="flex items-center gap-2">
-                    <Input
-                        type="number"
-                        min={0}
-                        className="w-28"
-                        value={form.data.kuota}
-                        onChange={(e) => {
-                            form.setData('kuota', e.target.value);
-                            setSaved(false);
-                        }}
-                    />
-                    <Button type="submit" size="sm" disabled={form.processing}>
-                        Simpan
-                    </Button>
-                    {saved && <span className="text-sm text-green-600">Tersimpan</span>}
-                </form>
-                <InputError message={form.errors.kuota} />
-            </TableCell>
-        </TableRow>
     );
 }

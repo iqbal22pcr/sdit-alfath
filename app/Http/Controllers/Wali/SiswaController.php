@@ -45,7 +45,6 @@ class SiswaController extends Controller
             'kategoriSiswa:id,nama',
             'tagihan' => fn ($q) => $q->latest(),
             'tagihan.komponenBiaya:id,nama,jenis',
-            'tagihan.rencanaCicilan.itemCicilan',
         ]);
 
         $pembayaran = Pembayaran::query()

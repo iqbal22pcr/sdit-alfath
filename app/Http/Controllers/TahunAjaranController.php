@@ -16,7 +16,7 @@ class TahunAjaranController extends Controller
     public function index(): Response
     {
         return Inertia::render('tahun-ajaran/index', [
-            'tahunAjaran' => TahunAjaran::orderBy('nama')->get(['id', 'nama', 'status_aktif']),
+            'tahunAjaran' => TahunAjaran::orderBy('nama')->get(['id', 'nama', 'tahun_mulai', 'status_aktif']),
         ]);
     }
 

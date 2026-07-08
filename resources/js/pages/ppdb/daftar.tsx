@@ -74,7 +74,14 @@ export default function PpdbDaftar({ gelombang }: { gelombang: { id: number; nam
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
-        form.post(route('ppdb.store'));
+        form.post(route('ppdb.store'), {
+            onError: (errors) => {
+                const firstKey = Object.keys(errors)[0];
+                if (!firstKey) return;
+
+                document.getElementById(firstKey.replace(/[._]/g, '-'))?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            },
+        });
     };
 
     const addWali = () => {
@@ -119,9 +126,9 @@ export default function PpdbDaftar({ gelombang }: { gelombang: { id: number; nam
                     </CardHeader>
                     <CardContent className="space-y-4">
                         <div className="grid gap-2">
-                            <Label htmlFor="nama_pendaftar">Nama Lengkap</Label>
+                            <Label htmlFor="nama-pendaftar">Nama Lengkap</Label>
                             <Input
-                                id="nama_pendaftar"
+                                id="nama-pendaftar"
                                 value={form.data.nama_pendaftar}
                                 onChange={(e) => form.setData('nama_pendaftar', e.target.value)}
                             />
@@ -130,9 +137,9 @@ export default function PpdbDaftar({ gelombang }: { gelombang: { id: number; nam
 
                         <div className="grid grid-cols-2 gap-4">
                             <div className="grid gap-2">
-                                <Label htmlFor="tempat_lahir">Tempat Lahir</Label>
+                                <Label htmlFor="tempat-lahir">Tempat Lahir</Label>
                                 <Input
-                                    id="tempat_lahir"
+                                    id="tempat-lahir"
                                     value={form.data.tempat_lahir}
                                     onChange={(e) => form.setData('tempat_lahir', e.target.value)}
                                 />
@@ -140,9 +147,9 @@ export default function PpdbDaftar({ gelombang }: { gelombang: { id: number; nam
                             </div>
 
                             <div className="grid gap-2">
-                                <Label htmlFor="tanggal_lahir">Tanggal Lahir</Label>
+                                <Label htmlFor="tanggal-lahir">Tanggal Lahir</Label>
                                 <Input
-                                    id="tanggal_lahir"
+                                    id="tanggal-lahir"
                                     type="date"
                                     value={form.data.tanggal_lahir}
                                     onChange={(e) => form.setData('tanggal_lahir', e.target.value)}
@@ -152,9 +159,9 @@ export default function PpdbDaftar({ gelombang }: { gelombang: { id: number; nam
                         </div>
 
                         <div className="grid gap-2">
-                            <Label htmlFor="jenis_kelamin">Jenis Kelamin</Label>
+                            <Label htmlFor="jenis-kelamin">Jenis Kelamin</Label>
                             <Select value={form.data.jenis_kelamin} onValueChange={(value) => form.setData('jenis_kelamin', value as never)}>
-                                <SelectTrigger id="jenis_kelamin">
+                                <SelectTrigger id="jenis-kelamin">
                                     <SelectValue placeholder="Pilih jenis kelamin" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -180,9 +187,9 @@ export default function PpdbDaftar({ gelombang }: { gelombang: { id: number; nam
                     </CardHeader>
                     <CardContent className="space-y-4">
                         <div className="grid gap-2">
-                            <Label htmlFor="status_ayah">Status Ayah</Label>
+                            <Label htmlFor="status-ayah">Status Ayah</Label>
                             <Select value={form.data.status_ayah} onValueChange={(value) => form.setData('status_ayah', value as never)}>
-                                <SelectTrigger id="status_ayah">
+                                <SelectTrigger id="status-ayah">
                                     <SelectValue placeholder="Pilih status ayah" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -194,12 +201,12 @@ export default function PpdbDaftar({ gelombang }: { gelombang: { id: number; nam
                         </div>
 
                         <div className="grid gap-2">
-                            <Label htmlFor="penghasilan_tetap">Apakah orang tua memiliki penghasilan tetap?</Label>
+                            <Label htmlFor="penghasilan-tetap">Apakah orang tua memiliki penghasilan tetap?</Label>
                             <Select
                                 value={form.data.penghasilan_tetap}
                                 onValueChange={(value) => form.setData('penghasilan_tetap', value as never)}
                             >
-                                <SelectTrigger id="penghasilan_tetap">
+                                <SelectTrigger id="penghasilan-tetap">
                                     <SelectValue placeholder="Pilih jawaban" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -211,12 +218,12 @@ export default function PpdbDaftar({ gelombang }: { gelombang: { id: number; nam
                         </div>
 
                         <div className="grid gap-2">
-                            <Label htmlFor="punya_saudara_di_sekolah">Apakah punya saudara kandung di sekolah ini?</Label>
+                            <Label htmlFor="punya-saudara-di-sekolah">Apakah punya saudara kandung di sekolah ini?</Label>
                             <Select
                                 value={form.data.punya_saudara_di_sekolah}
                                 onValueChange={(value) => form.setData('punya_saudara_di_sekolah', value as never)}
                             >
-                                <SelectTrigger id="punya_saudara_di_sekolah">
+                                <SelectTrigger id="punya-saudara-di-sekolah">
                                     <SelectValue placeholder="Pilih jawaban" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -229,9 +236,9 @@ export default function PpdbDaftar({ gelombang }: { gelombang: { id: number; nam
 
                         {form.data.punya_saudara_di_sekolah === '1' && (
                             <div className="grid gap-2">
-                                <Label htmlFor="nama_saudara">Nama Saudara</Label>
+                                <Label htmlFor="nama-saudara">Nama Saudara</Label>
                                 <Input
-                                    id="nama_saudara"
+                                    id="nama-saudara"
                                     value={form.data.nama_saudara}
                                     onChange={(e) => form.setData('nama_saudara', e.target.value)}
                                 />
@@ -356,7 +363,7 @@ export default function PpdbDaftar({ gelombang }: { gelombang: { id: number; nam
 
                         {butuhSuratTidakMampu && (
                             <DokumenField
-                                id="dokumen-surat-tidak-mampu"
+                                id="dokumen-surat-keterangan-tidak-mampu"
                                 label="Surat Keterangan Tidak Mampu"
                                 error={form.errors['dokumen.surat_keterangan_tidak_mampu']}
                                 onChange={(file) => updateDokumen('surat_keterangan_tidak_mampu', file)}

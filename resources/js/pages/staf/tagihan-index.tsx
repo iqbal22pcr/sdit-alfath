@@ -18,7 +18,6 @@ interface TagihanRow {
     created_at: string;
     siswa: { nama: string };
     komponen_biaya: { nama: string; jenis: string };
-    rencana_cicilan: { id: number } | null;
 }
 
 const STATUS_LABEL: Record<StatusTagihan, string> = {

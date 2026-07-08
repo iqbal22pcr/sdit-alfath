@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Tagihan extends Model
 {
@@ -27,6 +26,7 @@ class Tagihan extends Model
         'nomor_tagihan',
         'bulan_tagihan',
         'tahun_tagihan',
+        'jatuh_tempo',
         'nominal',
         'terbayar',
         'status',
@@ -42,6 +42,7 @@ class Tagihan extends Model
         return [
             'bulan_tagihan' => 'integer',
             'tahun_tagihan' => 'integer',
+            'jatuh_tempo' => 'date',
             'nominal' => 'integer',
             'terbayar' => 'integer',
         ];
@@ -69,14 +70,6 @@ class Tagihan extends Model
     public function komponenBiaya(): BelongsTo
     {
         return $this->belongsTo(KomponenBiaya::class);
-    }
-
-    /**
-     * Get the rencana cicilan for this tagihan, if any.
-     */
-    public function rencanaCicilan(): HasOne
-    {
-        return $this->hasOne(RencanaCicilan::class);
     }
 
     /**

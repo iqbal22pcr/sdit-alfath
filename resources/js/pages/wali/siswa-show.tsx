@@ -5,23 +5,9 @@ import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/react';
 
-type StatusSiswa = 'aktif' | 'alumni' | 'keluar';
+type StatusSiswa = 'calon' | 'aktif' | 'alumni' | 'keluar';
 type StatusTagihan = 'belum_bayar' | 'sebagian' | 'lunas';
-type StatusItemCicilan = 'belum_bayar' | 'lunas';
 type Metode = 'tunai' | 'transfer';
-
-interface ItemCicilan {
-    id: number;
-    cicilan_ke: number;
-    jatuh_tempo: string;
-    nominal: number;
-    status: StatusItemCicilan;
-}
-
-interface RencanaCicilan {
-    id: number;
-    item_cicilan: ItemCicilan[];
-}
 
 interface TagihanRow {
     id: number;
@@ -30,7 +16,6 @@ interface TagihanRow {
     terbayar: number;
     status: StatusTagihan;
     komponen_biaya: { nama: string; jenis: string };
-    rencana_cicilan: RencanaCicilan | null;
 }
 
 interface PembayaranRow {
@@ -52,12 +37,14 @@ interface SiswaDetail {
 }
 
 const STATUS_SISWA_LABEL: Record<StatusSiswa, string> = {
+    calon: 'Calon Siswa',
     aktif: 'Aktif',
     alumni: 'Alumni',
     keluar: 'Keluar',
 };
 
 const STATUS_SISWA_BADGE_VARIANT: Record<StatusSiswa, 'default' | 'secondary' | 'destructive' | 'outline'> = {
+    calon: 'outline',
     aktif: 'default',
     alumni: 'secondary',
     keluar: 'destructive',
@@ -72,16 +59,6 @@ const STATUS_TAGIHAN_LABEL: Record<StatusTagihan, string> = {
 const STATUS_TAGIHAN_BADGE_VARIANT: Record<StatusTagihan, 'default' | 'secondary' | 'destructive' | 'outline'> = {
     belum_bayar: 'secondary',
     sebagian: 'outline',
-    lunas: 'default',
-};
-
-const ITEM_STATUS_LABEL: Record<StatusItemCicilan, string> = {
-    belum_bayar: 'Belum Bayar',
-    lunas: 'Lunas',
-};
-
-const ITEM_STATUS_BADGE_VARIANT: Record<StatusItemCicilan, 'default' | 'secondary'> = {
-    belum_bayar: 'secondary',
     lunas: 'default',
 };
 
@@ -133,42 +110,12 @@ export default function WaliSiswaShow({ siswa, pembayaran }: { siswa: SiswaDetai
                                     <Badge variant={STATUS_TAGIHAN_BADGE_VARIANT[t.status]}>{STATUS_TAGIHAN_LABEL[t.status]}</Badge>
                                 </div>
                             </CardHeader>
-                            <CardContent className="space-y-4">
+                            <CardContent>
                                 <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm sm:grid-cols-3">
                                     <Field label="Komponen Biaya" value={t.komponen_biaya.nama} />
                                     <Field label="Nominal" value={currency(t.nominal)} />
                                     <Field label="Terbayar" value={currency(t.terbayar)} />
                                 </div>
-
-                                {t.rencana_cicilan && (
-                                    <div className="rounded-md border">
-                                        <Table>
-                                            <TableHeader>
-                                                <TableRow>
-                                                    <TableHead>Cicilan Ke</TableHead>
-                                                    <TableHead>Jatuh Tempo</TableHead>
-                                                    <TableHead>Status</TableHead>
-                                                </TableRow>
-                                            </TableHeader>
-                                            <TableBody>
-                                                {t.rencana_cicilan.item_cicilan
-                                                    .slice()
-                                                    .sort((a, b) => a.cicilan_ke - b.cicilan_ke)
-                                                    .map((item) => (
-                                                        <TableRow key={item.id}>
-                                                            <TableCell>{item.cicilan_ke}</TableCell>
-                                                            <TableCell>{formatTanggal(item.jatuh_tempo)}</TableCell>
-                                                            <TableCell>
-                                                                <Badge variant={ITEM_STATUS_BADGE_VARIANT[item.status]}>
-                                                                    {ITEM_STATUS_LABEL[item.status]}
-                                                                </Badge>
-                                                            </TableCell>
-                                                        </TableRow>
-                                                    ))}
-                                            </TableBody>
-                                        </Table>
-                                    </div>
-                                )}
                             </CardContent>
                         </Card>
                     ))}

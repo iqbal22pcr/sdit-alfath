@@ -21,6 +21,7 @@ class TahunAjaran extends Model
      */
     protected $fillable = [
         'nama',
+        'tahun_mulai',
         'status_aktif',
     ];
 
@@ -32,6 +33,7 @@ class TahunAjaran extends Model
     protected function casts(): array
     {
         return [
+            'tahun_mulai' => 'integer',
             'status_aktif' => 'boolean',
         ];
     }
