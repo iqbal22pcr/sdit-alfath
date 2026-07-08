@@ -8,6 +8,7 @@ use App\Http\Controllers\Staf\DashboardPpdbController;
 use App\Http\Controllers\Staf\PendaftaranPpdbController as StafPendaftaranPpdbController;
 use App\Http\Controllers\Staf\TagihanController;
 use App\Http\Controllers\TahunAjaranController;
+use App\Http\Controllers\Wali\SiswaController as WaliSiswaController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -23,6 +24,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('ppdb/daftar', [PendaftaranPpdbController::class, 'create'])->name('ppdb.create');
     Route::post('ppdb/daftar', [PendaftaranPpdbController::class, 'store'])->name('ppdb.store');
     Route::get('ppdb/konfirmasi/{pendaftaran_ppdb}', [PendaftaranPpdbController::class, 'konfirmasi'])->name('ppdb.konfirmasi');
+
+    Route::get('wali/siswa', [WaliSiswaController::class, 'index'])->name('wali.siswa.index');
+    Route::get('wali/siswa/{siswa}', [WaliSiswaController::class, 'show'])->name('wali.siswa.show');
 });
 
 Route::middleware(['auth', 'admin'])->group(function () {
