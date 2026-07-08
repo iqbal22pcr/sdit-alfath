@@ -6,6 +6,7 @@ use App\Http\Controllers\KuotaKategoriController;
 use App\Http\Controllers\PendaftaranPpdbController;
 use App\Http\Controllers\Staf\DashboardPpdbController;
 use App\Http\Controllers\Staf\PendaftaranPpdbController as StafPendaftaranPpdbController;
+use App\Http\Controllers\Staf\TagihanController;
 use App\Http\Controllers\TahunAjaranController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -39,6 +40,12 @@ Route::middleware(['auth', 'staf-ppdb'])->group(function () {
     Route::get('staf/ppdb/{pendaftaran_ppdb}/verifikasi', [StafPendaftaranPpdbController::class, 'show'])->name('staf.ppdb.verifikasi');
     Route::post('staf/ppdb/{pendaftaran_ppdb}/verifikasi', [StafPendaftaranPpdbController::class, 'verifikasi'])->name('staf.ppdb.verifikasi.store');
     Route::post('staf/ppdb/{pendaftaran_ppdb}/konversi', [StafPendaftaranPpdbController::class, 'konversi'])->name('staf.ppdb.konversi');
+});
+
+Route::middleware(['auth', 'staf-keuangan'])->group(function () {
+    Route::get('staf/tagihan', [TagihanController::class, 'index'])->name('staf.tagihan.index');
+    Route::get('staf/tagihan/{tagihan}', [TagihanController::class, 'show'])->name('staf.tagihan.show');
+    Route::post('staf/tagihan/{tagihan}/cicilan', [TagihanController::class, 'aturCicilan'])->name('staf.tagihan.cicilan.store');
 });
 
 require __DIR__.'/settings.php';

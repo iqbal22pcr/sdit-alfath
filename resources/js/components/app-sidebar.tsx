@@ -4,7 +4,7 @@ import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem, type SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
-import { BookOpen, Calendar, CalendarRange, ClipboardList, Folder, LayoutGrid, Tags } from 'lucide-react';
+import { BookOpen, Calendar, CalendarRange, ClipboardList, Folder, LayoutGrid, Receipt, Tags } from 'lucide-react';
 import AppLogo from './app-logo';
 
 const footerNavItems: NavItem[] = [
@@ -54,6 +54,15 @@ export function AppSidebar() {
                       title: 'Dashboard PPDB',
                       url: route('staf.ppdb-dashboard'),
                       icon: ClipboardList,
+                  },
+              ]
+            : []),
+        ...(auth.user.role === 'staf_keuangan'
+            ? [
+                  {
+                      title: 'Kelola Tagihan',
+                      url: route('staf.tagihan.index'),
+                      icon: Receipt,
                   },
               ]
             : []),
