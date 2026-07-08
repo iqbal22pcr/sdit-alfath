@@ -51,4 +51,12 @@ class KategoriSiswa extends Model
     {
         return $this->hasMany(PendaftaranPpdb::class);
     }
+
+    /**
+     * Get the siswa records assigned to this kategori.
+     */
+    public function siswa(): HasMany
+    {
+        return $this->hasMany(Siswa::class);
+    }
 }

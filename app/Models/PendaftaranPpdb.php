@@ -126,6 +126,7 @@ class PendaftaranPpdb extends Model
             }
 
             $siswa = $this->siswa()->create([
+                'kategori_siswa_id' => $this->kategori_siswa_id,
                 'nama' => $this->nama_pendaftar,
                 // Placeholder sementara -- format NIS asli masih menunggu
                 // kebijakan sekolah, belum ditetapkan.
