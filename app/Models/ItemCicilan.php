@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class ItemCicilan extends Model
 {
@@ -46,5 +47,13 @@ class ItemCicilan extends Model
     public function rencanaCicilan(): BelongsTo
     {
         return $this->belongsTo(RencanaCicilan::class);
+    }
+
+    /**
+     * Get the pembayaran rows recorded against this item cicilan.
+     */
+    public function pembayaran(): HasMany
+    {
+        return $this->hasMany(Pembayaran::class);
     }
 }

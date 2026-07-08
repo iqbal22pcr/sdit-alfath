@@ -2,16 +2,19 @@ import InputError from '@/components/input-error';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, useForm } from '@inertiajs/react';
-import { FormEventHandler } from 'react';
+import { FormEventHandler, useState } from 'react';
 
 type StatusTagihan = 'belum_bayar' | 'sebagian' | 'lunas';
 type StatusItemCicilan = 'belum_bayar' | 'lunas';
+type Metode = 'tunai' | 'transfer' | '';
 
 interface ItemCicilan {
     id: number;
@@ -45,6 +48,20 @@ interface AturCicilanForm {
     [key: string]: string;
 }
 
+interface BayarLangsungForm {
+    nominal: string;
+    tanggal_bayar: string;
+    metode: Metode;
+    [key: string]: string;
+}
+
+interface BayarCicilanForm {
+    nominal: string;
+    tanggal_bayar: string;
+    metode: Metode;
+    [key: string]: string;
+}
+
 const STATUS_LABEL: Record<StatusTagihan, string> = {
     belum_bayar: 'Belum Bayar',
     sebagian: 'Sebagian',
@@ -72,6 +89,8 @@ const currency = (value: number) => new Intl.NumberFormat('id-ID', { style: 'cur
 const formatTanggal = (value: string) =>
     new Date(value).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
 
+const todayInput = () => new Date().toISOString().slice(0, 10);
+
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Kelola Tagihan', href: '/staf/tagihan' },
     { title: 'Detail Tagihan', href: '#' },
@@ -79,13 +98,43 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 export default function StafTagihanShow({ tagihan }: { tagihan: TagihanDetail }) {
     const form = useForm<AturCicilanForm>({ jumlah_cicilan: '3' });
+    const bayarForm = useForm<BayarLangsungForm>({ nominal: '', tanggal_bayar: todayInput(), metode: '' });
+    const cicilanBayarForm = useForm<BayarCicilanForm>({ nominal: '', tanggal_bayar: todayInput(), metode: '' });
+
+    const [payingItem, setPayingItem] = useState<ItemCicilan | null>(null);
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
         form.post(route('staf.tagihan.cicilan.store', tagihan.id), { preserveScroll: true });
     };
 
+    const submitBayarLangsung: FormEventHandler = (e) => {
+        e.preventDefault();
+        bayarForm.post(route('staf.tagihan.bayar-langsung.store', tagihan.id), {
+            preserveScroll: true,
+            onSuccess: () => bayarForm.reset(),
+        });
+    };
+
+    const openBayarCicilan = (item: ItemCicilan) => {
+        cicilanBayarForm.clearErrors();
+        cicilanBayarForm.setData({ nominal: String(item.nominal), tanggal_bayar: todayInput(), metode: '' });
+        setPayingItem(item);
+    };
+
+    const submitBayarCicilan: FormEventHandler = (e) => {
+        e.preventDefault();
+        if (! payingItem) return;
+
+        cicilanBayarForm.post(route('staf.item-cicilan.bayar.store', payingItem.id), {
+            preserveScroll: true,
+            onSuccess: () => setPayingItem(null),
+        });
+    };
+
     const bisaAturCicilan = tagihan.komponen_biaya.jenis === 'masuk' && ! tagihan.rencana_cicilan && tagihan.status !== 'lunas';
+    const bisaBayarLangsung = ! tagihan.rencana_cicilan && tagihan.status !== 'lunas';
+    const sisa = tagihan.nominal - tagihan.terbayar;
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -112,6 +161,7 @@ export default function StafTagihanShow({ tagihan }: { tagihan: TagihanDetail })
                         <Field label="Bulan Tagihan" value={tagihan.bulan_tagihan ? String(tagihan.bulan_tagihan) : '-'} />
                         <Field label="Nominal" value={currency(tagihan.nominal)} />
                         <Field label="Terbayar" value={currency(tagihan.terbayar)} />
+                        <Field label="Sisa" value={currency(sisa)} />
                     </CardContent>
                 </Card>
 
@@ -129,6 +179,7 @@ export default function StafTagihanShow({ tagihan }: { tagihan: TagihanDetail })
                                             <TableHead>Jatuh Tempo</TableHead>
                                             <TableHead>Nominal</TableHead>
                                             <TableHead>Status</TableHead>
+                                            <TableHead className="text-right">Aksi</TableHead>
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>
@@ -144,6 +195,13 @@ export default function StafTagihanShow({ tagihan }: { tagihan: TagihanDetail })
                                                         <Badge variant={ITEM_STATUS_BADGE_VARIANT[item.status]}>
                                                             {ITEM_STATUS_LABEL[item.status]}
                                                         </Badge>
+                                                    </TableCell>
+                                                    <TableCell className="text-right">
+                                                        {item.status === 'belum_bayar' && (
+                                                            <Button variant="outline" size="sm" onClick={() => openBayarCicilan(item)}>
+                                                                Bayar
+                                                            </Button>
+                                                        )}
                                                     </TableCell>
                                                 </TableRow>
                                             ))}
@@ -176,7 +234,126 @@ export default function StafTagihanShow({ tagihan }: { tagihan: TagihanDetail })
                         )}
                     </CardContent>
                 </Card>
+
+                {bisaBayarLangsung && (
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Bayar Tagihan</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <form onSubmit={submitBayarLangsung} className="flex flex-col gap-4">
+                                <div className="grid gap-2">
+                                    <Label htmlFor="nominal">Nominal (maks. {currency(sisa)})</Label>
+                                    <Input
+                                        id="nominal"
+                                        type="number"
+                                        min={1}
+                                        max={sisa}
+                                        value={bayarForm.data.nominal}
+                                        onChange={(e) => bayarForm.setData('nominal', e.target.value)}
+                                        className="w-48"
+                                    />
+                                    <InputError message={bayarForm.errors.nominal} />
+                                </div>
+                                <div className="grid gap-2">
+                                    <Label htmlFor="tanggal_bayar">Tanggal Bayar</Label>
+                                    <Input
+                                        id="tanggal_bayar"
+                                        type="date"
+                                        max={todayInput()}
+                                        value={bayarForm.data.tanggal_bayar}
+                                        onChange={(e) => bayarForm.setData('tanggal_bayar', e.target.value)}
+                                        className="w-48"
+                                    />
+                                    <InputError message={bayarForm.errors.tanggal_bayar} />
+                                </div>
+                                <div className="grid gap-2">
+                                    <Label htmlFor="metode">Metode</Label>
+                                    <Select value={bayarForm.data.metode} onValueChange={(value) => bayarForm.setData('metode', value as Metode)}>
+                                        <SelectTrigger id="metode" className="w-48">
+                                            <SelectValue placeholder="Pilih metode" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="tunai">Tunai</SelectItem>
+                                            <SelectItem value="transfer">Transfer</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                    <InputError message={bayarForm.errors.metode} />
+                                </div>
+                                <div>
+                                    <Button type="submit" disabled={bayarForm.processing}>
+                                        Catat Pembayaran
+                                    </Button>
+                                </div>
+                            </form>
+                        </CardContent>
+                    </Card>
+                )}
             </div>
+
+            <Dialog
+                open={payingItem !== null}
+                onOpenChange={(open) => {
+                    if (! open) {
+                        setPayingItem(null);
+                        cicilanBayarForm.clearErrors();
+                    }
+                }}
+            >
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Bayar Cicilan Ke-{payingItem?.cicilan_ke}</DialogTitle>
+                        <DialogDescription>
+                            Konfirmasi pembayaran cicilan sebesar {payingItem ? currency(payingItem.nominal) : ''}.
+                        </DialogDescription>
+                    </DialogHeader>
+
+                    <form onSubmit={submitBayarCicilan} className="space-y-4">
+                        <div className="grid gap-2">
+                            <Label>Nominal</Label>
+                            <p className="text-sm font-medium">{payingItem ? currency(payingItem.nominal) : ''}</p>
+                        </div>
+                        <div className="grid gap-2">
+                            <Label htmlFor="cicilan_tanggal_bayar">Tanggal Bayar</Label>
+                            <Input
+                                id="cicilan_tanggal_bayar"
+                                type="date"
+                                max={todayInput()}
+                                value={cicilanBayarForm.data.tanggal_bayar}
+                                onChange={(e) => cicilanBayarForm.setData('tanggal_bayar', e.target.value)}
+                            />
+                            <InputError message={cicilanBayarForm.errors.tanggal_bayar} />
+                        </div>
+                        <div className="grid gap-2">
+                            <Label htmlFor="cicilan_metode">Metode</Label>
+                            <Select
+                                value={cicilanBayarForm.data.metode}
+                                onValueChange={(value) => cicilanBayarForm.setData('metode', value as Metode)}
+                            >
+                                <SelectTrigger id="cicilan_metode">
+                                    <SelectValue placeholder="Pilih metode" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="tunai">Tunai</SelectItem>
+                                    <SelectItem value="transfer">Transfer</SelectItem>
+                                </SelectContent>
+                            </Select>
+                            <InputError message={cicilanBayarForm.errors.metode} />
+                        </div>
+
+                        <DialogFooter>
+                            <DialogClose asChild>
+                                <Button type="button" variant="secondary">
+                                    Batal
+                                </Button>
+                            </DialogClose>
+                            <Button type="submit" disabled={cicilanBayarForm.processing}>
+                                Bayar
+                            </Button>
+                        </DialogFooter>
+                    </form>
+                </DialogContent>
+            </Dialog>
         </AppLayout>
     );
 }

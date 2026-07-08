@@ -46,6 +46,8 @@ Route::middleware(['auth', 'staf-keuangan'])->group(function () {
     Route::get('staf/tagihan', [TagihanController::class, 'index'])->name('staf.tagihan.index');
     Route::get('staf/tagihan/{tagihan}', [TagihanController::class, 'show'])->name('staf.tagihan.show');
     Route::post('staf/tagihan/{tagihan}/cicilan', [TagihanController::class, 'aturCicilan'])->name('staf.tagihan.cicilan.store');
+    Route::post('staf/tagihan/{tagihan}/bayar-langsung', [TagihanController::class, 'bayarLangsung'])->name('staf.tagihan.bayar-langsung.store');
+    Route::post('staf/item-cicilan/{item_cicilan}/bayar', [TagihanController::class, 'bayarCicilan'])->name('staf.item-cicilan.bayar.store');
 });
 
 require __DIR__.'/settings.php';

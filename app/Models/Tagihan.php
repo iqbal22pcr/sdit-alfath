@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Tagihan extends Model
@@ -76,5 +77,13 @@ class Tagihan extends Model
     public function rencanaCicilan(): HasOne
     {
         return $this->hasOne(RencanaCicilan::class);
+    }
+
+    /**
+     * Get the pembayaran rows recorded against this tagihan.
+     */
+    public function pembayaran(): HasMany
+    {
+        return $this->hasMany(Pembayaran::class);
     }
 }
