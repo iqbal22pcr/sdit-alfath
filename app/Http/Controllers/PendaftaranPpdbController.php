@@ -76,6 +76,10 @@ class PendaftaranPpdbController extends Controller
                 'punya_saudara_di_sekolah' => $request->boolean('punya_saudara_di_sekolah'),
                 'nama_saudara' => $request->validated('nama_saudara'),
                 'status' => 'diajukan',
+                'username_siswa' => $request->validated('username_siswa'),
+                // Cast to 'hashed' on the model, so this is stored as a
+                // hash, never plaintext.
+                'password_siswa' => $request->validated('password_siswa'),
             ]);
 
             $pendaftaran->update([

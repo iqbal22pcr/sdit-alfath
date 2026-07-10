@@ -37,6 +37,23 @@ class PendaftaranPpdbRequest extends FormRequest
             'wali.*.telepon' => ['required', 'string', 'max:255'],
             'wali.*.hubungan' => ['required', Rule::in(['ayah', 'ibu', 'wali'])],
 
+            // username_siswa must be unique across two tables: it's
+            // chosen at registration time, but the real users row for
+            // this siswa isn't created until the siswa is finalized as
+            // aktif later, so a uniqueness check against `users` alone
+            // can't catch two different registrants picking the same
+            // username before either of them is finalized.
+            'username_siswa' => [
+                'required',
+                'string',
+                'min:4',
+                'max:255',
+                'alpha_dash',
+                Rule::unique('users', 'username'),
+                Rule::unique('pendaftaran_ppdb', 'username_siswa'),
+            ],
+            'password_siswa' => ['required', 'string', 'min:6', 'confirmed'],
+
             'dokumen.akta' => ['required', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:2048'],
             'dokumen.kartu_keluarga' => ['required', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:2048'],
             'dokumen.ktp_orangtua' => ['required', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:2048'],

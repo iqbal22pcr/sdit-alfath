@@ -10,7 +10,7 @@ import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { type FormDataConvertible } from '@inertiajs/core';
 import { Head, useForm } from '@inertiajs/react';
-import { FormEventHandler } from 'react';
+import { FormEventHandler, useState } from 'react';
 
 interface WaliInput {
     nama: string;
@@ -41,6 +41,9 @@ interface PendaftaranForm {
     punya_saudara_di_sekolah: '' | '1' | '0';
     nama_saudara: string;
     wali: WaliInput[];
+    username_siswa: string;
+    password_siswa: string;
+    password_siswa_confirmation: string;
     dokumen: DokumenInput;
     [key: string]: FormDataConvertible;
 }
@@ -58,6 +61,9 @@ const emptyForm: PendaftaranForm = {
     punya_saudara_di_sekolah: '',
     nama_saudara: '',
     wali: [{ ...emptyWali }],
+    username_siswa: '',
+    password_siswa: '',
+    password_siswa_confirmation: '',
     dokumen: {
         akta: null,
         kartu_keluarga: null,
@@ -70,8 +76,115 @@ const emptyForm: PendaftaranForm = {
 
 const breadcrumbs: BreadcrumbItem[] = [{ title: 'Pendaftaran PPDB', href: '/ppdb/daftar' }];
 
+// Every top-level field that belongs to Step 1 (Data & Akun). Anything
+// not in this list (currently just dokumen.*) belongs to Step 2. Used
+// both to gate the "Lanjut" button and to figure out which step to
+// jump back to when the server returns an error for a field the user
+// can no longer see.
+const STEP_1_FIELDS = [
+    'nama_pendaftar',
+    'tempat_lahir',
+    'tanggal_lahir',
+    'jenis_kelamin',
+    'alamat',
+    'status_ayah',
+    'penghasilan_tetap',
+    'punya_saudara_di_sekolah',
+    'nama_saudara',
+    'wali',
+    'username_siswa',
+    'password_siswa',
+    'password_siswa_confirmation',
+];
+
+function stepForField(field: string): 1 | 2 {
+    // Nested keys like "wali.0.nama" or "dokumen.akta" only carry their
+    // root segment in STEP_1_FIELDS.
+    const root = field.split('.')[0];
+    return STEP_1_FIELDS.includes(root) ? 1 : 2;
+}
+
+function scrollToField(field: string) {
+    document.getElementById(field.replace(/[._]/g, '-'))?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+/**
+ * Client-side pre-check for Step 1, so "Lanjut" gives immediate
+ * feedback instead of only failing once the user reaches the final
+ * submit. This intentionally mirrors (not replaces) the server-side
+ * rules in PendaftaranPpdbRequest -- the server still re-validates
+ * everything on submit regardless of what this function says.
+ */
+function validateStep1(data: PendaftaranForm): Record<string, string> {
+    const errors: Record<string, string> = {};
+
+    if (!data.nama_pendaftar.trim()) errors.nama_pendaftar = 'Nama lengkap wajib diisi.';
+    if (!data.tempat_lahir.trim()) errors.tempat_lahir = 'Tempat lahir wajib diisi.';
+    if (!data.tanggal_lahir) errors.tanggal_lahir = 'Tanggal lahir wajib diisi.';
+    if (!data.jenis_kelamin) errors.jenis_kelamin = 'Jenis kelamin wajib dipilih.';
+    if (!data.alamat.trim()) errors.alamat = 'Alamat wajib diisi.';
+    if (!data.status_ayah) errors.status_ayah = 'Status ayah wajib dipilih.';
+    if (data.penghasilan_tetap === '') errors.penghasilan_tetap = 'Wajib dipilih.';
+    if (data.punya_saudara_di_sekolah === '') errors.punya_saudara_di_sekolah = 'Wajib dipilih.';
+    if (data.punya_saudara_di_sekolah === '1' && !data.nama_saudara.trim()) {
+        errors.nama_saudara = 'Nama saudara wajib diisi.';
+    }
+
+    data.wali.forEach((wali, index) => {
+        if (!wali.nama.trim()) errors[`wali.${index}.nama`] = 'Nama wali wajib diisi.';
+        if (!wali.nik.trim()) errors[`wali.${index}.nik`] = 'NIK wajib diisi.';
+        if (!wali.telepon.trim()) errors[`wali.${index}.telepon`] = 'Telepon wajib diisi.';
+        if (!wali.hubungan) errors[`wali.${index}.hubungan`] = 'Hubungan wajib dipilih.';
+    });
+
+    if (!data.username_siswa.trim()) {
+        errors.username_siswa = 'Username wajib diisi.';
+    } else if (data.username_siswa.length < 4) {
+        errors.username_siswa = 'Username minimal 4 karakter.';
+    } else if (!/^[A-Za-z0-9_-]+$/.test(data.username_siswa)) {
+        errors.username_siswa = 'Username hanya boleh huruf, angka, garis bawah (_), dan tanda hubung (-).';
+    }
+
+    if (!data.password_siswa) {
+        errors.password_siswa = 'Password wajib diisi.';
+    } else if (data.password_siswa.length < 6) {
+        errors.password_siswa = 'Password minimal 6 karakter.';
+    }
+
+    if (!data.password_siswa_confirmation) {
+        errors.password_siswa_confirmation = 'Konfirmasi password wajib diisi.';
+    } else if (data.password_siswa_confirmation !== data.password_siswa) {
+        errors.password_siswa_confirmation = 'Konfirmasi password tidak sama dengan password di atas.';
+    }
+
+    return errors;
+}
+
 export default function PpdbDaftar({ gelombang }: { gelombang: { id: number; nama: string } }) {
     const form = useForm<PendaftaranForm>(emptyForm);
+    const [step, setStep] = useState<1 | 2>(1);
+    const [clientErrors, setClientErrors] = useState<Record<string, string>>({});
+
+    const fieldError = (field: string): string | undefined => form.errors[field] ?? clientErrors[field];
+
+    const handleNext = () => {
+        const errors = validateStep1(form.data);
+
+        if (Object.keys(errors).length > 0) {
+            setClientErrors(errors);
+            scrollToField(Object.keys(errors)[0]);
+            return;
+        }
+
+        setClientErrors({});
+        setStep(2);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    const handleBack = () => {
+        setStep(1);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
@@ -80,8 +193,28 @@ export default function PpdbDaftar({ gelombang }: { gelombang: { id: number; nam
                 const firstKey = Object.keys(errors)[0];
                 if (!firstKey) return;
 
-                document.getElementById(firstKey.replace(/[._]/g, '-'))?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                const targetStep = stepForField(firstKey);
+
+                if (targetStep !== step) {
+                    setStep(targetStep);
+                    // The field for this error doesn't exist in the DOM
+                    // until the step above finishes re-rendering, so wait
+                    // for the next paint before scrolling to it.
+                    requestAnimationFrame(() => scrollToField(firstKey));
+                } else {
+                    scrollToField(firstKey);
+                }
+
+                // Only clear the password fields when the error actually
+                // concerns them (e.g. confirmation mismatch) -- an
+                // unrelated error elsewhere in Step 1 (say, tanggal_lahir)
+                // shouldn't wipe out a password the user already filled
+                // in correctly.
+                if ('password_siswa' in errors || 'password_siswa_confirmation' in errors) {
+                    form.reset('password_siswa', 'password_siswa_confirmation');
+                }
             },
+            onSuccess: () => form.reset('password_siswa', 'password_siswa_confirmation'),
         });
     };
 
@@ -117,264 +250,331 @@ export default function PpdbDaftar({ gelombang }: { gelombang: { id: number; nam
             <form onSubmit={submit} className="mx-auto flex w-full max-w-3xl flex-col gap-6 p-4">
                 <Heading title="Formulir Pendaftaran PPDB" description={`Gelombang: ${gelombang.nama}`} />
 
-                <Card>
-                    <CardHeader>
-                        <CardTitle>1. Data Anak</CardTitle>
-                        <CardDescription>Data diri calon siswa yang didaftarkan.</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        <div className="grid gap-2">
-                            <Label htmlFor="nama-pendaftar">Nama Lengkap</Label>
-                            <Input
-                                id="nama-pendaftar"
-                                value={form.data.nama_pendaftar}
-                                onChange={(e) => form.setData('nama_pendaftar', e.target.value)}
-                            />
-                            <InputError message={form.errors.nama_pendaftar} />
-                        </div>
+                <p className="text-sm font-medium text-muted-foreground">
+                    Langkah {step} dari 2: {step === 1 ? 'Data & Akun' : 'Upload Dokumen'}
+                </p>
 
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="grid gap-2">
-                                <Label htmlFor="tempat-lahir">Tempat Lahir</Label>
-                                <Input
-                                    id="tempat-lahir"
-                                    value={form.data.tempat_lahir}
-                                    onChange={(e) => form.setData('tempat_lahir', e.target.value)}
-                                />
-                                <InputError message={form.errors.tempat_lahir} />
-                            </div>
-
-                            <div className="grid gap-2">
-                                <Label htmlFor="tanggal-lahir">Tanggal Lahir</Label>
-                                <Input
-                                    id="tanggal-lahir"
-                                    type="date"
-                                    value={form.data.tanggal_lahir}
-                                    onChange={(e) => form.setData('tanggal_lahir', e.target.value)}
-                                />
-                                <InputError message={form.errors.tanggal_lahir} />
-                            </div>
-                        </div>
-
-                        <div className="grid gap-2">
-                            <Label htmlFor="jenis-kelamin">Jenis Kelamin</Label>
-                            <Select value={form.data.jenis_kelamin} onValueChange={(value) => form.setData('jenis_kelamin', value as never)}>
-                                <SelectTrigger id="jenis-kelamin">
-                                    <SelectValue placeholder="Pilih jenis kelamin" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="laki_laki">Laki-laki</SelectItem>
-                                    <SelectItem value="perempuan">Perempuan</SelectItem>
-                                </SelectContent>
-                            </Select>
-                            <InputError message={form.errors.jenis_kelamin} />
-                        </div>
-
-                        <div className="grid gap-2">
-                            <Label htmlFor="alamat">Alamat</Label>
-                            <Textarea id="alamat" value={form.data.alamat} onChange={(e) => form.setData('alamat', e.target.value)} />
-                            <InputError message={form.errors.alamat} />
-                        </div>
-                    </CardContent>
-                </Card>
-
-                <Card>
-                    <CardHeader>
-                        <CardTitle>2. Kondisi Keluarga</CardTitle>
-                        <CardDescription>Dipakai untuk menentukan kategori dan dokumen pendukung yang dibutuhkan.</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        <div className="grid gap-2">
-                            <Label htmlFor="status-ayah">Status Ayah</Label>
-                            <Select value={form.data.status_ayah} onValueChange={(value) => form.setData('status_ayah', value as never)}>
-                                <SelectTrigger id="status-ayah">
-                                    <SelectValue placeholder="Pilih status ayah" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="hidup">Hidup</SelectItem>
-                                    <SelectItem value="meninggal">Meninggal</SelectItem>
-                                </SelectContent>
-                            </Select>
-                            <InputError message={form.errors.status_ayah} />
-                        </div>
-
-                        <div className="grid gap-2">
-                            <Label htmlFor="penghasilan-tetap">Apakah orang tua memiliki penghasilan tetap?</Label>
-                            <Select
-                                value={form.data.penghasilan_tetap}
-                                onValueChange={(value) => form.setData('penghasilan_tetap', value as never)}
-                            >
-                                <SelectTrigger id="penghasilan-tetap">
-                                    <SelectValue placeholder="Pilih jawaban" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="1">Ya</SelectItem>
-                                    <SelectItem value="0">Tidak</SelectItem>
-                                </SelectContent>
-                            </Select>
-                            <InputError message={form.errors.penghasilan_tetap} />
-                        </div>
-
-                        <div className="grid gap-2">
-                            <Label htmlFor="punya-saudara-di-sekolah">Apakah punya saudara kandung di sekolah ini?</Label>
-                            <Select
-                                value={form.data.punya_saudara_di_sekolah}
-                                onValueChange={(value) => form.setData('punya_saudara_di_sekolah', value as never)}
-                            >
-                                <SelectTrigger id="punya-saudara-di-sekolah">
-                                    <SelectValue placeholder="Pilih jawaban" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="1">Ya</SelectItem>
-                                    <SelectItem value="0">Tidak</SelectItem>
-                                </SelectContent>
-                            </Select>
-                            <InputError message={form.errors.punya_saudara_di_sekolah} />
-                        </div>
-
-                        {form.data.punya_saudara_di_sekolah === '1' && (
-                            <div className="grid gap-2">
-                                <Label htmlFor="nama-saudara">Nama Saudara</Label>
-                                <Input
-                                    id="nama-saudara"
-                                    value={form.data.nama_saudara}
-                                    onChange={(e) => form.setData('nama_saudara', e.target.value)}
-                                />
-                                <InputError message={form.errors.nama_saudara} />
-                            </div>
-                        )}
-                    </CardContent>
-                </Card>
-
-                <Card>
-                    <CardHeader>
-                        <CardTitle>3. Data Wali</CardTitle>
-                        <CardDescription>Minimal satu wali (ayah, ibu, atau wali lainnya).</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-6">
-                        {form.data.wali.map((wali, index) => (
-                            <div key={index} className="space-y-4 rounded-md border p-4">
-                                <div className="flex items-center justify-between">
-                                    <h3 className="text-sm font-medium">Wali {index + 1}</h3>
-                                    {form.data.wali.length > 1 && (
-                                        <Button type="button" variant="ghost" size="sm" onClick={() => removeWali(index)}>
-                                            Hapus
-                                        </Button>
-                                    )}
-                                </div>
-
+                {step === 1 && (
+                    <>
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>1. Data Anak</CardTitle>
+                                <CardDescription>Data diri calon siswa yang didaftarkan.</CardDescription>
+                            </CardHeader>
+                            <CardContent className="space-y-4">
                                 <div className="grid gap-2">
-                                    <Label htmlFor={`wali-${index}-nama`}>Nama</Label>
+                                    <Label htmlFor="nama-pendaftar">Nama Lengkap</Label>
                                     <Input
-                                        id={`wali-${index}-nama`}
-                                        value={wali.nama}
-                                        onChange={(e) => updateWali(index, 'nama', e.target.value)}
+                                        id="nama-pendaftar"
+                                        value={form.data.nama_pendaftar}
+                                        onChange={(e) => form.setData('nama_pendaftar', e.target.value)}
                                     />
-                                    <InputError message={form.errors[`wali.${index}.nama`]} />
+                                    <InputError message={fieldError('nama_pendaftar')} />
                                 </div>
 
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="grid gap-2">
-                                        <Label htmlFor={`wali-${index}-nik`}>NIK</Label>
+                                        <Label htmlFor="tempat-lahir">Tempat Lahir</Label>
                                         <Input
-                                            id={`wali-${index}-nik`}
-                                            value={wali.nik}
-                                            onChange={(e) => updateWali(index, 'nik', e.target.value)}
+                                            id="tempat-lahir"
+                                            value={form.data.tempat_lahir}
+                                            onChange={(e) => form.setData('tempat_lahir', e.target.value)}
                                         />
-                                        <InputError message={form.errors[`wali.${index}.nik`]} />
+                                        <InputError message={fieldError('tempat_lahir')} />
                                     </div>
 
                                     <div className="grid gap-2">
-                                        <Label htmlFor={`wali-${index}-telepon`}>Telepon</Label>
+                                        <Label htmlFor="tanggal-lahir">Tanggal Lahir</Label>
                                         <Input
-                                            id={`wali-${index}-telepon`}
-                                            value={wali.telepon}
-                                            onChange={(e) => updateWali(index, 'telepon', e.target.value)}
+                                            id="tanggal-lahir"
+                                            type="date"
+                                            value={form.data.tanggal_lahir}
+                                            onChange={(e) => form.setData('tanggal_lahir', e.target.value)}
                                         />
-                                        <InputError message={form.errors[`wali.${index}.telepon`]} />
+                                        <InputError message={fieldError('tanggal_lahir')} />
                                     </div>
                                 </div>
 
                                 <div className="grid gap-2">
-                                    <Label htmlFor={`wali-${index}-hubungan`}>Hubungan</Label>
-                                    <Select value={wali.hubungan} onValueChange={(value) => updateWali(index, 'hubungan', value)}>
-                                        <SelectTrigger id={`wali-${index}-hubungan`}>
-                                            <SelectValue placeholder="Pilih hubungan" />
+                                    <Label htmlFor="jenis-kelamin">Jenis Kelamin</Label>
+                                    <Select value={form.data.jenis_kelamin} onValueChange={(value) => form.setData('jenis_kelamin', value as never)}>
+                                        <SelectTrigger id="jenis-kelamin">
+                                            <SelectValue placeholder="Pilih jenis kelamin" />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            <SelectItem value="ayah">Ayah</SelectItem>
-                                            <SelectItem value="ibu">Ibu</SelectItem>
-                                            <SelectItem value="wali">Wali</SelectItem>
+                                            <SelectItem value="laki_laki">Laki-laki</SelectItem>
+                                            <SelectItem value="perempuan">Perempuan</SelectItem>
                                         </SelectContent>
                                     </Select>
-                                    <InputError message={form.errors[`wali.${index}.hubungan`]} />
+                                    <InputError message={fieldError('jenis_kelamin')} />
                                 </div>
-                            </div>
-                        ))}
 
-                        <Button type="button" variant="outline" onClick={addWali}>
-                            + Tambah Wali
-                        </Button>
-                        <InputError message={form.errors.wali} />
-                    </CardContent>
-                </Card>
+                                <div className="grid gap-2">
+                                    <Label htmlFor="alamat">Alamat</Label>
+                                    <Textarea id="alamat" value={form.data.alamat} onChange={(e) => form.setData('alamat', e.target.value)} />
+                                    <InputError message={fieldError('alamat')} />
+                                </div>
+                            </CardContent>
+                        </Card>
 
-                <Card>
-                    <CardHeader>
-                        <CardTitle>4. Upload Dokumen</CardTitle>
-                        <CardDescription>Format PDF, JPG, atau PNG, maksimal 2MB per file.</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        <DokumenField
-                            id="dokumen-akta"
-                            label="Akta Kelahiran"
-                            error={form.errors['dokumen.akta']}
-                            onChange={(file) => updateDokumen('akta', file)}
-                        />
-                        <DokumenField
-                            id="dokumen-kartu-keluarga"
-                            label="Kartu Keluarga"
-                            error={form.errors['dokumen.kartu_keluarga']}
-                            onChange={(file) => updateDokumen('kartu_keluarga', file)}
-                        />
-                        <DokumenField
-                            id="dokumen-ktp-orangtua"
-                            label="KTP Orang Tua"
-                            error={form.errors['dokumen.ktp_orangtua']}
-                            onChange={(file) => updateDokumen('ktp_orangtua', file)}
-                        />
-                        <DokumenField
-                            id="dokumen-pas-foto"
-                            label="Pas Foto"
-                            error={form.errors['dokumen.pas_foto']}
-                            onChange={(file) => updateDokumen('pas_foto', file)}
-                        />
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>2. Kondisi Keluarga</CardTitle>
+                                <CardDescription>Dipakai untuk menentukan kategori dan dokumen pendukung yang dibutuhkan.</CardDescription>
+                            </CardHeader>
+                            <CardContent className="space-y-4">
+                                <div className="grid gap-2">
+                                    <Label htmlFor="status-ayah">Status Ayah</Label>
+                                    <Select value={form.data.status_ayah} onValueChange={(value) => form.setData('status_ayah', value as never)}>
+                                        <SelectTrigger id="status-ayah">
+                                            <SelectValue placeholder="Pilih status ayah" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="hidup">Hidup</SelectItem>
+                                            <SelectItem value="meninggal">Meninggal</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                    <InputError message={fieldError('status_ayah')} />
+                                </div>
 
-                        {butuhSuratKematianAyah && (
-                            <DokumenField
-                                id="dokumen-surat-kematian-ayah"
-                                label="Surat Kematian Ayah"
-                                error={form.errors['dokumen.surat_kematian_ayah']}
-                                onChange={(file) => updateDokumen('surat_kematian_ayah', file)}
-                            />
-                        )}
+                                <div className="grid gap-2">
+                                    <Label htmlFor="penghasilan-tetap">Apakah orang tua memiliki penghasilan tetap?</Label>
+                                    <Select
+                                        value={form.data.penghasilan_tetap}
+                                        onValueChange={(value) => form.setData('penghasilan_tetap', value as never)}
+                                    >
+                                        <SelectTrigger id="penghasilan-tetap">
+                                            <SelectValue placeholder="Pilih jawaban" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="1">Ya</SelectItem>
+                                            <SelectItem value="0">Tidak</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                    <InputError message={fieldError('penghasilan_tetap')} />
+                                </div>
 
-                        {butuhSuratTidakMampu && (
-                            <DokumenField
-                                id="dokumen-surat-keterangan-tidak-mampu"
-                                label="Surat Keterangan Tidak Mampu"
-                                error={form.errors['dokumen.surat_keterangan_tidak_mampu']}
-                                onChange={(file) => updateDokumen('surat_keterangan_tidak_mampu', file)}
-                            />
-                        )}
-                    </CardContent>
-                </Card>
+                                <div className="grid gap-2">
+                                    <Label htmlFor="punya-saudara-di-sekolah">Apakah punya saudara kandung di sekolah ini?</Label>
+                                    <Select
+                                        value={form.data.punya_saudara_di_sekolah}
+                                        onValueChange={(value) => form.setData('punya_saudara_di_sekolah', value as never)}
+                                    >
+                                        <SelectTrigger id="punya-saudara-di-sekolah">
+                                            <SelectValue placeholder="Pilih jawaban" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="1">Ya</SelectItem>
+                                            <SelectItem value="0">Tidak</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                    <InputError message={fieldError('punya_saudara_di_sekolah')} />
+                                </div>
 
-                <div className="flex justify-end">
-                    <Button type="submit" disabled={form.processing}>
-                        Submit Pendaftaran
-                    </Button>
-                </div>
+                                {form.data.punya_saudara_di_sekolah === '1' && (
+                                    <div className="grid gap-2">
+                                        <Label htmlFor="nama-saudara">Nama Saudara</Label>
+                                        <Input
+                                            id="nama-saudara"
+                                            value={form.data.nama_saudara}
+                                            onChange={(e) => form.setData('nama_saudara', e.target.value)}
+                                        />
+                                        <InputError message={fieldError('nama_saudara')} />
+                                    </div>
+                                )}
+                            </CardContent>
+                        </Card>
+
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>3. Data Wali</CardTitle>
+                                <CardDescription>Minimal satu wali (ayah, ibu, atau wali lainnya).</CardDescription>
+                            </CardHeader>
+                            <CardContent className="space-y-6">
+                                {form.data.wali.map((wali, index) => (
+                                    <div key={index} className="space-y-4 rounded-md border p-4">
+                                        <div className="flex items-center justify-between">
+                                            <h3 className="text-sm font-medium">Wali {index + 1}</h3>
+                                            {form.data.wali.length > 1 && (
+                                                <Button type="button" variant="ghost" size="sm" onClick={() => removeWali(index)}>
+                                                    Hapus
+                                                </Button>
+                                            )}
+                                        </div>
+
+                                        <div className="grid gap-2">
+                                            <Label htmlFor={`wali-${index}-nama`}>Nama</Label>
+                                            <Input
+                                                id={`wali-${index}-nama`}
+                                                value={wali.nama}
+                                                onChange={(e) => updateWali(index, 'nama', e.target.value)}
+                                            />
+                                            <InputError message={fieldError(`wali.${index}.nama`)} />
+                                        </div>
+
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div className="grid gap-2">
+                                                <Label htmlFor={`wali-${index}-nik`}>NIK</Label>
+                                                <Input
+                                                    id={`wali-${index}-nik`}
+                                                    value={wali.nik}
+                                                    onChange={(e) => updateWali(index, 'nik', e.target.value)}
+                                                />
+                                                <InputError message={fieldError(`wali.${index}.nik`)} />
+                                            </div>
+
+                                            <div className="grid gap-2">
+                                                <Label htmlFor={`wali-${index}-telepon`}>Telepon</Label>
+                                                <Input
+                                                    id={`wali-${index}-telepon`}
+                                                    value={wali.telepon}
+                                                    onChange={(e) => updateWali(index, 'telepon', e.target.value)}
+                                                />
+                                                <InputError message={fieldError(`wali.${index}.telepon`)} />
+                                            </div>
+                                        </div>
+
+                                        <div className="grid gap-2">
+                                            <Label htmlFor={`wali-${index}-hubungan`}>Hubungan</Label>
+                                            <Select value={wali.hubungan} onValueChange={(value) => updateWali(index, 'hubungan', value)}>
+                                                <SelectTrigger id={`wali-${index}-hubungan`}>
+                                                    <SelectValue placeholder="Pilih hubungan" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectItem value="ayah">Ayah</SelectItem>
+                                                    <SelectItem value="ibu">Ibu</SelectItem>
+                                                    <SelectItem value="wali">Wali</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+                                            <InputError message={fieldError(`wali.${index}.hubungan`)} />
+                                        </div>
+                                    </div>
+                                ))}
+
+                                <Button type="button" variant="outline" onClick={addWali}>
+                                    + Tambah Wali
+                                </Button>
+                                <InputError message={fieldError('wali')} />
+                            </CardContent>
+                        </Card>
+
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>4. Buat Akun untuk Anak</CardTitle>
+                                <CardDescription>Dipakai anak untuk login ke akun akademiknya sendiri nanti.</CardDescription>
+                            </CardHeader>
+                            <CardContent className="space-y-4">
+                                <div className="grid gap-2">
+                                    <Label htmlFor="username-siswa">Username</Label>
+                                    <Input
+                                        id="username-siswa"
+                                        value={form.data.username_siswa}
+                                        onChange={(e) => form.setData('username_siswa', e.target.value)}
+                                        autoComplete="off"
+                                        placeholder="mis. budi2026"
+                                    />
+                                    <InputError message={fieldError('username_siswa')} />
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="grid gap-2">
+                                        <Label htmlFor="password-siswa">Password</Label>
+                                        <Input
+                                            id="password-siswa"
+                                            type="password"
+                                            value={form.data.password_siswa}
+                                            onChange={(e) => form.setData('password_siswa', e.target.value)}
+                                            autoComplete="new-password"
+                                        />
+                                        <InputError message={fieldError('password_siswa')} />
+                                    </div>
+
+                                    <div className="grid gap-2">
+                                        <Label htmlFor="password-siswa-confirmation">Konfirmasi Password</Label>
+                                        <Input
+                                            id="password-siswa-confirmation"
+                                            type="password"
+                                            value={form.data.password_siswa_confirmation}
+                                            onChange={(e) => form.setData('password_siswa_confirmation', e.target.value)}
+                                            autoComplete="new-password"
+                                        />
+                                        <InputError message={fieldError('password_siswa_confirmation')} />
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+
+                        <div className="flex justify-end">
+                            <Button type="button" onClick={handleNext}>
+                                Lanjut
+                            </Button>
+                        </div>
+                    </>
+                )}
+
+                {step === 2 && (
+                    <>
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>5. Upload Dokumen</CardTitle>
+                                <CardDescription>Format PDF, JPG, atau PNG, maksimal 2MB per file.</CardDescription>
+                            </CardHeader>
+                            <CardContent className="space-y-4">
+                                <DokumenField
+                                    id="dokumen-akta"
+                                    label="Akta Kelahiran"
+                                    error={fieldError('dokumen.akta')}
+                                    onChange={(file) => updateDokumen('akta', file)}
+                                />
+                                <DokumenField
+                                    id="dokumen-kartu-keluarga"
+                                    label="Kartu Keluarga"
+                                    error={fieldError('dokumen.kartu_keluarga')}
+                                    onChange={(file) => updateDokumen('kartu_keluarga', file)}
+                                />
+                                <DokumenField
+                                    id="dokumen-ktp-orangtua"
+                                    label="KTP Orang Tua"
+                                    error={fieldError('dokumen.ktp_orangtua')}
+                                    onChange={(file) => updateDokumen('ktp_orangtua', file)}
+                                />
+                                <DokumenField
+                                    id="dokumen-pas-foto"
+                                    label="Pas Foto"
+                                    error={fieldError('dokumen.pas_foto')}
+                                    onChange={(file) => updateDokumen('pas_foto', file)}
+                                />
+
+                                {butuhSuratKematianAyah && (
+                                    <DokumenField
+                                        id="dokumen-surat-kematian-ayah"
+                                        label="Surat Kematian Ayah"
+                                        error={fieldError('dokumen.surat_kematian_ayah')}
+                                        onChange={(file) => updateDokumen('surat_kematian_ayah', file)}
+                                    />
+                                )}
+
+                                {butuhSuratTidakMampu && (
+                                    <DokumenField
+                                        id="dokumen-surat-keterangan-tidak-mampu"
+                                        label="Surat Keterangan Tidak Mampu"
+                                        error={fieldError('dokumen.surat_keterangan_tidak_mampu')}
+                                        onChange={(file) => updateDokumen('surat_keterangan_tidak_mampu', file)}
+                                    />
+                                )}
+                            </CardContent>
+                        </Card>
+
+                        <div className="flex justify-between">
+                            <Button type="button" variant="outline" onClick={handleBack}>
+                                Kembali
+                            </Button>
+                            <Button type="submit" disabled={form.processing}>
+                                Submit Pendaftaran
+                            </Button>
+                        </div>
+                    </>
+                )}
             </form>
         </AppLayout>
     );
