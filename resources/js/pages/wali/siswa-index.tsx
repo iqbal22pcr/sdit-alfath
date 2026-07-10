@@ -1,6 +1,9 @@
+import { EmptyState } from '@/components/empty-state';
+import Heading from '@/components/heading';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import AppLayout from '@/layouts/app-layout';
+import { statusBadgeClass } from '@/lib/status-badge';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link } from '@inertiajs/react';
 
@@ -21,13 +24,6 @@ const STATUS_LABEL: Record<StatusSiswa, string> = {
     keluar: 'Keluar',
 };
 
-const STATUS_BADGE_VARIANT: Record<StatusSiswa, 'default' | 'secondary' | 'destructive' | 'outline'> = {
-    calon: 'outline',
-    aktif: 'default',
-    alumni: 'secondary',
-    keluar: 'destructive',
-};
-
 const breadcrumbs: BreadcrumbItem[] = [{ title: 'Anak Saya', href: '/wali/siswa' }];
 
 export default function WaliSiswaIndex({ siswa }: { siswa: SiswaRow[] }) {
@@ -36,12 +32,16 @@ export default function WaliSiswaIndex({ siswa }: { siswa: SiswaRow[] }) {
             <Head title="Anak Saya" />
 
             <div className="flex flex-col gap-4 p-4">
-                <h1 className="text-xl font-semibold">Anak Saya</h1>
+                <Heading title="Anak Saya" description="Daftar anak yang terhubung dengan akun Anda." />
 
                 {siswa.length === 0 ? (
                     <Card>
-                        <CardContent className="py-6 text-center text-sm text-muted-foreground">
-                            Belum ada data anak yang terhubung ke akun Anda.
+                        <CardContent>
+                            <EmptyState
+                                title="Belum ada anak terdaftar."
+                                description="Daftar PPDB dulu untuk mulai."
+                                action={{ label: 'Daftar PPDB', href: route('ppdb.create') }}
+                            />
                         </CardContent>
                     </Card>
                 ) : (
@@ -52,7 +52,9 @@ export default function WaliSiswaIndex({ siswa }: { siswa: SiswaRow[] }) {
                                     <CardHeader className="pb-2">
                                         <div className="flex items-center justify-between gap-2">
                                             <CardTitle className="text-base">{s.nama}</CardTitle>
-                                            <Badge variant={STATUS_BADGE_VARIANT[s.status]}>{STATUS_LABEL[s.status]}</Badge>
+                                            <Badge variant="outline" className={statusBadgeClass(s.status)}>
+                                                {STATUS_LABEL[s.status]}
+                                            </Badge>
                                         </div>
                                     </CardHeader>
                                     <CardContent className="space-y-1 text-sm text-muted-foreground">

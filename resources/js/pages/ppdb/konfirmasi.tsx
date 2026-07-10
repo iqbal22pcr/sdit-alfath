@@ -10,7 +10,7 @@ export default function PpdbKonfirmasi({ nomorPendaftaran, namaPendaftar }: { no
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Pendaftaran Berhasil" />
 
-            <div className="mx-auto max-w-xl p-4">
+            <div className="mx-auto w-full max-w-xl p-4">
                 <Card>
                     <CardHeader>
                         <CardTitle>Pendaftaran Berhasil Dikirim</CardTitle>

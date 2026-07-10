@@ -1,7 +1,11 @@
+import { EmptyState } from '@/components/empty-state';
+import Heading from '@/components/heading';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import AppLayout from '@/layouts/app-layout';
+import { formatRupiah, formatTanggal } from '@/lib/format';
+import { statusBadgeClass } from '@/lib/status-badge';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/react';
 
@@ -43,34 +47,16 @@ const STATUS_SISWA_LABEL: Record<StatusSiswa, string> = {
     keluar: 'Keluar',
 };
 
-const STATUS_SISWA_BADGE_VARIANT: Record<StatusSiswa, 'default' | 'secondary' | 'destructive' | 'outline'> = {
-    calon: 'outline',
-    aktif: 'default',
-    alumni: 'secondary',
-    keluar: 'destructive',
-};
-
 const STATUS_TAGIHAN_LABEL: Record<StatusTagihan, string> = {
     belum_bayar: 'Belum Bayar',
     sebagian: 'Sebagian',
     lunas: 'Lunas',
 };
 
-const STATUS_TAGIHAN_BADGE_VARIANT: Record<StatusTagihan, 'default' | 'secondary' | 'destructive' | 'outline'> = {
-    belum_bayar: 'secondary',
-    sebagian: 'outline',
-    lunas: 'default',
-};
-
 const METODE_LABEL: Record<Metode, string> = {
     tunai: 'Tunai',
     transfer: 'Transfer',
 };
-
-const currency = (value: number) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(value);
-
-const formatTanggal = (value: string) =>
-    new Date(value).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
 
 export default function WaliSiswaShow({ siswa, pembayaran }: { siswa: SiswaDetail; pembayaran: PembayaranRow[] }) {
     const breadcrumbs: BreadcrumbItem[] = [
@@ -82,15 +68,15 @@ export default function WaliSiswaShow({ siswa, pembayaran }: { siswa: SiswaDetai
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title={siswa.nama} />
 
-            <div className="mx-auto flex max-w-3xl flex-col gap-6 p-4">
+            <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 p-4">
                 <div className="flex items-center justify-between">
-                    <div>
-                        <h1 className="text-xl font-semibold">{siswa.nama}</h1>
-                        <p className="text-sm text-muted-foreground">
-                            NIS: {siswa.nis} · Kategori: {siswa.kategori_siswa ? siswa.kategori_siswa.nama : '-'}
-                        </p>
-                    </div>
-                    <Badge variant={STATUS_SISWA_BADGE_VARIANT[siswa.status]}>{STATUS_SISWA_LABEL[siswa.status]}</Badge>
+                    <Heading
+                        title={siswa.nama}
+                        description={`NIS: ${siswa.nis} · Kategori: ${siswa.kategori_siswa ? siswa.kategori_siswa.nama : '-'}`}
+                    />
+                    <Badge variant="outline" className={statusBadgeClass(siswa.status)}>
+                        {STATUS_SISWA_LABEL[siswa.status]}
+                    </Badge>
                 </div>
 
                 <div className="flex flex-col gap-4">
@@ -98,7 +84,9 @@ export default function WaliSiswaShow({ siswa, pembayaran }: { siswa: SiswaDetai
 
                     {siswa.tagihan.length === 0 && (
                         <Card>
-                            <CardContent className="py-6 text-center text-sm text-muted-foreground">Belum ada tagihan.</CardContent>
+                            <CardContent>
+                                <EmptyState title="Belum ada tagihan." />
+                            </CardContent>
                         </Card>
                     )}
 
@@ -107,14 +95,16 @@ export default function WaliSiswaShow({ siswa, pembayaran }: { siswa: SiswaDetai
                             <CardHeader className="pb-2">
                                 <div className="flex items-center justify-between gap-2">
                                     <CardTitle className="text-base">{t.nomor_tagihan}</CardTitle>
-                                    <Badge variant={STATUS_TAGIHAN_BADGE_VARIANT[t.status]}>{STATUS_TAGIHAN_LABEL[t.status]}</Badge>
+                                    <Badge variant="outline" className={statusBadgeClass(t.status)}>
+                                        {STATUS_TAGIHAN_LABEL[t.status]}
+                                    </Badge>
                                 </div>
                             </CardHeader>
                             <CardContent>
                                 <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm sm:grid-cols-3">
                                     <Field label="Komponen Biaya" value={t.komponen_biaya.nama} />
-                                    <Field label="Nominal" value={currency(t.nominal)} />
-                                    <Field label="Terbayar" value={currency(t.terbayar)} />
+                                    <Field label="Nominal" value={formatRupiah(t.nominal)} />
+                                    <Field label="Terbayar" value={formatRupiah(t.terbayar)} />
                                 </div>
                             </CardContent>
                         </Card>
@@ -124,7 +114,7 @@ export default function WaliSiswaShow({ siswa, pembayaran }: { siswa: SiswaDetai
                 <div className="flex flex-col gap-3">
                     <h2 className="text-sm font-medium text-muted-foreground">Riwayat Pembayaran</h2>
 
-                    <div className="rounded-md border">
+                    <div className="overflow-x-auto rounded-md border">
                         <Table>
                             <TableHeader>
                                 <TableRow>
@@ -138,8 +128,8 @@ export default function WaliSiswaShow({ siswa, pembayaran }: { siswa: SiswaDetai
                             <TableBody>
                                 {pembayaran.length === 0 && (
                                     <TableRow>
-                                        <TableCell colSpan={5} className="text-center text-muted-foreground">
-                                            Belum ada riwayat pembayaran.
+                                        <TableCell colSpan={5}>
+                                            <EmptyState title="Belum ada riwayat pembayaran." />
                                         </TableCell>
                                     </TableRow>
                                 )}
@@ -148,7 +138,7 @@ export default function WaliSiswaShow({ siswa, pembayaran }: { siswa: SiswaDetai
                                     <TableRow key={p.id}>
                                         <TableCell className="font-medium">{p.nomor_pembayaran}</TableCell>
                                         <TableCell>{p.tagihan.nomor_tagihan}</TableCell>
-                                        <TableCell>{currency(p.nominal)}</TableCell>
+                                        <TableCell>{formatRupiah(p.nominal)}</TableCell>
                                         <TableCell>{formatTanggal(p.tanggal_bayar)}</TableCell>
                                         <TableCell>{METODE_LABEL[p.metode]}</TableCell>
                                     </TableRow>

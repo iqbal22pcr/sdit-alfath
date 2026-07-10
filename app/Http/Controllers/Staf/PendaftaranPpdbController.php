@@ -52,6 +52,10 @@ class PendaftaranPpdbController extends Controller
 
         $status = $request->validated('status');
         $kategoriSiswaId = $request->validated('kategori_siswa_id');
+        // Only ever meaningful for perlu_perbaikan -- nulled out for
+        // every other status so no stale note lingers from an earlier
+        // verification round.
+        $catatanVerifikasi = $status === 'perlu_perbaikan' ? $request->validated('catatan_verifikasi') : null;
 
         if ($status === 'diterima') {
             $kuota = KuotaKategori::where('gelombang_ppdb_id', $pendaftaranPpdb->gelombang_ppdb_id)
@@ -73,11 +77,12 @@ class PendaftaranPpdbController extends Controller
             }
         }
 
-        DB::transaction(function () use ($pendaftaranPpdb, $status, $kategoriSiswaId, $request) {
+        DB::transaction(function () use ($pendaftaranPpdb, $status, $kategoriSiswaId, $catatanVerifikasi, $request) {
             $pendaftaranPpdb->update([
                 'status' => $status,
                 'kategori_siswa_id' => $kategoriSiswaId,
                 'diverifikasi_oleh' => $request->user()->id,
+                'catatan_verifikasi' => $catatanVerifikasi,
             ]);
 
             if ($status === 'diterima') {

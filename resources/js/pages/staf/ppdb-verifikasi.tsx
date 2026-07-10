@@ -1,9 +1,13 @@
+import Heading from '@/components/heading';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/app-layout';
+import { formatTanggal } from '@/lib/format';
+import { statusBadgeClass } from '@/lib/status-badge';
 import { type BreadcrumbItem } from '@/types';
 import { Head, useForm } from '@inertiajs/react';
 
@@ -57,6 +61,7 @@ interface PendaftaranDetail {
 interface VerifikasiForm {
     status: Status | '';
     kategori_siswa_id: string;
+    catatan_verifikasi: string;
     [key: string]: string;
 }
 
@@ -74,15 +79,6 @@ const STATUS_LABEL: Record<Status, string> = {
     perlu_perbaikan: 'Perlu Perbaikan',
     diterima: 'Diterima',
     ditolak: 'Ditolak',
-};
-
-const STATUS_BADGE_VARIANT: Record<Status, 'default' | 'secondary' | 'destructive' | 'outline'> = {
-    draft: 'secondary',
-    diajukan: 'secondary',
-    diverifikasi: 'outline',
-    perlu_perbaikan: 'outline',
-    diterima: 'default',
-    ditolak: 'destructive',
 };
 
 const JENIS_KELAMIN_LABEL: Record<PendaftaranDetail['jenis_kelamin'], string> = {
@@ -110,9 +106,6 @@ const JENIS_DOKUMEN_LABEL: Record<string, string> = {
     surat_keterangan_tidak_mampu: 'Surat Keterangan Tidak Mampu',
 };
 
-const formatTanggal = (value: string) =>
-    new Date(value).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
-
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Dashboard PPDB', href: '/staf/ppdb-dashboard' },
     { title: 'Detail Verifikasi', href: '#' },
@@ -130,6 +123,7 @@ export default function StafPpdbVerifikasi({
     const form = useForm<VerifikasiForm>({
         status: '',
         kategori_siswa_id: pendaftaran.kategori_siswa_id ? String(pendaftaran.kategori_siswa_id) : '',
+        catatan_verifikasi: '',
     });
 
     const finalisasiForm = useForm({});
@@ -151,13 +145,12 @@ export default function StafPpdbVerifikasi({
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title={`Verifikasi ${pendaftaran.nomor_pendaftaran}`} />
 
-            <div className="mx-auto flex max-w-3xl flex-col gap-6 p-4">
+            <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 p-4">
                 <div className="flex items-center justify-between">
-                    <div>
-                        <h1 className="text-xl font-semibold">{pendaftaran.nomor_pendaftaran}</h1>
-                        <p className="text-sm text-muted-foreground">Gelombang: {pendaftaran.gelombang_ppdb.nama}</p>
-                    </div>
-                    <Badge variant={STATUS_BADGE_VARIANT[pendaftaran.status]}>{STATUS_LABEL[pendaftaran.status]}</Badge>
+                    <Heading title={pendaftaran.nomor_pendaftaran} description={`Gelombang: ${pendaftaran.gelombang_ppdb.nama}`} />
+                    <Badge variant="outline" className={statusBadgeClass(pendaftaran.status)}>
+                        {STATUS_LABEL[pendaftaran.status]}
+                    </Badge>
                 </div>
 
                 <Card>
@@ -230,8 +223,10 @@ export default function StafPpdbVerifikasi({
                         <CardContent className="space-y-2 text-sm text-muted-foreground">
                             <p>
                                 Pendaftaran ini sudah final dengan status{' '}
-                                <Badge variant={STATUS_BADGE_VARIANT[pendaftaran.status]}>{STATUS_LABEL[pendaftaran.status]}</Badge>, tidak bisa
-                                diverifikasi ulang lewat form ini.
+                                <Badge variant="outline" className={statusBadgeClass(pendaftaran.status)}>
+                                    {STATUS_LABEL[pendaftaran.status]}
+                                </Badge>
+                                , tidak bisa diverifikasi ulang lewat form ini.
                             </p>
                             <p>
                                 Diverifikasi oleh: <span className="font-medium text-foreground">{pendaftaran.verifikator?.name ?? '-'}</span>
@@ -263,6 +258,19 @@ export default function StafPpdbVerifikasi({
                                 </Select>
                                 {form.errors.kategori_siswa_id && <p className="text-sm text-red-600 dark:text-red-400">{form.errors.kategori_siswa_id}</p>}
                                 {form.errors.status && <p className="text-sm text-red-600 dark:text-red-400">{form.errors.status}</p>}
+                            </div>
+
+                            <div className="grid gap-2">
+                                <Label htmlFor="catatan_verifikasi">Catatan untuk Orang Tua (wajib diisi untuk Minta Perbaikan)</Label>
+                                <Textarea
+                                    id="catatan_verifikasi"
+                                    value={form.data.catatan_verifikasi}
+                                    onChange={(e) => form.setData('catatan_verifikasi', e.target.value)}
+                                    placeholder="Jelaskan apa yang perlu diperbaiki, mis. dokumen kurang jelas atau data belum lengkap."
+                                />
+                                {form.errors.catatan_verifikasi && (
+                                    <p className="text-sm text-red-600 dark:text-red-400">{form.errors.catatan_verifikasi}</p>
+                                )}
                             </div>
 
                             <div className="flex flex-wrap gap-2">

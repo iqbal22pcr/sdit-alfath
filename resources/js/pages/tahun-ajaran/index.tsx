@@ -1,3 +1,5 @@
+import { EmptyState } from '@/components/empty-state';
+import Heading from '@/components/heading';
 import InputError from '@/components/input-error';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -7,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import AppLayout from '@/layouts/app-layout';
+import { statusBadgeClass } from '@/lib/status-badge';
 import { type BreadcrumbItem } from '@/types';
 import { Head, useForm } from '@inertiajs/react';
 import { FormEventHandler, useState } from 'react';
@@ -86,7 +89,7 @@ export default function TahunAjaranIndex({ tahunAjaran }: { tahunAjaran: TahunAj
 
             <div className="flex flex-col gap-4 p-4">
                 <div className="flex items-center justify-between">
-                    <h1 className="text-xl font-semibold">Tahun Ajaran</h1>
+                    <Heading title="Tahun Ajaran" description="Kelola daftar tahun ajaran dan tentukan tahun ajaran yang sedang aktif." />
 
                     <Dialog
                         open={addOpen}
@@ -157,7 +160,7 @@ export default function TahunAjaranIndex({ tahunAjaran }: { tahunAjaran: TahunAj
                     </Dialog>
                 </div>
 
-                <div className="rounded-md border">
+                <div className="overflow-x-auto rounded-md border">
                     <Table>
                         <TableHeader>
                             <TableRow>
@@ -170,8 +173,11 @@ export default function TahunAjaranIndex({ tahunAjaran }: { tahunAjaran: TahunAj
                         <TableBody>
                             {tahunAjaran.length === 0 && (
                                 <TableRow>
-                                    <TableCell colSpan={4} className="text-center text-muted-foreground">
-                                        Belum ada tahun ajaran.
+                                    <TableCell colSpan={4}>
+                                        <EmptyState
+                                            title="Belum ada tahun ajaran."
+                                            action={{ label: 'Tambah Tahun Ajaran', onClick: () => setAddOpen(true) }}
+                                        />
                                     </TableCell>
                                 </TableRow>
                             )}
@@ -181,7 +187,7 @@ export default function TahunAjaranIndex({ tahunAjaran }: { tahunAjaran: TahunAj
                                     <TableCell className="font-medium">{tahun.nama}</TableCell>
                                     <TableCell>{tahun.tahun_mulai}</TableCell>
                                     <TableCell>
-                                        <Badge variant={tahun.status_aktif ? 'default' : 'secondary'}>
+                                        <Badge variant="outline" className={statusBadgeClass(tahun.status_aktif ? 'aktif' : 'tidak_aktif')}>
                                             {tahun.status_aktif ? 'Aktif' : 'Tidak Aktif'}
                                         </Badge>
                                     </TableCell>

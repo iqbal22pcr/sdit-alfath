@@ -22,6 +22,11 @@ class PendaftaranPpdbVerifikasiRequest extends FormRequest
                 'nullable',
                 Rule::exists('kategori_siswa', 'id'),
             ],
+            'catatan_verifikasi' => [
+                Rule::requiredIf(fn () => $this->input('status') === 'perlu_perbaikan'),
+                'nullable',
+                'string',
+            ],
         ];
     }
 }

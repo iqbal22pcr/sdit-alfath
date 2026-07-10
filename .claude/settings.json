@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(NODE_PATH=\"/e/Apps/laragon/www/sdit-alfath/node_modules\" node diag-overflow4.js)",
+      "Bash(NODE_PATH=\"/e/Apps/laragon/www/sdit-alfath/node_modules\" node diag-overflow3.js)",
+      "Bash(NODE_PATH=\"/e/Apps/laragon/www/sdit-alfath/node_modules\" node final-overflow-check.js)"
+    ]
+  }
+}

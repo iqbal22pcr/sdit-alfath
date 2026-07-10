@@ -1,8 +1,11 @@
+import { EmptyState } from '@/components/empty-state';
+import Heading from '@/components/heading';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import AppLayout from '@/layouts/app-layout';
+import { formatTanggal } from '@/lib/format';
 import { type BreadcrumbItem } from '@/types';
 import { type FormDataConvertible } from '@inertiajs/core';
 import { Head, Link, useForm } from '@inertiajs/react';
@@ -35,8 +38,6 @@ interface KuotaBatchForm {
     kuota: KuotaBarisForm[];
     [key: string]: FormDataConvertible;
 }
-
-const toDateInput = (value: string) => value.slice(0, 10);
 
 export default function GelombangPpdbShow({
     gelombangPpdb,
@@ -78,14 +79,15 @@ export default function GelombangPpdbShow({
                     <Link href={route('gelombang-ppdb.index')} className="text-sm text-muted-foreground hover:underline">
                         &larr; Kembali ke daftar gelombang
                     </Link>
-                    <h1 className="mt-2 text-xl font-semibold">{gelombangPpdb.nama}</h1>
-                    <p className="text-sm text-muted-foreground">
-                        {gelombangPpdb.tahun_ajaran.nama} &middot; {toDateInput(gelombangPpdb.tanggal_mulai)} s/d{' '}
-                        {toDateInput(gelombangPpdb.tanggal_selesai)}
-                    </p>
+                    <div className="mt-2">
+                        <Heading
+                            title={gelombangPpdb.nama}
+                            description={`${gelombangPpdb.tahun_ajaran.nama} · ${formatTanggal(gelombangPpdb.tanggal_mulai)} s/d ${formatTanggal(gelombangPpdb.tanggal_selesai)}`}
+                        />
+                    </div>
                 </div>
 
-                <div className="rounded-md border">
+                <div className="overflow-x-auto rounded-md border">
                     <Table>
                         <TableHeader>
                             <TableRow>
@@ -97,8 +99,12 @@ export default function GelombangPpdbShow({
                         <TableBody>
                             {kategoriDenganKuota.length === 0 && (
                                 <TableRow>
-                                    <TableCell colSpan={3} className="text-center text-muted-foreground">
-                                        Belum ada kategori siswa.
+                                    <TableCell colSpan={3}>
+                                        <EmptyState
+                                            title="Belum ada kategori siswa."
+                                            description="Tambahkan kategori siswa dulu sebelum mengatur kuota gelombang ini."
+                                            action={{ label: 'Kelola Kategori Siswa', href: route('kategori-siswa.index') }}
+                                        />
                                     </TableCell>
                                 </TableRow>
                             )}

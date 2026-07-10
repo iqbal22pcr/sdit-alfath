@@ -1,3 +1,5 @@
+import { EmptyState } from '@/components/empty-state';
+import Heading from '@/components/heading';
 import InputError from '@/components/input-error';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -7,6 +9,8 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import AppLayout from '@/layouts/app-layout';
+import { formatRupiah, formatTanggal } from '@/lib/format';
+import { statusBadgeClass } from '@/lib/status-badge';
 import { type BreadcrumbItem } from '@/types';
 import { type FormDataConvertible } from '@inertiajs/core';
 import { Head, useForm } from '@inertiajs/react';
@@ -53,21 +57,10 @@ const STATUS_LABEL: Record<StatusTagihan, string> = {
     lunas: 'Lunas',
 };
 
-const STATUS_BADGE_VARIANT: Record<StatusTagihan, 'default' | 'secondary' | 'destructive' | 'outline'> = {
-    belum_bayar: 'secondary',
-    sebagian: 'outline',
-    lunas: 'default',
-};
-
 const METODE_LABEL: Record<MetodeTerisi, string> = {
     tunai: 'Tunai',
     transfer: 'Transfer',
 };
-
-const currency = (value: number) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(value);
-
-const formatTanggal = (value: string) =>
-    new Date(value).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
 
 const todayInput = () => new Date().toISOString().slice(0, 10);
 
@@ -105,15 +98,12 @@ export default function StafTagihanShow({ tagihan }: { tagihan: TagihanDetail })
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title={`Tagihan ${tagihan.nomor_tagihan}`} />
 
-            <div className="mx-auto flex max-w-3xl flex-col gap-6 p-4">
+            <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 p-4">
                 <div className="flex items-center justify-between">
-                    <div>
-                        <h1 className="text-xl font-semibold">{tagihan.nomor_tagihan}</h1>
-                        <p className="text-sm text-muted-foreground">
-                            {tagihan.siswa.nama} ({tagihan.siswa.nis})
-                        </p>
-                    </div>
-                    <Badge variant={STATUS_BADGE_VARIANT[tagihan.status]}>{STATUS_LABEL[tagihan.status]}</Badge>
+                    <Heading title={tagihan.nomor_tagihan} description={`${tagihan.siswa.nama} (${tagihan.siswa.nis})`} />
+                    <Badge variant="outline" className={statusBadgeClass(tagihan.status)}>
+                        {STATUS_LABEL[tagihan.status]}
+                    </Badge>
                 </div>
 
                 <Card>
@@ -124,15 +114,19 @@ export default function StafTagihanShow({ tagihan }: { tagihan: TagihanDetail })
                         <Field label="Komponen Biaya" value={tagihan.komponen_biaya.nama} />
                         <Field label="Tahun Tagihan" value={String(tagihan.tahun_tagihan)} />
                         <Field label="Bulan Tagihan" value={tagihan.bulan_tagihan ? String(tagihan.bulan_tagihan) : '-'} />
-                        <Field label="Nominal" value={currency(tagihan.nominal)} />
-                        <Field label="Terbayar" value={currency(tagihan.terbayar)} />
-                        <Field label="Sisa" value={currency(sisa)} />
+                        <Field label="Nominal" value={formatRupiah(tagihan.nominal)} />
+                        <Field label="Terbayar" value={formatRupiah(tagihan.terbayar)} />
+                        <Field label="Sisa" value={formatRupiah(sisa)} />
                         {jenisMasuk && (
                             <div>
                                 <p className="text-xs text-muted-foreground">Jatuh Tempo</p>
                                 <div className="flex items-center gap-2">
                                     <p>{jatuhTempoTanggal ? formatTanggal(tagihan.jatuh_tempo as string) : '-'}</p>
-                                    {terlambat && <Badge variant="destructive">Terlambat</Badge>}
+                                    {terlambat && (
+                                        <Badge variant="outline" className={statusBadgeClass('terlambat')}>
+                                            Terlambat
+                                        </Badge>
+                                    )}
                                 </div>
                             </div>
                         )}
@@ -148,10 +142,10 @@ export default function StafTagihanShow({ tagihan }: { tagihan: TagihanDetail })
                             <form onSubmit={submitBayarLangsung} className="flex flex-col gap-4">
                                 <div className="grid gap-2">
                                     <Label htmlFor="nominal">
-                                        {wajibLunasSekaligus ? 'Nominal (lunas sekaligus, tidak bisa sebagian)' : `Nominal (maks. ${currency(sisa)})`}
+                                        {wajibLunasSekaligus ? 'Nominal (lunas sekaligus, tidak bisa sebagian)' : `Nominal (maks. ${formatRupiah(sisa)})`}
                                     </Label>
                                     {wajibLunasSekaligus ? (
-                                        <p className="text-sm font-medium">{currency(sisa)}</p>
+                                        <p className="text-sm font-medium">{formatRupiah(sisa)}</p>
                                     ) : (
                                         <Input
                                             id="nominal"
@@ -228,7 +222,7 @@ export default function StafTagihanShow({ tagihan }: { tagihan: TagihanDetail })
                         <CardTitle>Riwayat Pembayaran</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="rounded-md border">
+                        <div className="overflow-x-auto rounded-md border">
                             <Table>
                                 <TableHeader>
                                     <TableRow>
@@ -242,8 +236,8 @@ export default function StafTagihanShow({ tagihan }: { tagihan: TagihanDetail })
                                 <TableBody>
                                     {tagihan.pembayaran.length === 0 && (
                                         <TableRow>
-                                            <TableCell colSpan={5} className="text-center text-muted-foreground">
-                                                Belum ada riwayat pembayaran.
+                                            <TableCell colSpan={5}>
+                                                <EmptyState title="Belum ada riwayat pembayaran." />
                                             </TableCell>
                                         </TableRow>
                                     )}
@@ -251,7 +245,7 @@ export default function StafTagihanShow({ tagihan }: { tagihan: TagihanDetail })
                                     {tagihan.pembayaran.map((p) => (
                                         <TableRow key={p.id}>
                                             <TableCell className="font-medium">{p.nomor_pembayaran}</TableCell>
-                                            <TableCell>{currency(p.nominal)}</TableCell>
+                                            <TableCell>{formatRupiah(p.nominal)}</TableCell>
                                             <TableCell>{formatTanggal(p.tanggal_bayar)}</TableCell>
                                             <TableCell>{METODE_LABEL[p.metode]}</TableCell>
                                             <TableCell className="text-right">

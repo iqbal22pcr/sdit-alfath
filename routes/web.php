@@ -26,6 +26,8 @@ Route::middleware(['auth'])->group(function () {
     Route::post('ppdb/daftar', [PendaftaranPpdbController::class, 'store'])->name('ppdb.store');
     Route::get('ppdb/konfirmasi/{pendaftaran_ppdb}', [PendaftaranPpdbController::class, 'konfirmasi'])->name('ppdb.konfirmasi');
     Route::get('ppdb/riwayat', [PendaftaranPpdbController::class, 'riwayat'])->name('ppdb.riwayat');
+    Route::get('ppdb/{pendaftaran_ppdb}/perbaiki', [PendaftaranPpdbController::class, 'edit'])->name('ppdb.perbaiki');
+    Route::put('ppdb/{pendaftaran_ppdb}/perbaiki', [PendaftaranPpdbController::class, 'update'])->name('ppdb.perbaiki.update');
 
     Route::get('wali/siswa', [WaliSiswaController::class, 'index'])->name('wali.siswa.index');
     Route::get('wali/siswa/{siswa}', [WaliSiswaController::class, 'show'])->name('wali.siswa.show');

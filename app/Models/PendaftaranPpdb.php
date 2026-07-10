@@ -37,6 +37,7 @@ class PendaftaranPpdb extends Model
         'punya_saudara_di_sekolah',
         'nama_saudara',
         'status',
+        'catatan_verifikasi',
     ];
 
     /**

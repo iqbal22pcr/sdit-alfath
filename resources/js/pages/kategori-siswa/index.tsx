@@ -1,3 +1,5 @@
+import { EmptyState } from '@/components/empty-state';
+import Heading from '@/components/heading';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -85,7 +87,7 @@ export default function KategoriSiswaIndex({ kategoriSiswa }: { kategoriSiswa: K
 
             <div className="flex flex-col gap-4 p-4">
                 <div className="flex items-center justify-between">
-                    <h1 className="text-xl font-semibold">Kategori Siswa</h1>
+                    <Heading title="Kategori Siswa" description="Kelola kategori siswa beserta persentase potongan biaya untuk tiap kategori." />
 
                     <Dialog
                         open={addOpen}
@@ -157,7 +159,7 @@ export default function KategoriSiswaIndex({ kategoriSiswa }: { kategoriSiswa: K
                     </Dialog>
                 </div>
 
-                <div className="rounded-md border">
+                <div className="overflow-x-auto rounded-md border">
                     <Table>
                         <TableHeader>
                             <TableRow>
@@ -170,8 +172,11 @@ export default function KategoriSiswaIndex({ kategoriSiswa }: { kategoriSiswa: K
                         <TableBody>
                             {kategoriSiswa.length === 0 && (
                                 <TableRow>
-                                    <TableCell colSpan={4} className="text-center text-muted-foreground">
-                                        Belum ada kategori siswa.
+                                    <TableCell colSpan={4}>
+                                        <EmptyState
+                                            title="Belum ada kategori siswa."
+                                            action={{ label: 'Tambah Kategori', onClick: () => setAddOpen(true) }}
+                                        />
                                     </TableCell>
                                 </TableRow>
                             )}

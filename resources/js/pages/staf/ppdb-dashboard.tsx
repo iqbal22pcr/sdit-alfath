@@ -1,9 +1,13 @@
+import { EmptyState } from '@/components/empty-state';
+import Heading from '@/components/heading';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import AppLayout from '@/layouts/app-layout';
+import { formatTanggal } from '@/lib/format';
+import { statusBadgeClass } from '@/lib/status-badge';
 import { cn } from '@/lib/utils';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
@@ -37,19 +41,7 @@ const STATUS_LABEL: Record<Status, string> = {
     ditolak: 'Ditolak',
 };
 
-const STATUS_BADGE_VARIANT: Record<Status, 'default' | 'secondary' | 'destructive' | 'outline'> = {
-    draft: 'secondary',
-    diajukan: 'secondary',
-    diverifikasi: 'outline',
-    perlu_perbaikan: 'outline',
-    diterima: 'default',
-    ditolak: 'destructive',
-};
-
 const breadcrumbs: BreadcrumbItem[] = [{ title: 'Dashboard PPDB', href: '/staf/ppdb-dashboard' }];
-
-const formatTanggal = (value: string) =>
-    new Date(value).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
 
 export default function StafPpdbDashboard({
     gelombang,
@@ -90,9 +82,12 @@ export default function StafPpdbDashboard({
                 <Head title="Dashboard PPDB" />
                 <div className="p-4">
                     <Card>
-                        <CardHeader>
-                            <CardTitle>Tidak Ada Gelombang PPDB yang Sedang Buka</CardTitle>
-                        </CardHeader>
+                        <CardContent>
+                            <EmptyState
+                                title="Tidak ada gelombang PPDB yang sedang buka."
+                                description="Buka gelombang baru dari halaman Gelombang PPDB untuk mulai menerima pendaftaran."
+                            />
+                        </CardContent>
                     </Card>
                 </div>
             </AppLayout>
@@ -104,10 +99,7 @@ export default function StafPpdbDashboard({
             <Head title="Dashboard PPDB" />
 
             <div className="flex flex-col gap-6 p-4">
-                <div>
-                    <h1 className="text-xl font-semibold">Dashboard PPDB</h1>
-                    <p className="text-sm text-muted-foreground">Gelombang: {gelombang.nama}</p>
-                </div>
+                <Heading title="Dashboard PPDB" description={`Gelombang: ${gelombang.nama}`} />
 
                 <div>
                     <h2 className="mb-3 text-sm font-medium text-muted-foreground">Status Kuota per Kategori</h2>
@@ -144,7 +136,7 @@ export default function StafPpdbDashboard({
                         </Select>
                     </div>
 
-                    <div className="rounded-md border">
+                    <div className="overflow-x-auto rounded-md border">
                         <Table>
                             <TableHeader>
                                 <TableRow>
@@ -160,8 +152,8 @@ export default function StafPpdbDashboard({
                             <TableBody>
                                 {filteredPendaftaran.length === 0 && (
                                     <TableRow>
-                                        <TableCell colSpan={7} className="text-center text-muted-foreground">
-                                            Tidak ada pendaftar.
+                                        <TableCell colSpan={7}>
+                                            <EmptyState title="Tidak ada pendaftar." />
                                         </TableCell>
                                     </TableRow>
                                 )}
@@ -175,7 +167,9 @@ export default function StafPpdbDashboard({
                                             {p.kategori_siswa ? p.kategori_siswa.nama : <span className="text-muted-foreground">Belum ditentukan</span>}
                                         </TableCell>
                                         <TableCell>
-                                            <Badge variant={STATUS_BADGE_VARIANT[p.status]}>{STATUS_LABEL[p.status]}</Badge>
+                                            <Badge variant="outline" className={statusBadgeClass(p.status)}>
+                                                {STATUS_LABEL[p.status]}
+                                            </Badge>
                                         </TableCell>
                                         <TableCell>{formatTanggal(p.created_at)}</TableCell>
                                         <TableCell className="text-right">
@@ -203,7 +197,9 @@ function KuotaCard({ kategori, total, terpakai, sisa }: KuotaKategoriSummary) {
             <CardHeader className="pb-2">
                 <div className="flex items-center justify-between gap-2">
                     <CardTitle className="text-base">{kategori}</CardTitle>
-                    <Badge variant={penuh ? 'destructive' : 'default'}>{penuh ? 'Penuh' : 'Tersedia'}</Badge>
+                    <Badge variant="outline" className={statusBadgeClass(penuh ? 'penuh' : 'tersedia')}>
+                        {penuh ? 'Penuh' : 'Tersedia'}
+                    </Badge>
                 </div>
             </CardHeader>
             <CardContent>

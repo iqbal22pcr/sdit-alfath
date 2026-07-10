@@ -1,5 +1,6 @@
 import Heading from '@/components/heading';
 import InputError from '@/components/input-error';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -11,6 +12,40 @@ import { type BreadcrumbItem } from '@/types';
 import { type FormDataConvertible } from '@inertiajs/core';
 import { Head, useForm } from '@inertiajs/react';
 import { FormEventHandler } from 'react';
+
+type JenisDokumen = 'akta' | 'kartu_keluarga' | 'ktp_orangtua' | 'pas_foto' | 'surat_kematian_ayah' | 'surat_keterangan_tidak_mampu';
+
+interface WaliPpdbExisting {
+    id: number;
+    nama: string;
+    nik: string;
+    telepon: string;
+    hubungan: 'ayah' | 'ibu' | 'wali';
+}
+
+interface DokumenPpdbExisting {
+    id: number;
+    jenis_dokumen: JenisDokumen;
+    berkas: string;
+    terverifikasi: boolean;
+}
+
+interface PendaftaranEditable {
+    id: number;
+    nomor_pendaftaran: string;
+    nama_pendaftar: string;
+    tempat_lahir: string;
+    tanggal_lahir: string;
+    jenis_kelamin: 'laki_laki' | 'perempuan';
+    alamat: string;
+    status_ayah: 'hidup' | 'meninggal';
+    penghasilan_tetap: boolean;
+    punya_saudara_di_sekolah: boolean;
+    nama_saudara: string | null;
+    catatan_verifikasi: string | null;
+    wali_ppdb: WaliPpdbExisting[];
+    dokumen_ppdb: DokumenPpdbExisting[];
+}
 
 interface WaliInput {
     nama: string;
@@ -47,35 +82,47 @@ interface PendaftaranForm {
 
 const emptyWali: WaliInput = { nama: '', nik: '', telepon: '', hubungan: '' };
 
-const emptyForm: PendaftaranForm = {
-    nama_pendaftar: '',
-    tempat_lahir: '',
-    tanggal_lahir: '',
-    jenis_kelamin: '',
-    alamat: '',
-    status_ayah: '',
-    penghasilan_tetap: '',
-    punya_saudara_di_sekolah: '',
-    nama_saudara: '',
-    wali: [{ ...emptyWali }],
-    dokumen: {
-        akta: null,
-        kartu_keluarga: null,
-        ktp_orangtua: null,
-        pas_foto: null,
-        surat_kematian_ayah: null,
-        surat_keterangan_tidak_mampu: null,
-    },
-};
+const breadcrumbs: BreadcrumbItem[] = [
+    { title: 'Riwayat Pendaftaran PPDB', href: '/ppdb/riwayat' },
+    { title: 'Perbaiki Pendaftaran', href: '#' },
+];
 
-const breadcrumbs: BreadcrumbItem[] = [{ title: 'Pendaftaran PPDB', href: '/ppdb/daftar' }];
+export default function PpdbPerbaiki({ pendaftaran }: { pendaftaran: PendaftaranEditable }) {
+    const existingDokumen = new Map(pendaftaran.dokumen_ppdb.map((d) => [d.jenis_dokumen, d]));
 
-export default function PpdbDaftar({ gelombang }: { gelombang: { id: number; nama: string } }) {
-    const form = useForm<PendaftaranForm>(emptyForm);
+    const form = useForm<PendaftaranForm>({
+        nama_pendaftar: pendaftaran.nama_pendaftar,
+        tempat_lahir: pendaftaran.tempat_lahir,
+        tanggal_lahir: pendaftaran.tanggal_lahir.slice(0, 10),
+        jenis_kelamin: pendaftaran.jenis_kelamin,
+        alamat: pendaftaran.alamat,
+        status_ayah: pendaftaran.status_ayah,
+        penghasilan_tetap: pendaftaran.penghasilan_tetap ? '1' : '0',
+        punya_saudara_di_sekolah: pendaftaran.punya_saudara_di_sekolah ? '1' : '0',
+        nama_saudara: pendaftaran.nama_saudara ?? '',
+        wali:
+            pendaftaran.wali_ppdb.length > 0
+                ? pendaftaran.wali_ppdb.map((w) => ({ nama: w.nama, nik: w.nik, telepon: w.telepon, hubungan: w.hubungan }))
+                : [{ ...emptyWali }],
+        dokumen: {
+            akta: null,
+            kartu_keluarga: null,
+            ktp_orangtua: null,
+            pas_foto: null,
+            surat_kematian_ayah: null,
+            surat_keterangan_tidak_mampu: null,
+        },
+    });
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
-        form.post(route('ppdb.store'), {
+        // Laravel/PHP never parses multipart/form-data bodies on a literal
+        // PUT request (only POST), so a real form.put() with files would
+        // arrive server-side with an empty body. POST with a spoofed
+        // _method field is Inertia's documented workaround for file
+        // uploads on update forms.
+        form.transform((data) => ({ ...data, _method: 'put' }));
+        form.post(route('ppdb.perbaiki.update', pendaftaran.id), {
             onError: (errors) => {
                 const firstKey = Object.keys(errors)[0];
                 if (!firstKey) return;
@@ -112,10 +159,17 @@ export default function PpdbDaftar({ gelombang }: { gelombang: { id: number; nam
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Pendaftaran PPDB" />
+            <Head title={`Perbaiki ${pendaftaran.nomor_pendaftaran}`} />
 
             <form onSubmit={submit} className="mx-auto flex w-full max-w-3xl flex-col gap-6 p-4">
-                <Heading title="Formulir Pendaftaran PPDB" description={`Gelombang: ${gelombang.nama}`} />
+                <Heading title="Perbaiki Pendaftaran" description={pendaftaran.nomor_pendaftaran} />
+
+                {pendaftaran.catatan_verifikasi && (
+                    <Alert className="border-yellow-500/50 bg-yellow-50 text-yellow-800 dark:border-yellow-500/50 dark:bg-yellow-950/40 dark:text-yellow-200">
+                        <AlertTitle>Catatan dari Staf</AlertTitle>
+                        <AlertDescription className="text-yellow-800 dark:text-yellow-200">{pendaftaran.catatan_verifikasi}</AlertDescription>
+                    </Alert>
+                )}
 
                 <Card>
                     <CardHeader>
@@ -322,31 +376,37 @@ export default function PpdbDaftar({ gelombang }: { gelombang: { id: number; nam
                 <Card>
                     <CardHeader>
                         <CardTitle>4. Upload Dokumen</CardTitle>
-                        <CardDescription>Format PDF, JPG, atau PNG, maksimal 2MB per file.</CardDescription>
+                        <CardDescription>
+                            Format PDF, JPG, atau PNG, maksimal 2MB per file. Biarkan kosong kalau tidak ingin mengganti file yang sudah ada.
+                        </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
                         <DokumenField
                             id="dokumen-akta"
                             label="Akta Kelahiran"
                             error={form.errors['dokumen.akta']}
+                            existing={existingDokumen.get('akta')}
                             onChange={(file) => updateDokumen('akta', file)}
                         />
                         <DokumenField
                             id="dokumen-kartu-keluarga"
                             label="Kartu Keluarga"
                             error={form.errors['dokumen.kartu_keluarga']}
+                            existing={existingDokumen.get('kartu_keluarga')}
                             onChange={(file) => updateDokumen('kartu_keluarga', file)}
                         />
                         <DokumenField
                             id="dokumen-ktp-orangtua"
                             label="KTP Orang Tua"
                             error={form.errors['dokumen.ktp_orangtua']}
+                            existing={existingDokumen.get('ktp_orangtua')}
                             onChange={(file) => updateDokumen('ktp_orangtua', file)}
                         />
                         <DokumenField
                             id="dokumen-pas-foto"
                             label="Pas Foto"
                             error={form.errors['dokumen.pas_foto']}
+                            existing={existingDokumen.get('pas_foto')}
                             onChange={(file) => updateDokumen('pas_foto', file)}
                         />
 
@@ -355,6 +415,7 @@ export default function PpdbDaftar({ gelombang }: { gelombang: { id: number; nam
                                 id="dokumen-surat-kematian-ayah"
                                 label="Surat Kematian Ayah"
                                 error={form.errors['dokumen.surat_kematian_ayah']}
+                                existing={existingDokumen.get('surat_kematian_ayah')}
                                 onChange={(file) => updateDokumen('surat_kematian_ayah', file)}
                             />
                         )}
@@ -364,6 +425,7 @@ export default function PpdbDaftar({ gelombang }: { gelombang: { id: number; nam
                                 id="dokumen-surat-keterangan-tidak-mampu"
                                 label="Surat Keterangan Tidak Mampu"
                                 error={form.errors['dokumen.surat_keterangan_tidak_mampu']}
+                                existing={existingDokumen.get('surat_keterangan_tidak_mampu')}
                                 onChange={(file) => updateDokumen('surat_keterangan_tidak_mampu', file)}
                             />
                         )}
@@ -372,7 +434,7 @@ export default function PpdbDaftar({ gelombang }: { gelombang: { id: number; nam
 
                 <div className="flex justify-end">
                     <Button type="submit" disabled={form.processing}>
-                        Submit Pendaftaran
+                        Kirim Perbaikan
                     </Button>
                 </div>
             </form>
@@ -384,16 +446,32 @@ function DokumenField({
     id,
     label,
     error,
+    existing,
     onChange,
 }: {
     id: string;
     label: string;
     error?: string;
+    existing?: DokumenPpdbExisting;
     onChange: (file: File | null) => void;
 }) {
     return (
         <div className="grid gap-2">
             <Label htmlFor={id}>{label}</Label>
+            {existing && (
+                <p className="text-sm text-muted-foreground">
+                    File saat ini:{' '}
+                    <a
+                        href={`/storage/${existing.berkas}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-primary underline-offset-4 hover:underline"
+                    >
+                        Lihat File
+                    </a>
+                    . Pilih file baru di bawah untuk mengganti, atau biarkan kosong.
+                </p>
+            )}
             <Input id={id} type="file" accept=".pdf,.jpg,.jpeg,.png" onChange={(e) => onChange(e.target.files?.[0] ?? null)} />
             <InputError message={error} />
         </div>

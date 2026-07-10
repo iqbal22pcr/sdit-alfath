@@ -1,3 +1,5 @@
+import { EmptyState } from '@/components/empty-state';
+import Heading from '@/components/heading';
 import InputError from '@/components/input-error';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -8,6 +10,8 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import AppLayout from '@/layouts/app-layout';
+import { formatRupiah, formatTanggal } from '@/lib/format';
+import { statusBadgeClass } from '@/lib/status-badge';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { FormEventHandler, useState } from 'react';
@@ -48,8 +52,6 @@ const emptyForm: GelombangPpdbForm = {
     biaya_masuk: 0,
     status_buka: false,
 };
-
-const currency = (value: number) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(value);
 
 const toDateInput = (value: string) => value.slice(0, 10);
 
@@ -113,7 +115,7 @@ export default function GelombangPpdbIndex({ gelombangPpdb, tahunAjaran }: { gel
 
             <div className="flex flex-col gap-4 p-4">
                 <div className="flex items-center justify-between">
-                    <h1 className="text-xl font-semibold">Gelombang PPDB</h1>
+                    <Heading title="Gelombang PPDB" description="Kelola gelombang penerimaan siswa baru beserta kuota tiap kategori." />
 
                     <Dialog
                         open={addOpen}
@@ -152,7 +154,7 @@ export default function GelombangPpdbIndex({ gelombangPpdb, tahunAjaran }: { gel
                     </Dialog>
                 </div>
 
-                <div className="rounded-md border">
+                <div className="overflow-x-auto rounded-md border">
                     <Table>
                         <TableHeader>
                             <TableRow>
@@ -167,8 +169,11 @@ export default function GelombangPpdbIndex({ gelombangPpdb, tahunAjaran }: { gel
                         <TableBody>
                             {gelombangPpdb.length === 0 && (
                                 <TableRow>
-                                    <TableCell colSpan={6} className="text-center text-muted-foreground">
-                                        Belum ada gelombang PPDB.
+                                    <TableCell colSpan={6}>
+                                        <EmptyState
+                                            title="Belum ada gelombang PPDB."
+                                            action={{ label: 'Tambah Gelombang', onClick: () => setAddOpen(true) }}
+                                        />
                                     </TableCell>
                                 </TableRow>
                             )}
@@ -178,11 +183,11 @@ export default function GelombangPpdbIndex({ gelombangPpdb, tahunAjaran }: { gel
                                     <TableCell className="font-medium">{gelombang.nama}</TableCell>
                                     <TableCell>{gelombang.tahun_ajaran.nama}</TableCell>
                                     <TableCell>
-                                        {toDateInput(gelombang.tanggal_mulai)} s/d {toDateInput(gelombang.tanggal_selesai)}
+                                        {formatTanggal(gelombang.tanggal_mulai)} s/d {formatTanggal(gelombang.tanggal_selesai)}
                                     </TableCell>
-                                    <TableCell>{currency(gelombang.biaya_masuk)}</TableCell>
+                                    <TableCell>{formatRupiah(gelombang.biaya_masuk)}</TableCell>
                                     <TableCell>
-                                        <Badge variant={gelombang.status_buka ? 'default' : 'secondary'}>
+                                        <Badge variant="outline" className={statusBadgeClass(gelombang.status_buka ? 'buka' : 'tutup')}>
                                             {gelombang.status_buka ? 'Buka' : 'Tutup'}
                                         </Badge>
                                     </TableCell>
