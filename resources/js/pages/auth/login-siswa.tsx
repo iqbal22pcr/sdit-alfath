@@ -10,62 +10,54 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AuthLayout from '@/layouts/auth-layout';
 
-interface LoginForm {
-    email: string;
+interface LoginSiswaForm {
+    username: string;
     password: string;
     remember: boolean;
 }
 
-interface LoginProps {
+interface LoginSiswaProps {
     status?: string;
-    canResetPassword: boolean;
 }
 
-export default function Login({ status, canResetPassword }: LoginProps) {
-    const { data, setData, post, processing, errors, reset } = useForm<LoginForm>({
-        email: '',
+export default function LoginSiswa({ status }: LoginSiswaProps) {
+    const { data, setData, post, processing, errors, reset } = useForm<LoginSiswaForm>({
+        username: '',
         password: '',
         remember: false,
     });
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
-        post(route('login'), {
+        post(route('login-siswa'), {
             onFinish: () => reset('password'),
         });
     };
 
     return (
-        <AuthLayout title="Log in to your account" description="Enter your email and password below to log in">
-            <Head title="Log in" />
+        <AuthLayout title="Login siswa" description="Masukkan username dan password untuk masuk">
+            <Head title="Login Siswa" />
 
             <form className="flex flex-col gap-6" onSubmit={submit}>
                 <div className="grid gap-6">
                     <div className="grid gap-2">
-                        <Label htmlFor="email">Email address</Label>
+                        <Label htmlFor="username">Username</Label>
                         <Input
-                            id="email"
-                            type="email"
+                            id="username"
+                            type="text"
                             required
                             autoFocus
                             tabIndex={1}
-                            autoComplete="email"
-                            value={data.email}
-                            onChange={(e) => setData('email', e.target.value)}
-                            placeholder="email@example.com"
+                            autoComplete="username"
+                            value={data.username}
+                            onChange={(e) => setData('username', e.target.value)}
+                            placeholder="Username"
                         />
-                        <InputError message={errors.email} />
+                        <InputError message={errors.username} />
                     </div>
 
                     <div className="grid gap-2">
-                        <div className="flex items-center">
-                            <Label htmlFor="password">Password</Label>
-                            {canResetPassword && (
-                                <TextLink href={route('password.request')} className="ml-auto text-sm" tabIndex={5}>
-                                    Forgot password?
-                                </TextLink>
-                            )}
-                        </div>
+                        <Label htmlFor="password">Password</Label>
                         <Input
                             id="password"
                             type="password"
@@ -81,26 +73,19 @@ export default function Login({ status, canResetPassword }: LoginProps) {
 
                     <div className="flex items-center space-x-3">
                         <Checkbox id="remember" name="remember" tabIndex={3} />
-                        <Label htmlFor="remember">Remember me</Label>
+                        <Label htmlFor="remember">Ingat saya</Label>
                     </div>
 
                     <Button type="submit" className="mt-4 w-full" tabIndex={4} disabled={processing}>
                         {processing && <LoaderCircle className="h-4 w-4 animate-spin" />}
-                        Log in
+                        Masuk
                     </Button>
                 </div>
 
                 <div className="text-muted-foreground text-center text-sm">
-                    Don't have an account?{' '}
-                    <TextLink href={route('register')} tabIndex={5}>
-                        Sign up
-                    </TextLink>
-                </div>
-
-                <div className="text-muted-foreground text-center text-sm">
-                    Login sebagai siswa?{' '}
-                    <TextLink href={route('login-siswa')} tabIndex={6}>
-                        Login sebagai siswa
+                    Login sebagai staf atau wali?{' '}
+                    <TextLink href={route('login')} tabIndex={5}>
+                        Login di sini
                     </TextLink>
                 </div>
             </form>

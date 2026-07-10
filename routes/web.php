@@ -57,5 +57,11 @@ Route::middleware(['auth', 'staf-keuangan'])->group(function () {
     Route::post('staf/tagihan/{tagihan}/bayar-langsung', [TagihanController::class, 'bayarLangsung'])->name('staf.tagihan.bayar-langsung.store');
 });
 
+Route::middleware(['auth', 'siswa'])->group(function () {
+    Route::get('siswa/dashboard', function () {
+        return Inertia::render('siswa/dashboard');
+    })->name('siswa.dashboard');
+});
+
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';

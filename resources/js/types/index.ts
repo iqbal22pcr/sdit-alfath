@@ -34,12 +34,13 @@ export interface SharedData {
     [key: string]: unknown;
 }
 
-export type Role = 'admin' | 'kepala_sekolah' | 'guru' | 'staf_keuangan' | 'staf_ppdb' | 'wali_murid';
+export type Role = 'admin' | 'kepala_sekolah' | 'guru' | 'staf_keuangan' | 'staf_ppdb' | 'wali_murid' | 'siswa';
 
 export interface User {
     id: number;
     name: string;
-    email: string;
+    email: string | null;
+    username: string | null;
     avatar?: string;
     email_verified_at: string | null;
     role: Role;

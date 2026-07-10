@@ -24,6 +24,7 @@ class Siswa extends Model
     protected $fillable = [
         'pendaftaran_ppdb_id',
         'kategori_siswa_id',
+        'user_id',
         'nama',
         'nis',
         'nisn',
@@ -36,6 +37,15 @@ class Siswa extends Model
     public function pendaftaranPpdb(): BelongsTo
     {
         return $this->belongsTo(PendaftaranPpdb::class);
+    }
+
+    /**
+     * Get the login account for this siswa, if one has been created
+     * yet (only happens once the siswa is finalized as "aktif").
+     */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 
     /**

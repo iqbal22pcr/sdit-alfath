@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\EnsureUserIsAdmin;
+use App\Http\Middleware\EnsureUserIsSiswa;
 use App\Http\Middleware\EnsureUserIsStafKeuangan;
 use App\Http\Middleware\EnsureUserIsStafPpdb;
 use App\Http\Middleware\HandleInertiaRequests;
@@ -25,6 +26,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'admin' => EnsureUserIsAdmin::class,
             'staf-ppdb' => EnsureUserIsStafPpdb::class,
             'staf-keuangan' => EnsureUserIsStafKeuangan::class,
+            'siswa' => EnsureUserIsSiswa::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

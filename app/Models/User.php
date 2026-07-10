@@ -27,6 +27,7 @@ class User extends Authenticatable
         'staf_keuangan',
         'staf_ppdb',
         'wali_murid',
+        'siswa',
     ];
 
     /**
@@ -54,6 +55,7 @@ class User extends Authenticatable
             'staf_ppdb' => route('staf.ppdb-dashboard', absolute: false),
             'staf_keuangan' => route('staf.tagihan.index', absolute: false),
             'wali_murid' => route('wali.siswa.index', absolute: false),
+            'siswa' => route('siswa.dashboard', absolute: false),
             default => route('dashboard', absolute: false),
         };
     }
@@ -75,6 +77,7 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'username',
         'password',
     ];
 

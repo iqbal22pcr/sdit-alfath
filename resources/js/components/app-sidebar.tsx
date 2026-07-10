@@ -4,7 +4,7 @@ import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem, type SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
-import { BookOpen, Calendar, CalendarRange, ClipboardList, FileText, Folder, GraduationCap, History, LayoutGrid, Receipt, Tags } from 'lucide-react';
+import { BookMarked, BookOpen, Calendar, CalendarRange, ClipboardList, FileText, Folder, GraduationCap, History, LayoutGrid, Receipt, Tags } from 'lucide-react';
 import AppLogo from './app-logo';
 
 const footerNavItems: NavItem[] = [
@@ -22,7 +22,7 @@ const footerNavItems: NavItem[] = [
 
 // Roles that land on their own dedicated dashboard after login don't
 // need the generic starter-kit "Dashboard" link cluttering the sidebar.
-const ROLES_WITH_OWN_DASHBOARD = ['staf_ppdb', 'staf_keuangan', 'wali_murid'];
+const ROLES_WITH_OWN_DASHBOARD = ['staf_ppdb', 'staf_keuangan', 'wali_murid', 'siswa'];
 
 export function AppSidebar() {
     const { auth } = usePage<SharedData>().props;
@@ -90,6 +90,15 @@ export function AppSidebar() {
                       title: 'Riwayat Pendaftaran PPDB',
                       url: route('ppdb.riwayat'),
                       icon: History,
+                  },
+              ]
+            : []),
+        ...(auth.user.role === 'siswa'
+            ? [
+                  {
+                      title: 'Dashboard Akademik',
+                      url: route('siswa.dashboard'),
+                      icon: BookMarked,
                   },
               ]
             : []),

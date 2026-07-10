@@ -17,6 +17,15 @@ class PendaftaranPpdb extends Model
     protected $table = 'pendaftaran_ppdb';
 
     /**
+     * The attributes that should be hidden for serialization.
+     *
+     * @var list<string>
+     */
+    protected $hidden = [
+        'password_siswa',
+    ];
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var list<string>
@@ -38,6 +47,8 @@ class PendaftaranPpdb extends Model
         'nama_saudara',
         'status',
         'catatan_verifikasi',
+        'username_siswa',
+        'password_siswa',
     ];
 
     /**
@@ -51,6 +62,7 @@ class PendaftaranPpdb extends Model
             'tanggal_lahir' => 'date',
             'penghasilan_tetap' => 'boolean',
             'punya_saudara_di_sekolah' => 'boolean',
+            'password_siswa' => 'hashed',
         ];
     }
 
@@ -129,9 +141,12 @@ class PendaftaranPpdb extends Model
             $siswa = $this->siswa()->create([
                 'kategori_siswa_id' => $this->kategori_siswa_id,
                 'nama' => $this->nama_pendaftar,
-                // Placeholder sementara -- format NIS asli masih menunggu
-                // kebijakan sekolah, belum ditetapkan.
-                'nis' => "TEMP-{$this->id}",
+                // nis murni data administratif sekolah (bukan dipakai
+                // login) dan belum ditetapkan kebijakannya -- biarkan
+                // kosong sampai sekolah menetapkan NIS sungguhan,
+                // daripada mengisi placeholder yang tidak berarti apa
+                // pun.
+                'nis' => null,
                 // NISN berasal dari data Kemendikbud, belum ada sumber
                 // datanya di sistem ini.
                 'nisn' => null,
