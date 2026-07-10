@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
-use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -34,22 +33,7 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended($this->redirectPathFor($request->user()));
-    }
-
-    /**
-     * Get the post-login landing page for the given user's role.
-     * Roles without a dedicated dashboard (admin, kepala_sekolah, guru)
-     * fall back to the generic starter-kit dashboard.
-     */
-    private function redirectPathFor(User $user): string
-    {
-        return match ($user->role) {
-            'staf_ppdb' => route('staf.ppdb-dashboard', absolute: false),
-            'staf_keuangan' => route('staf.tagihan.index', absolute: false),
-            'wali_murid' => route('wali.siswa.index', absolute: false),
-            default => route('dashboard', absolute: false),
-        };
+        return redirect()->intended($request->user()->defaultRedirectPath());
     }
 
     /**

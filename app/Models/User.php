@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -10,7 +11,7 @@ use RuntimeException;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
+    /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
     /**
@@ -40,6 +41,21 @@ class User extends Authenticatable
                 );
             }
         });
+    }
+
+    /**
+     * Get this user's landing page after login or registration.
+     * Roles without a dedicated dashboard (admin, kepala_sekolah, guru)
+     * fall back to the generic starter-kit dashboard.
+     */
+    public function defaultRedirectPath(): string
+    {
+        return match ($this->role) {
+            'staf_ppdb' => route('staf.ppdb-dashboard', absolute: false),
+            'staf_keuangan' => route('staf.tagihan.index', absolute: false),
+            'wali_murid' => route('wali.siswa.index', absolute: false),
+            default => route('dashboard', absolute: false),
+        };
     }
 
     /**
