@@ -233,8 +233,9 @@ class PendaftaranPpdbController extends Controller
     public function riwayat(): Response
     {
         $pendaftaran = PendaftaranPpdb::where('user_id', request()->user()->id)
+            ->with('siswa:id,pendaftaran_ppdb_id,status')
             ->latest()
-            ->get(['id', 'nomor_pendaftaran', 'nama_pendaftar', 'status', 'catatan_verifikasi', 'created_at']);
+            ->get(['id', 'nomor_pendaftaran', 'nama_pendaftar', 'status', 'catatan_verifikasi', 'username_siswa', 'created_at']);
 
         return Inertia::render('ppdb/riwayat', [
             'pendaftaran' => $pendaftaran,

@@ -4,9 +4,9 @@ use App\Http\Controllers\GelombangPpdbController;
 use App\Http\Controllers\KategoriSiswaController;
 use App\Http\Controllers\KuotaKategoriController;
 use App\Http\Controllers\PendaftaranPpdbController;
+use App\Http\Controllers\Staf\AktivasiSiswaController;
 use App\Http\Controllers\Staf\DashboardPpdbController;
 use App\Http\Controllers\Staf\PendaftaranPpdbController as StafPendaftaranPpdbController;
-use App\Http\Controllers\Staf\SiswaController as StafSiswaController;
 use App\Http\Controllers\Staf\TagihanController;
 use App\Http\Controllers\TahunAjaranController;
 use App\Http\Controllers\Wali\SiswaController as WaliSiswaController;
@@ -48,7 +48,8 @@ Route::middleware(['auth', 'staf-ppdb'])->group(function () {
     Route::get('staf/ppdb/{pendaftaran_ppdb}/verifikasi', [StafPendaftaranPpdbController::class, 'show'])->name('staf.ppdb.verifikasi');
     Route::post('staf/ppdb/{pendaftaran_ppdb}/verifikasi', [StafPendaftaranPpdbController::class, 'verifikasi'])->name('staf.ppdb.verifikasi.store');
 
-    Route::post('staf/siswa/{siswa}/finalisasi', [StafSiswaController::class, 'finalisasi'])->name('staf.siswa.finalisasi');
+    Route::get('staf/aktivasi-bermasalah', [AktivasiSiswaController::class, 'index'])->name('staf.aktivasi-bermasalah');
+    Route::post('staf/aktivasi-bermasalah/{siswa}/coba-lagi', [AktivasiSiswaController::class, 'cobaLagi'])->name('staf.aktivasi-bermasalah.coba-lagi');
 });
 
 Route::middleware(['auth', 'staf-keuangan'])->group(function () {

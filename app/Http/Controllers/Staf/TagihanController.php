@@ -5,13 +5,16 @@ namespace App\Http\Controllers\Staf;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Staf\BayarLangsungRequest;
 use App\Models\Pembayaran;
+use App\Models\Siswa;
 use App\Models\Tagihan;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
+use Throwable;
 
 class TagihanController extends Controller
 {
@@ -91,9 +94,48 @@ class TagihanController extends Controller
                 'terbayar' => $terbayar,
                 'status' => $terbayar >= $tagihan->nominal ? 'lunas' : ($terbayar > 0 ? 'sebagian' : 'belum_bayar'),
             ]);
+
+            $this->cobaAktivasiOtomatis($tagihan);
         });
 
         return to_route('staf.tagihan.show', $tagihan)->with('success', 'Pembayaran berhasil dicatat.');
+    }
+
+    /**
+     * After a payment completes a tagihan, check whether it was the
+     * last piece needed to auto-activate the siswa it belongs to.
+     *
+     * Failures here must never undo the payment that was just
+     * recorded -- they're caught, logged, and surfaced to staf as a
+     * warning to investigate on the monitoring page instead.
+     */
+    private function cobaAktivasiOtomatis(Tagihan $tagihan): void
+    {
+        /** @var Siswa|null $siswa */
+        $siswa = $tagihan->siswa;
+
+        if (! $siswa || ! $siswa->bisaAktivasiOtomatis()) {
+            return;
+        }
+
+        try {
+            $siswa->aktivasiOtomatis();
+        } catch (Throwable $e) {
+            // Full message + stack trace go to the log for developers
+            // to diagnose -- the raw exception (which can contain SQL,
+            // password hashes, etc.) must never reach the flash message
+            // a staf user sees.
+            Log::error('Aktivasi otomatis siswa gagal.', [
+                'siswa_id' => $siswa->id,
+                'tagihan_id' => $tagihan->id,
+                'exception' => $e,
+            ]);
+
+            session()->flash(
+                'warning',
+                'Pembayaran berhasil, tapi aktivasi otomatis siswa gagal. Cek halaman Monitoring Aktivasi untuk detail.'
+            );
+        }
     }
 
     /**

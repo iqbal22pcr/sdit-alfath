@@ -4,7 +4,21 @@ import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem, type SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
-import { BookMarked, BookOpen, Calendar, CalendarRange, ClipboardList, FileText, Folder, GraduationCap, History, LayoutGrid, Receipt, Tags } from 'lucide-react';
+import {
+    AlertTriangle,
+    BookMarked,
+    BookOpen,
+    Calendar,
+    CalendarRange,
+    ClipboardList,
+    FileText,
+    Folder,
+    GraduationCap,
+    History,
+    LayoutGrid,
+    Receipt,
+    Tags,
+} from 'lucide-react';
 import AppLogo from './app-logo';
 
 const footerNavItems: NavItem[] = [
@@ -62,6 +76,11 @@ export function AppSidebar() {
                       title: 'Dashboard PPDB',
                       url: route('staf.ppdb-dashboard'),
                       icon: ClipboardList,
+                  },
+                  {
+                      title: 'Monitoring Aktivasi',
+                      url: route('staf.aktivasi-bermasalah'),
+                      icon: AlertTriangle,
                   },
               ]
             : []),

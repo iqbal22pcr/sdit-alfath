@@ -2,16 +2,18 @@
 
 namespace App\Models;
 
+use Database\Factories\SiswaFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use RuntimeException;
 
 class Siswa extends Model
 {
-    /** @use HasFactory<\Database\Factories\SiswaFactory> */
+    /** @use HasFactory<SiswaFactory> */
     use HasFactory;
 
     protected $table = 'siswa';
@@ -41,7 +43,7 @@ class Siswa extends Model
 
     /**
      * Get the login account for this siswa, if one has been created
-     * yet (only happens once the siswa is finalized as "aktif").
+     * yet (only happens once aktivasiOtomatis() activates the siswa).
      */
     public function user(): BelongsTo
     {
@@ -139,34 +141,81 @@ class Siswa extends Model
     }
 
     /**
-     * Promote this siswa from "calon" to fully "aktif".
+     * Check whether this siswa is ready for automatic activation:
+     * still "calon", has no login account yet, and has at least one
+     * uang buku tagihan AND at least one uang seragam tagihan, all of
+     * which are already lunas -- uang masuk is intentionally NOT part
+     * of this check, only the two onboarding-gate components are.
      *
-     * Guarded on two fronts: the siswa must currently be "calon" (a
-     * siswa that's already aktif/alumni/keluar has no business being
-     * re-finalized), and every uang buku / uang seragam tagihan must
-     * already be lunas -- uang masuk is intentionally NOT part of
-     * this check, only the two onboarding-gate components are.
+     * The "both jenis must actually exist" check is deliberate and not
+     * redundant: "every remaining tagihan is lunas" is vacuously true
+     * when there are zero buku/seragam tagihan to find in the first
+     * place (e.g. buatTagihanAwal() partially failed), which would
+     * otherwise let a siswa with no onboarding tagihan at all look
+     * "ready".
+     *
+     * Never throws, just answers the question, so callers can poll it
+     * freely (e.g. after every payment) without needing to catch
+     * anything.
      */
-    public function finalisasi(): void
+    public function bisaAktivasiOtomatis(): bool
     {
-        abort_unless(
-            $this->status === 'calon',
-            422,
-            "Siswa ini berstatus \"{$this->status}\", bukan calon siswa, tidak bisa difinalisasi."
-        );
-
-        $belumLunas = $this->tagihan()
-            ->whereHas('komponenBiaya', fn ($q) => $q->whereIn('jenis', ['buku', 'seragam']))
-            ->where('status', '!=', 'lunas')
-            ->with('komponenBiaya:id,nama')
-            ->get();
-
-        if ($belumLunas->isNotEmpty()) {
-            $namaKomponen = $belumLunas->pluck('komponenBiaya.nama')->implode(', ');
-
-            abort(422, "Belum bisa difinalisasi: {$namaKomponen} belum lunas.");
+        if ($this->status !== 'calon' || $this->user_id !== null) {
+            return false;
         }
 
-        $this->update(['status' => 'aktif']);
+        $tagihanOnboarding = $this->tagihan()
+            ->whereHas('komponenBiaya', fn ($q) => $q->whereIn('jenis', ['buku', 'seragam']))
+            ->with('komponenBiaya:id,jenis')
+            ->get();
+
+        $jenisTersedia = $tagihanOnboarding->pluck('komponenBiaya.jenis')->unique();
+
+        if (! $jenisTersedia->contains('buku') || ! $jenisTersedia->contains('seragam')) {
+            return false;
+        }
+
+        return $tagihanOnboarding->every(fn (Tagihan $tagihan) => $tagihan->status === 'lunas');
+    }
+
+    /**
+     * Activate this siswa: create its login account from the
+     * username/password the wali set up during PPDB registration,
+     * link it, and flip status to "aktif".
+     *
+     * Callers are expected to check bisaAktivasiOtomatis() first; it's
+     * re-checked here defensively so a caller mistake can never
+     * activate a siswa that doesn't actually qualify.
+     */
+    public function aktivasiOtomatis(): void
+    {
+        if (! $this->bisaAktivasiOtomatis()) {
+            throw new RuntimeException("Siswa #{$this->id} belum memenuhi syarat aktivasi otomatis.");
+        }
+
+        DB::transaction(function () {
+            $pendaftaran = $this->pendaftaranPpdb;
+
+            $user = new User;
+            $user->name = $this->nama;
+            $user->username = $pendaftaran->username_siswa;
+            // Already a hash, produced when the wali filled in
+            // password_siswa during PPDB registration -- User::password
+            // also casts as 'hashed', which detects an already-hashed
+            // value and stores it as-is instead of hashing it again.
+            $user->password = $pendaftaran->password_siswa;
+            $user->email = null;
+            $user->role = 'siswa';
+            $user->save();
+
+            $this->update([
+                'user_id' => $user->id,
+                'status' => 'aktif',
+            ]);
+
+            // The hash now lives on users.password; no need to keep a
+            // second copy here. username_siswa stays, for reference.
+            $pendaftaran->update(['password_siswa' => null]);
+        });
     }
 }

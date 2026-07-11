@@ -6,8 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Staf\PendaftaranPpdbVerifikasiRequest;
 use App\Models\KuotaKategori;
 use App\Models\PendaftaranPpdb;
-use App\Models\Siswa;
-use App\Models\Tagihan;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
@@ -27,13 +25,11 @@ class PendaftaranPpdbController extends Controller
             'kategoriSiswa:id,nama',
             'gelombangPpdb:id,nama',
             'verifikator:id,name',
-            'siswa.tagihan.komponenBiaya:id,nama,jenis',
         ]);
 
         return Inertia::render('staf/ppdb-verifikasi', [
             'pendaftaran' => $pendaftaranPpdb,
             'kuotaKategori' => $this->kuotaKategoriUntukGelombang($pendaftaranPpdb),
-            'finalisasi' => $this->finalisasiInfo($pendaftaranPpdb->siswa),
         ]);
     }
 
@@ -122,41 +118,5 @@ class PendaftaranPpdbController extends Controller
             })
             ->values()
             ->all();
-    }
-
-    /**
-     * Compute whether the siswa tied to this pendaftaran (if any) can
-     * be finalized yet, and why not if it can't -- so the "Finalisasi
-     * Siswa" button on the frontend can be disabled with a clear
-     * reason up front, instead of only failing after the staff clicks
-     * it.
-     *
-     * @return array<string, mixed>|null
-     */
-    private function finalisasiInfo(?Siswa $siswa): ?array
-    {
-        if (! $siswa) {
-            return null;
-        }
-
-        if ($siswa->status !== 'calon') {
-            return [
-                'siswa_id' => $siswa->id,
-                'status_siswa' => $siswa->status,
-                'bisa' => false,
-                'alasan' => "Siswa berstatus \"{$siswa->status}\", tidak perlu difinalisasi.",
-            ];
-        }
-
-        $belumLunas = $siswa->tagihan
-            ->filter(fn (Tagihan $tagihan) => in_array($tagihan->komponenBiaya->jenis, ['buku', 'seragam'], true) && $tagihan->status !== 'lunas')
-            ->pluck('komponenBiaya.nama');
-
-        return [
-            'siswa_id' => $siswa->id,
-            'status_siswa' => $siswa->status,
-            'bisa' => $belumLunas->isEmpty(),
-            'alasan' => $belumLunas->isNotEmpty() ? 'Belum bisa difinalisasi: '.$belumLunas->implode(', ').' belum lunas.' : null,
-        ];
     }
 }

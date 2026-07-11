@@ -65,13 +65,6 @@ interface VerifikasiForm {
     [key: string]: string;
 }
 
-interface FinalisasiInfo {
-    siswa_id: number;
-    status_siswa: 'calon' | 'aktif' | 'alumni' | 'keluar';
-    bisa: boolean;
-    alasan: string | null;
-}
-
 const STATUS_LABEL: Record<Status, string> = {
     draft: 'Draft',
     diajukan: 'Diajukan',
@@ -114,11 +107,9 @@ const breadcrumbs: BreadcrumbItem[] = [
 export default function StafPpdbVerifikasi({
     pendaftaran,
     kuotaKategori,
-    finalisasi,
 }: {
     pendaftaran: PendaftaranDetail;
     kuotaKategori: KuotaKategoriOption[];
-    finalisasi: FinalisasiInfo | null;
 }) {
     const form = useForm<VerifikasiForm>({
         status: '',
@@ -126,16 +117,9 @@ export default function StafPpdbVerifikasi({
         catatan_verifikasi: '',
     });
 
-    const finalisasiForm = useForm({});
-
     const submitVerifikasi = (status: 'diterima' | 'ditolak' | 'perlu_perbaikan') => {
         form.transform((data) => ({ ...data, status }));
         form.post(route('staf.ppdb.verifikasi.store', pendaftaran.id), { preserveScroll: true });
-    };
-
-    const submitFinalisasi = () => {
-        if (! finalisasi) return;
-        finalisasiForm.post(route('staf.siswa.finalisasi', finalisasi.siswa_id), { preserveScroll: true });
     };
 
     const kategoriDipilih = form.data.kategori_siswa_id !== '';
@@ -288,23 +272,6 @@ export default function StafPpdbVerifikasi({
                                     Minta Perbaikan
                                 </Button>
                             </div>
-                        </CardContent>
-                    </Card>
-                )}
-
-                {finalisasi && (
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Finalisasi Siswa</CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-3">
-                            <p className="text-sm text-muted-foreground">
-                                Status siswa saat ini: <span className="font-medium">{finalisasi.status_siswa}</span>
-                            </p>
-                            <Button type="button" disabled={! finalisasi.bisa || finalisasiForm.processing} onClick={submitFinalisasi}>
-                                Finalisasi Siswa
-                            </Button>
-                            {finalisasi.alasan && <p className="text-sm text-muted-foreground">{finalisasi.alasan}</p>}
                         </CardContent>
                     </Card>
                 )}
