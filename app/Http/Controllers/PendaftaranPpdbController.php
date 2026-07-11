@@ -195,7 +195,7 @@ class PendaftaranPpdbController extends Controller
             }
         });
 
-        return to_route('ppdb.riwayat')->with('success', 'Perbaikan pendaftaran berhasil dikirim ulang.');
+        return to_route('ppdb.pendaftaran')->with('success', 'Perbaikan pendaftaran berhasil dikirim ulang.');
     }
 
     /**
@@ -230,14 +230,14 @@ class PendaftaranPpdbController extends Controller
     /**
      * List every registration the logged-in user has ever submitted.
      */
-    public function riwayat(): Response
+    public function pendaftaran(): Response
     {
         $pendaftaran = PendaftaranPpdb::where('user_id', request()->user()->id)
             ->with('siswa:id,pendaftaran_ppdb_id,status')
             ->latest()
             ->get(['id', 'nomor_pendaftaran', 'nama_pendaftar', 'status', 'catatan_verifikasi', 'username_siswa', 'created_at']);
 
-        return Inertia::render('ppdb/riwayat', [
+        return Inertia::render('ppdb/pendaftaran', [
             'pendaftaran' => $pendaftaran,
         ]);
     }

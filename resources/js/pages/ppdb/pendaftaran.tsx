@@ -33,15 +33,21 @@ const STATUS_LABEL: Record<Status, string> = {
     ditolak: 'Ditolak',
 };
 
-const breadcrumbs: BreadcrumbItem[] = [{ title: 'Riwayat Pendaftaran PPDB', href: '/ppdb/riwayat' }];
+const breadcrumbs: BreadcrumbItem[] = [{ title: 'Pendaftaran', href: '/ppdb/pendaftaran' }];
 
-export default function PpdbRiwayat({ pendaftaran }: { pendaftaran: PendaftaranRow[] }) {
+export default function PpdbPendaftaran({ pendaftaran }: { pendaftaran: PendaftaranRow[] }) {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Riwayat Pendaftaran PPDB" />
+            <Head title="Pendaftaran" />
 
             <div className="flex flex-col gap-4 p-4">
-                <Heading title="Riwayat Pendaftaran PPDB" description="Pantau status pendaftaran PPDB anak Anda dari waktu ke waktu." />
+                <div className="flex items-center justify-between">
+                    <Heading title="Pendaftaran" description="Pantau status pendaftaran PPDB anak Anda dari waktu ke waktu." />
+
+                    <Button asChild>
+                        <Link href={route('ppdb.create')}>+ Tambah Pendaftaran</Link>
+                    </Button>
+                </div>
 
                 <div className="overflow-x-auto rounded-md border">
                     <Table>

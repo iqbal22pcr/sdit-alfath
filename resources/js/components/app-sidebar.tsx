@@ -13,8 +13,6 @@ import {
     ClipboardList,
     FileText,
     Folder,
-    GraduationCap,
-    History,
     LayoutGrid,
     Receipt,
     Tags,
@@ -96,19 +94,19 @@ export function AppSidebar() {
         ...(auth.user.role === 'wali_murid'
             ? [
                   {
-                      title: 'Anak Saya',
-                      url: route('wali.siswa.index'),
-                      icon: GraduationCap,
+                      title: 'Dashboard',
+                      url: route('wali.dashboard'),
+                      icon: LayoutGrid,
                   },
                   {
-                      title: 'Daftar PPDB',
-                      url: route('ppdb.create'),
+                      title: 'Pendaftaran',
+                      url: route('ppdb.pendaftaran'),
                       icon: FileText,
                   },
                   {
-                      title: 'Riwayat Pendaftaran PPDB',
-                      url: route('ppdb.riwayat'),
-                      icon: History,
+                      title: 'Tagihan',
+                      url: route('wali.tagihan.index'),
+                      icon: Receipt,
                   },
               ]
             : []),

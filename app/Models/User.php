@@ -54,7 +54,7 @@ class User extends Authenticatable
         return match ($this->role) {
             'staf_ppdb' => route('staf.ppdb-dashboard', absolute: false),
             'staf_keuangan' => route('staf.tagihan.index', absolute: false),
-            'wali_murid' => route('wali.siswa.index', absolute: false),
+            'wali_murid' => route('wali.dashboard', absolute: false),
             'siswa' => route('siswa.dashboard', absolute: false),
             default => route('dashboard', absolute: false),
         };

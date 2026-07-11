@@ -9,7 +9,7 @@ use App\Http\Controllers\Staf\DashboardPpdbController;
 use App\Http\Controllers\Staf\PendaftaranPpdbController as StafPendaftaranPpdbController;
 use App\Http\Controllers\Staf\TagihanController;
 use App\Http\Controllers\TahunAjaranController;
-use App\Http\Controllers\Wali\SiswaController as WaliSiswaController;
+use App\Http\Controllers\Wali\TagihanController as WaliTagihanController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -25,12 +25,16 @@ Route::middleware(['auth'])->group(function () {
     Route::get('ppdb/daftar', [PendaftaranPpdbController::class, 'create'])->name('ppdb.create');
     Route::post('ppdb/daftar', [PendaftaranPpdbController::class, 'store'])->name('ppdb.store');
     Route::get('ppdb/konfirmasi/{pendaftaran_ppdb}', [PendaftaranPpdbController::class, 'konfirmasi'])->name('ppdb.konfirmasi');
-    Route::get('ppdb/riwayat', [PendaftaranPpdbController::class, 'riwayat'])->name('ppdb.riwayat');
+    Route::get('ppdb/pendaftaran', [PendaftaranPpdbController::class, 'pendaftaran'])->name('ppdb.pendaftaran');
     Route::get('ppdb/{pendaftaran_ppdb}/perbaiki', [PendaftaranPpdbController::class, 'edit'])->name('ppdb.perbaiki');
     Route::put('ppdb/{pendaftaran_ppdb}/perbaiki', [PendaftaranPpdbController::class, 'update'])->name('ppdb.perbaiki.update');
 
-    Route::get('wali/siswa', [WaliSiswaController::class, 'index'])->name('wali.siswa.index');
-    Route::get('wali/siswa/{siswa}', [WaliSiswaController::class, 'show'])->name('wali.siswa.show');
+    Route::get('wali/dashboard', function () {
+        return Inertia::render('wali/dashboard');
+    })->name('wali.dashboard');
+
+    Route::get('wali/tagihan', [WaliTagihanController::class, 'index'])->name('wali.tagihan.index');
+    Route::get('wali/tagihan/{tagihan}', [WaliTagihanController::class, 'show'])->name('wali.tagihan.show');
 });
 
 Route::middleware(['auth', 'admin'])->group(function () {

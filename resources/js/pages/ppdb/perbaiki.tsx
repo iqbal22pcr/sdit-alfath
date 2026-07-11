@@ -83,7 +83,7 @@ interface PendaftaranForm {
 const emptyWali: WaliInput = { nama: '', nik: '', telepon: '', hubungan: '' };
 
 const breadcrumbs: BreadcrumbItem[] = [
-    { title: 'Riwayat Pendaftaran PPDB', href: '/ppdb/riwayat' },
+    { title: 'Pendaftaran', href: '/ppdb/pendaftaran' },
     { title: 'Perbaiki Pendaftaran', href: '#' },
 ];
 
