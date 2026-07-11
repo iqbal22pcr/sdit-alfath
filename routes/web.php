@@ -4,6 +4,7 @@ use App\Http\Controllers\GelombangPpdbController;
 use App\Http\Controllers\KategoriSiswaController;
 use App\Http\Controllers\KuotaKategoriController;
 use App\Http\Controllers\PendaftaranPpdbController;
+use App\Http\Controllers\Siswa\DashboardController as SiswaDashboardController;
 use App\Http\Controllers\Staf\AktivasiSiswaController;
 use App\Http\Controllers\Staf\DashboardPpdbController;
 use App\Http\Controllers\Staf\PendaftaranPpdbController as StafPendaftaranPpdbController;
@@ -22,9 +23,12 @@ Route::middleware(['auth'])->group(function () {
         return Inertia::render('dashboard');
     })->name('dashboard');
 
+    Route::get('ppdb/konfirmasi/{pendaftaran_ppdb}', [PendaftaranPpdbController::class, 'konfirmasi'])->name('ppdb.konfirmasi');
+});
+
+Route::middleware(['auth', 'wali'])->group(function () {
     Route::get('ppdb/daftar', [PendaftaranPpdbController::class, 'create'])->name('ppdb.create');
     Route::post('ppdb/daftar', [PendaftaranPpdbController::class, 'store'])->name('ppdb.store');
-    Route::get('ppdb/konfirmasi/{pendaftaran_ppdb}', [PendaftaranPpdbController::class, 'konfirmasi'])->name('ppdb.konfirmasi');
     Route::get('ppdb/pendaftaran', [PendaftaranPpdbController::class, 'pendaftaran'])->name('ppdb.pendaftaran');
     Route::get('ppdb/{pendaftaran_ppdb}/perbaiki', [PendaftaranPpdbController::class, 'edit'])->name('ppdb.perbaiki');
     Route::put('ppdb/{pendaftaran_ppdb}/perbaiki', [PendaftaranPpdbController::class, 'update'])->name('ppdb.perbaiki.update');
@@ -63,9 +67,7 @@ Route::middleware(['auth', 'staf-keuangan'])->group(function () {
 });
 
 Route::middleware(['auth', 'siswa'])->group(function () {
-    Route::get('siswa/dashboard', function () {
-        return Inertia::render('siswa/dashboard');
-    })->name('siswa.dashboard');
+    Route::get('siswa/dashboard', [SiswaDashboardController::class, 'index'])->name('siswa.dashboard');
 });
 
 require __DIR__.'/settings.php';
