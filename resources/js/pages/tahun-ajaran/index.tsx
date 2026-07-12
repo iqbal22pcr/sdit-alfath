@@ -3,6 +3,7 @@ import Heading from '@/components/heading';
 import InputError from '@/components/input-error';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
@@ -160,52 +161,54 @@ export default function TahunAjaranIndex({ tahunAjaran }: { tahunAjaran: TahunAj
                     </Dialog>
                 </div>
 
-                <div className="overflow-x-auto rounded-md border">
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>Nama</TableHead>
-                                <TableHead>Tahun Mulai</TableHead>
-                                <TableHead>Status</TableHead>
-                                <TableHead className="text-right">Aksi</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {tahunAjaran.length === 0 && (
+                <Card className="rounded-xl">
+                    <CardContent>
+                        <Table>
+                            <TableHeader>
                                 <TableRow>
-                                    <TableCell colSpan={4}>
-                                        <EmptyState
-                                            title="Belum ada tahun ajaran."
-                                            action={{ label: 'Tambah Tahun Ajaran', onClick: () => setAddOpen(true) }}
-                                        />
-                                    </TableCell>
+                                    <TableHead>Nama</TableHead>
+                                    <TableHead>Tahun Mulai</TableHead>
+                                    <TableHead>Status</TableHead>
+                                    <TableHead className="text-right">Aksi</TableHead>
                                 </TableRow>
-                            )}
+                            </TableHeader>
+                            <TableBody>
+                                {tahunAjaran.length === 0 && (
+                                    <TableRow>
+                                        <TableCell colSpan={4}>
+                                            <EmptyState
+                                                title="Belum ada tahun ajaran."
+                                                action={{ label: 'Tambah Tahun Ajaran', onClick: () => setAddOpen(true) }}
+                                            />
+                                        </TableCell>
+                                    </TableRow>
+                                )}
 
-                            {tahunAjaran.map((tahun) => (
-                                <TableRow key={tahun.id}>
-                                    <TableCell className="font-medium">{tahun.nama}</TableCell>
-                                    <TableCell>{tahun.tahun_mulai}</TableCell>
-                                    <TableCell>
-                                        <Badge variant="outline" className={statusBadgeClass(tahun.status_aktif ? 'aktif' : 'tidak_aktif')}>
-                                            {tahun.status_aktif ? 'Aktif' : 'Tidak Aktif'}
-                                        </Badge>
-                                    </TableCell>
-                                    <TableCell className="text-right">
-                                        <div className="flex justify-end gap-2">
-                                            <Button variant="outline" size="sm" onClick={() => openEdit(tahun)}>
-                                                Edit
-                                            </Button>
-                                            <Button variant="destructive" size="sm" onClick={() => setDeleting(tahun)}>
-                                                Hapus
-                                            </Button>
-                                        </div>
-                                    </TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </div>
+                                {tahunAjaran.map((tahun) => (
+                                    <TableRow key={tahun.id}>
+                                        <TableCell className="font-medium">{tahun.nama}</TableCell>
+                                        <TableCell>{tahun.tahun_mulai}</TableCell>
+                                        <TableCell>
+                                            <Badge variant="outline" className={statusBadgeClass(tahun.status_aktif ? 'aktif' : 'tidak_aktif')}>
+                                                {tahun.status_aktif ? 'Aktif' : 'Tidak Aktif'}
+                                            </Badge>
+                                        </TableCell>
+                                        <TableCell className="text-right">
+                                            <div className="flex justify-end gap-2">
+                                                <Button variant="outline" size="sm" onClick={() => openEdit(tahun)}>
+                                                    Edit
+                                                </Button>
+                                                <Button variant="destructive" size="sm" onClick={() => setDeleting(tahun)}>
+                                                    Hapus
+                                                </Button>
+                                            </div>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </CardContent>
+                </Card>
             </div>
 
             {/* Edit dialog */}

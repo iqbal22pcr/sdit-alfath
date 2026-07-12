@@ -2,6 +2,7 @@ import { EmptyState } from '@/components/empty-state';
 import Heading from '@/components/heading';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -159,48 +160,50 @@ export default function KategoriSiswaIndex({ kategoriSiswa }: { kategoriSiswa: K
                     </Dialog>
                 </div>
 
-                <div className="overflow-x-auto rounded-md border">
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>Nama</TableHead>
-                                <TableHead>Persentase Diskon</TableHead>
-                                <TableHead>Deskripsi</TableHead>
-                                <TableHead className="text-right">Aksi</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {kategoriSiswa.length === 0 && (
+                <Card className="rounded-xl">
+                    <CardContent>
+                        <Table>
+                            <TableHeader>
                                 <TableRow>
-                                    <TableCell colSpan={4}>
-                                        <EmptyState
-                                            title="Belum ada kategori siswa."
-                                            action={{ label: 'Tambah Kategori', onClick: () => setAddOpen(true) }}
-                                        />
-                                    </TableCell>
+                                    <TableHead>Nama</TableHead>
+                                    <TableHead>Persentase Diskon</TableHead>
+                                    <TableHead>Deskripsi</TableHead>
+                                    <TableHead className="text-right">Aksi</TableHead>
                                 </TableRow>
-                            )}
+                            </TableHeader>
+                            <TableBody>
+                                {kategoriSiswa.length === 0 && (
+                                    <TableRow>
+                                        <TableCell colSpan={4}>
+                                            <EmptyState
+                                                title="Belum ada kategori siswa."
+                                                action={{ label: 'Tambah Kategori', onClick: () => setAddOpen(true) }}
+                                            />
+                                        </TableCell>
+                                    </TableRow>
+                                )}
 
-                            {kategoriSiswa.map((kategori) => (
-                                <TableRow key={kategori.id}>
-                                    <TableCell className="font-medium">{kategori.nama}</TableCell>
-                                    <TableCell>{kategori.persentase_diskon}%</TableCell>
-                                    <TableCell className="max-w-md text-muted-foreground">{kategori.deskripsi}</TableCell>
-                                    <TableCell className="text-right">
-                                        <div className="flex justify-end gap-2">
-                                            <Button variant="outline" size="sm" onClick={() => openEdit(kategori)}>
-                                                Edit
-                                            </Button>
-                                            <Button variant="destructive" size="sm" onClick={() => setDeleting(kategori)}>
-                                                Hapus
-                                            </Button>
-                                        </div>
-                                    </TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </div>
+                                {kategoriSiswa.map((kategori) => (
+                                    <TableRow key={kategori.id}>
+                                        <TableCell className="font-medium">{kategori.nama}</TableCell>
+                                        <TableCell>{kategori.persentase_diskon}%</TableCell>
+                                        <TableCell className="max-w-md text-muted-foreground">{kategori.deskripsi}</TableCell>
+                                        <TableCell className="text-right">
+                                            <div className="flex justify-end gap-2">
+                                                <Button variant="outline" size="sm" onClick={() => openEdit(kategori)}>
+                                                    Edit
+                                                </Button>
+                                                <Button variant="destructive" size="sm" onClick={() => setDeleting(kategori)}>
+                                                    Hapus
+                                                </Button>
+                                            </div>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </CardContent>
+                </Card>
             </div>
 
             {/* Edit dialog */}

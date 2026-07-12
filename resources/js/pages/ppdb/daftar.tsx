@@ -212,8 +212,10 @@ export default function PpdbDaftar({ gelombang }: { gelombang: { id: number; nam
             <form onSubmit={submit} className="flex w-full flex-col gap-4 p-4">
                 <Heading title="Formulir Pendaftaran PPDB" description={`Gelombang: ${gelombang.nama}`} />
 
-                <div className="max-w-md py-2">
-                    <Stepper steps={['Data & Akun', 'Upload Dokumen']} currentStep={step} />
+                <div className="flex w-full justify-center py-2">
+                    <div className="w-full max-w-md">
+                        <Stepper steps={['Data & Akun', 'Upload Dokumen']} currentStep={step} />
+                    </div>
                 </div>
 
                 {step === 1 && (

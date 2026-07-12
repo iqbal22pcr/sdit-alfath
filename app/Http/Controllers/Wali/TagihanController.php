@@ -43,6 +43,11 @@ class TagihanController extends Controller
                 'namaAnak' => $t->siswa->nama,
                 'jatuhTempo' => $t->jatuh_tempo->toDateString(),
             ])->values(),
+            'ringkasan' => [
+                'belumBayar' => $tagihan->where('status', 'belum_bayar')->count(),
+                'sebagian' => $tagihan->where('status', 'sebagian')->count(),
+                'lunas' => $tagihan->where('status', 'lunas')->count(),
+            ],
         ]);
     }
 

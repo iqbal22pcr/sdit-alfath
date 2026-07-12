@@ -58,6 +58,9 @@
     --color-sidebar-ring: var(--sidebar-ring);
 
     --color-gold: var(--gold);
+
+    --color-warning: var(--warning);
+    --color-warning-foreground: var(--warning-foreground);
 }
 
 /*
@@ -107,20 +110,33 @@
     --chart-3: hsl(151.9, 69.1%, 26.7%); /* green */
     --chart-4: hsl(26, 90.5%, 37.1%); /* amber */
     --chart-5: hsl(209, 14.6%, 41.8%); /* slate */
-    --radius: 0.5rem;
+    --radius: 0.75rem;
     --gold: hsl(35.5, 72%, 42%); /* #B8791E - deepened from sampled logo orange #FC7E24, used sparingly */
-    /* Sidebar now mirrors the neutral card/page surface instead of a
-       solid brand-navy fill (admin-dashboard-template direction) --
-       this is what makes the active nav item's primary/10 tint +
-       primary text actually readable; on the old navy fill, primary
-       text was nearly invisible since sidebar-background === primary. */
-    --sidebar-background: hsl(0, 0%, 100%); /* #FFFFFF, matches --card */
-    --sidebar-foreground: hsl(210, 37.5%, 12.5%); /* #14202C, matches --foreground */
+    /* Warning tokens: hue derived from --gold/--chart-4 (amber family),
+       not Tailwind's stock amber palette. --warning/--warning-foreground
+       is the solid pair (icon accents, filled chips) -- 5.74:1 verified
+       for white text on --warning. --bg-warning/--text-warning is the
+       tinted-surface pair used by warning Alerts -- 7.87:1 verified.
+       --border-warning is a non-text accent border, not AA-governed. */
+    --warning: hsl(35.5, 80%, 32%);
+    --warning-foreground: hsl(0, 0%, 100%);
+    --bg-warning: hsl(37, 92%, 95%);
+    --text-warning: hsl(24, 80%, 27%); /* 7.87:1 on --bg-warning */
+    --border-warning: hsl(32, 80%, 48%);
+    /* Sidebar is a solid brand-blue fill (matches --primary), with white
+       foreground text/icons for contrast. --sidebar-accent carries its
+       own alpha (translucent white, equivalent to bg-white/15) rather
+       than an opaque color, since it composites as a hover/active
+       overlay on top of the solid blue sidebar-background -- an opaque
+       token here would render as a jarring solid-white block wherever
+       bg-sidebar-accent is used (NavMain items, nav-user trigger, etc). */
+    --sidebar-background: hsl(209.4, 77.8%, 37.1%); /* #1560A8, matches --primary */
+    --sidebar-foreground: hsl(0, 0%, 100%); /* #FFFFFF */
     --sidebar-primary: hsl(209.4, 77.8%, 37.1%); /* #1560A8, matches --primary - logo chip bg */
     --sidebar-primary-foreground: hsl(0, 0%, 100%); /* #FFFFFF, matches --primary-foreground */
-    --sidebar-accent: hsl(210, 41.2%, 93.3%); /* #E7EEF5, matches --accent - neutral hover tint */
-    --sidebar-accent-foreground: hsl(210, 37.5%, 12.5%); /* #14202C, matches --accent-foreground */
-    --sidebar-border: hsl(212.7, 18.6%, 88.4%); /* #DCE1E7, matches --border */
+    --sidebar-accent: hsla(0, 0%, 100%, 0.15); /* translucent white overlay, equivalent to bg-white/15 */
+    --sidebar-accent-foreground: hsl(0, 0%, 100%); /* #FFFFFF */
+    --sidebar-border: hsl(209.4, 60%, 32%); /* darker blue-tinted border for separators within the sidebar */
     --sidebar-ring: hsl(35.5, 72%, 42%); /* gold */
 }
 
@@ -155,13 +171,26 @@
     --chart-4: hsl(26, 85%, 40%); /* amber, deepened for chart fill on dark surface */
     --chart-5: hsl(209.2, 21.3%, 64.1%); /* slate - intentionally muted, used only as a neutral/"other" chart color */
     --gold: hsl(36.5, 65.1%, 53.9%); /* #D69A3D - brightened for dark-bg legibility */
-    --sidebar-background: hsl(209, 49.2%, 12.4%); /* #10202F, matches --card */
-    --sidebar-foreground: hsl(210, 41.2%, 93.3%); /* #E7EEF5, matches --foreground */
+    /* Warning tokens, dark-mode counterparts -- same hue family as
+       --gold/--chart-4 above, tuned for dark surfaces. --warning is
+       brightened (matches the --gold dark-mode treatment) so a solid
+       fill still reads clearly; --bg-warning/--text-warning is a dim
+       amber-tinted surface with bright amber text, 9.65:1 verified. */
+    --warning: hsl(36.5, 70%, 55%); /* 6.93:1 with --warning-foreground */
+    --warning-foreground: hsl(24, 70%, 12%);
+    --bg-warning: hsl(32, 45%, 16%);
+    --text-warning: hsl(38, 85%, 78%); /* 9.65:1 on --bg-warning */
+    --border-warning: hsl(36, 55%, 42%);
+    /* Sidebar mirrors the light-mode treatment: solid brand-blue fill
+       (dark-mode --primary) with white foreground and a translucent
+       white overlay for --sidebar-accent. */
+    --sidebar-background: hsl(209.4, 77.8%, 44.5%); /* #1973CA, matches dark --primary */
+    --sidebar-foreground: hsl(0, 0%, 100%); /* #FFFFFF */
     --sidebar-primary: hsl(209.4, 77.8%, 44.5%); /* #1973CA, matches --primary - logo chip bg */
     --sidebar-primary-foreground: hsl(0, 0%, 100%); /* #FFFFFF */
-    --sidebar-accent: hsl(209.3, 43.4%, 19.4%); /* #1C3247, matches --accent - neutral hover tint */
-    --sidebar-accent-foreground: hsl(210, 41.2%, 93.3%); /* #E7EEF5, matches --accent-foreground */
-    --sidebar-border: hsl(210.7, 41.7%, 20.2%); /* #1E3349, matches --border */
+    --sidebar-accent: hsla(0, 0%, 100%, 0.15); /* translucent white overlay, equivalent to bg-white/15 */
+    --sidebar-accent-foreground: hsl(0, 0%, 100%); /* #FFFFFF */
+    --sidebar-border: hsl(209.4, 55%, 34%); /* darker blue-tinted border for separators within the sidebar */
     --sidebar-ring: hsl(36.5, 65.1%, 53.9%); /* gold */
 }
 

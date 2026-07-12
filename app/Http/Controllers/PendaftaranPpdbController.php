@@ -235,6 +235,11 @@ class PendaftaranPpdbController extends Controller
 
         return Inertia::render('ppdb/pendaftaran', [
             'pendaftaran' => $pendaftaran,
+            'ringkasan' => [
+                'total' => $pendaftaran->count(),
+                'perluPerbaikan' => $pendaftaran->where('status', 'perlu_perbaikan')->count(),
+                'diterima' => $pendaftaran->where('status', 'diterima')->count(),
+            ],
         ]);
     }
 

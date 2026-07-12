@@ -20,7 +20,7 @@ export function NavMain({ items = [] }: { items: NavItem[] }) {
                             <SidebarMenuButton
                                 asChild
                                 isActive={itemPath === currentPath}
-                                className="rounded-lg data-[active=true]:bg-primary/10 data-[active=true]:font-medium data-[active=true]:text-primary"
+                                className="rounded-lg text-white/80 hover:bg-white/15 hover:text-white data-[active=true]:bg-white/15 data-[active=true]:font-medium data-[active=true]:text-white"
                             >
                                 <Link href={item.url} prefetch>
                                     {item.icon && <item.icon />}

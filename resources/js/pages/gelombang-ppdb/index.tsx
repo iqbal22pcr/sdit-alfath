@@ -3,6 +3,7 @@ import Heading from '@/components/heading';
 import InputError from '@/components/input-error';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
@@ -154,61 +155,63 @@ export default function GelombangPpdbIndex({ gelombangPpdb, tahunAjaran }: { gel
                     </Dialog>
                 </div>
 
-                <div className="overflow-x-auto rounded-md border">
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>Nama</TableHead>
-                                <TableHead>Tahun Ajaran</TableHead>
-                                <TableHead>Periode</TableHead>
-                                <TableHead>Biaya Masuk</TableHead>
-                                <TableHead>Status</TableHead>
-                                <TableHead className="text-right">Aksi</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {gelombangPpdb.length === 0 && (
+                <Card className="rounded-xl">
+                    <CardContent>
+                        <Table>
+                            <TableHeader>
                                 <TableRow>
-                                    <TableCell colSpan={6}>
-                                        <EmptyState
-                                            title="Belum ada gelombang PPDB."
-                                            action={{ label: 'Tambah Gelombang', onClick: () => setAddOpen(true) }}
-                                        />
-                                    </TableCell>
+                                    <TableHead>Nama</TableHead>
+                                    <TableHead>Tahun Ajaran</TableHead>
+                                    <TableHead>Periode</TableHead>
+                                    <TableHead>Biaya Masuk</TableHead>
+                                    <TableHead>Status</TableHead>
+                                    <TableHead className="text-right">Aksi</TableHead>
                                 </TableRow>
-                            )}
+                            </TableHeader>
+                            <TableBody>
+                                {gelombangPpdb.length === 0 && (
+                                    <TableRow>
+                                        <TableCell colSpan={6}>
+                                            <EmptyState
+                                                title="Belum ada gelombang PPDB."
+                                                action={{ label: 'Tambah Gelombang', onClick: () => setAddOpen(true) }}
+                                            />
+                                        </TableCell>
+                                    </TableRow>
+                                )}
 
-                            {gelombangPpdb.map((gelombang) => (
-                                <TableRow key={gelombang.id}>
-                                    <TableCell className="font-medium">{gelombang.nama}</TableCell>
-                                    <TableCell>{gelombang.tahun_ajaran.nama}</TableCell>
-                                    <TableCell>
-                                        {formatTanggal(gelombang.tanggal_mulai)} s/d {formatTanggal(gelombang.tanggal_selesai)}
-                                    </TableCell>
-                                    <TableCell>{formatRupiah(gelombang.biaya_masuk)}</TableCell>
-                                    <TableCell>
-                                        <Badge variant="outline" className={statusBadgeClass(gelombang.status_buka ? 'buka' : 'tutup')}>
-                                            {gelombang.status_buka ? 'Buka' : 'Tutup'}
-                                        </Badge>
-                                    </TableCell>
-                                    <TableCell className="text-right">
-                                        <div className="flex justify-end gap-2">
-                                            <Button variant="outline" size="sm" asChild>
-                                                <Link href={route('gelombang-ppdb.show', gelombang.id)}>Kelola Kuota</Link>
-                                            </Button>
-                                            <Button variant="outline" size="sm" onClick={() => openEdit(gelombang)}>
-                                                Edit
-                                            </Button>
-                                            <Button variant="destructive" size="sm" onClick={() => setDeleting(gelombang)}>
-                                                Hapus
-                                            </Button>
-                                        </div>
-                                    </TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </div>
+                                {gelombangPpdb.map((gelombang) => (
+                                    <TableRow key={gelombang.id}>
+                                        <TableCell className="font-medium">{gelombang.nama}</TableCell>
+                                        <TableCell>{gelombang.tahun_ajaran.nama}</TableCell>
+                                        <TableCell>
+                                            {formatTanggal(gelombang.tanggal_mulai)} s/d {formatTanggal(gelombang.tanggal_selesai)}
+                                        </TableCell>
+                                        <TableCell>{formatRupiah(gelombang.biaya_masuk)}</TableCell>
+                                        <TableCell>
+                                            <Badge variant="outline" className={statusBadgeClass(gelombang.status_buka ? 'buka' : 'tutup')}>
+                                                {gelombang.status_buka ? 'Buka' : 'Tutup'}
+                                            </Badge>
+                                        </TableCell>
+                                        <TableCell className="text-right">
+                                            <div className="flex justify-end gap-2">
+                                                <Button variant="outline" size="sm" asChild>
+                                                    <Link href={route('gelombang-ppdb.show', gelombang.id)}>Kelola Kuota</Link>
+                                                </Button>
+                                                <Button variant="outline" size="sm" onClick={() => openEdit(gelombang)}>
+                                                    Edit
+                                                </Button>
+                                                <Button variant="destructive" size="sm" onClick={() => setDeleting(gelombang)}>
+                                                    Hapus
+                                                </Button>
+                                            </div>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </CardContent>
+                </Card>
             </div>
 
             {/* Edit dialog */}

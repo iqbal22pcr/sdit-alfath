@@ -1,14 +1,16 @@
 import { EmptyState } from '@/components/empty-state';
 import Heading from '@/components/heading';
+import { MetricCard } from '@/components/metric-card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
+import { Card, CardContent } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import AppLayout from '@/layouts/app-layout';
 import { formatRupiah, formatTanggal } from '@/lib/format';
 import { statusBadgeClass } from '@/lib/status-badge';
 import { type BreadcrumbItem } from '@/types';
 import { Head, router } from '@inertiajs/react';
-import { AlertTriangle } from 'lucide-react';
+import { AlertTriangle, CheckCircle2, CircleDollarSign, Receipt } from 'lucide-react';
 
 type StatusTagihan = 'belum_bayar' | 'sebagian' | 'lunas';
 
@@ -28,6 +30,12 @@ interface AlertJatuhTempo {
     jatuhTempo: string;
 }
 
+interface Ringkasan {
+    belumBayar: number;
+    sebagian: number;
+    lunas: number;
+}
+
 const STATUS_LABEL: Record<StatusTagihan, string> = {
     belum_bayar: 'Belum Bayar',
     sebagian: 'Sebagian',
@@ -36,8 +44,15 @@ const STATUS_LABEL: Record<StatusTagihan, string> = {
 
 const breadcrumbs: BreadcrumbItem[] = [{ title: 'Tagihan', href: '/wali/tagihan' }];
 
-export default function WaliTagihanIndex({ tagihan, alertJatuhTempo }: { tagihan: TagihanRow[]; alertJatuhTempo: AlertJatuhTempo[] }) {
-
+export default function WaliTagihanIndex({
+    tagihan,
+    alertJatuhTempo,
+    ringkasan,
+}: {
+    tagihan: TagihanRow[];
+    alertJatuhTempo: AlertJatuhTempo[];
+    ringkasan: Ringkasan;
+}) {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Tagihan" />
@@ -45,11 +60,17 @@ export default function WaliTagihanIndex({ tagihan, alertJatuhTempo }: { tagihan
             <div className="flex flex-col gap-4 p-4">
                 <Heading title="Tagihan" description="Pantau tagihan dan status pembayaran seluruh anak Anda." />
 
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                    <MetricCard icon={Receipt} tone="red" label="Belum Bayar" value={ringkasan.belumBayar} />
+                    <MetricCard icon={CircleDollarSign} tone="gold" label="Sebagian" value={ringkasan.sebagian} />
+                    <MetricCard icon={CheckCircle2} tone="green" label="Lunas" value={ringkasan.lunas} />
+                </div>
+
                 {alertJatuhTempo.length > 0 && (
-                    <Alert className="border-amber-500/50 bg-amber-50 text-amber-800 dark:border-amber-500/50 dark:bg-amber-950/40 dark:text-amber-200">
-                        <AlertTriangle className="size-4 text-amber-600 dark:text-amber-400" />
+                    <Alert className="border-[var(--border-warning)] bg-[var(--bg-warning)] text-[var(--text-warning)]">
+                        <AlertTriangle className="size-4 text-[var(--warning)]" />
                         <AlertTitle>Uang Masuk Segera Jatuh Tempo</AlertTitle>
-                        <AlertDescription className="text-amber-800 dark:text-amber-200">
+                        <AlertDescription className="text-[var(--text-warning)]">
                             <ul className="list-disc space-y-1 pl-4">
                                 {alertJatuhTempo.map((item, index) => (
                                     <li key={index}>
@@ -61,48 +82,50 @@ export default function WaliTagihanIndex({ tagihan, alertJatuhTempo }: { tagihan
                     </Alert>
                 )}
 
-                <div className="overflow-x-auto rounded-md border">
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>Nama Anak</TableHead>
-                                <TableHead>Komponen Biaya</TableHead>
-                                <TableHead>Nominal</TableHead>
-                                <TableHead>Terbayar</TableHead>
-                                <TableHead>Status</TableHead>
-                                <TableHead>Jatuh Tempo</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {tagihan.length === 0 && (
+                <Card className="rounded-xl">
+                    <CardContent>
+                        <Table>
+                            <TableHeader>
                                 <TableRow>
-                                    <TableCell colSpan={6}>
-                                        <EmptyState title="Belum ada tagihan." />
-                                    </TableCell>
+                                    <TableHead>Nama Anak</TableHead>
+                                    <TableHead>Komponen Biaya</TableHead>
+                                    <TableHead>Nominal</TableHead>
+                                    <TableHead>Terbayar</TableHead>
+                                    <TableHead>Status</TableHead>
+                                    <TableHead>Jatuh Tempo</TableHead>
                                 </TableRow>
-                            )}
+                            </TableHeader>
+                            <TableBody>
+                                {tagihan.length === 0 && (
+                                    <TableRow>
+                                        <TableCell colSpan={6}>
+                                            <EmptyState title="Belum ada tagihan." />
+                                        </TableCell>
+                                    </TableRow>
+                                )}
 
-                            {tagihan.map((t) => (
-                                <TableRow
-                                    key={t.id}
-                                    className="cursor-pointer"
-                                    onClick={() => router.visit(route('wali.tagihan.show', t.id))}
-                                >
-                                    <TableCell className="font-medium">{t.siswa.nama}</TableCell>
-                                    <TableCell>{t.komponen_biaya.nama}</TableCell>
-                                    <TableCell>{formatRupiah(t.nominal)}</TableCell>
-                                    <TableCell>{formatRupiah(t.terbayar)}</TableCell>
-                                    <TableCell>
-                                        <Badge variant="outline" className={statusBadgeClass(t.status)}>
-                                            {STATUS_LABEL[t.status]}
-                                        </Badge>
-                                    </TableCell>
-                                    <TableCell>{t.jatuh_tempo ? formatTanggal(t.jatuh_tempo) : '-'}</TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </div>
+                                {tagihan.map((t) => (
+                                    <TableRow
+                                        key={t.id}
+                                        className="cursor-pointer"
+                                        onClick={() => router.visit(route('wali.tagihan.show', t.id))}
+                                    >
+                                        <TableCell className="font-medium">{t.siswa.nama}</TableCell>
+                                        <TableCell>{t.komponen_biaya.nama}</TableCell>
+                                        <TableCell>{formatRupiah(t.nominal)}</TableCell>
+                                        <TableCell>{formatRupiah(t.terbayar)}</TableCell>
+                                        <TableCell>
+                                            <Badge variant="outline" className={statusBadgeClass(t.status)}>
+                                                {STATUS_LABEL[t.status]}
+                                            </Badge>
+                                        </TableCell>
+                                        <TableCell>{t.jatuh_tempo ? formatTanggal(t.jatuh_tempo) : '-'}</TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </CardContent>
+                </Card>
             </div>
         </AppLayout>
     );

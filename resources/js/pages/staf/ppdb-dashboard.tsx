@@ -103,10 +103,10 @@ export default function StafPpdbDashboard({
                 <Heading title="Dashboard PPDB" description={`Gelombang: ${gelombang.nama}`} />
 
                 {siswaPerluAktivasi.length > 0 && (
-                    <Alert className="border-amber-500/50 bg-amber-50 text-amber-800 dark:border-amber-500/50 dark:bg-amber-950/40 dark:text-amber-200">
-                        <AlertTriangle className="size-4 text-amber-600 dark:text-amber-400" />
+                    <Alert className="border-[var(--border-warning)] bg-[var(--bg-warning)] text-[var(--text-warning)]">
+                        <AlertTriangle className="size-4 text-[var(--warning)]" />
                         <AlertTitle>{siswaPerluAktivasi.length} Siswa Perlu Aktivasi Manual</AlertTitle>
-                        <AlertDescription className="text-amber-800 dark:text-amber-200">
+                        <AlertDescription className="text-[var(--text-warning)]">
                             <p className="mb-2">
                                 Sudah lunas uang buku dan uang seragam tapi masih berstatus calon -- aktivasi otomatis kemungkinan pernah gagal.
                             </p>

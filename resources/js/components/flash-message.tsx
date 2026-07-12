@@ -35,7 +35,7 @@ export function FlashMessage() {
                 </Alert>
             )}
             {flash.warning && (
-                <Alert className="border-yellow-500/50 bg-yellow-50 text-yellow-800 dark:border-yellow-500/50 dark:bg-yellow-950/40 dark:text-yellow-200">
+                <Alert className="border-[var(--border-warning)] bg-[var(--bg-warning)] text-[var(--text-warning)]">
                     <AlertDescription>{flash.warning}</AlertDescription>
                 </Alert>
             )}

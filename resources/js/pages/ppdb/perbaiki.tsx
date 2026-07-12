@@ -165,9 +165,9 @@ export default function PpdbPerbaiki({ pendaftaran }: { pendaftaran: Pendaftaran
                 <Heading title="Perbaiki Pendaftaran" description={pendaftaran.nomor_pendaftaran} />
 
                 {pendaftaran.catatan_verifikasi && (
-                    <Alert className="border-yellow-500/50 bg-yellow-50 text-yellow-800 dark:border-yellow-500/50 dark:bg-yellow-950/40 dark:text-yellow-200">
+                    <Alert className="border-[var(--border-warning)] bg-[var(--bg-warning)] text-[var(--text-warning)]">
                         <AlertTitle>Catatan dari Staf</AlertTitle>
-                        <AlertDescription className="text-yellow-800 dark:text-yellow-200">{pendaftaran.catatan_verifikasi}</AlertDescription>
+                        <AlertDescription className="text-[var(--text-warning)]">{pendaftaran.catatan_verifikasi}</AlertDescription>
                     </Alert>
                 )}
 
