@@ -1,5 +1,6 @@
 import { EmptyState } from '@/components/empty-state';
 import Heading from '@/components/heading';
+import { MetricCard } from '@/components/metric-card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -9,7 +10,7 @@ import { formatRupiah, formatTanggal } from '@/lib/format';
 import { statusBadgeClass } from '@/lib/status-badge';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link } from '@inertiajs/react';
-import { AlertTriangle } from 'lucide-react';
+import { AlertTriangle, Receipt, Users, Wallet } from 'lucide-react';
 
 type StatusSiswa = 'calon' | 'aktif' | 'alumni' | 'keluar';
 type StatusPendaftaran = 'draft' | 'diajukan' | 'diverifikasi' | 'perlu_perbaikan' | 'diterima' | 'ditolak';
@@ -112,24 +113,9 @@ export default function WaliDashboard({ namaWali, jumlahAnak, jumlahTagihanBelum
                 )}
 
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-                    <Card className="rounded-xl">
-                        <CardContent className="pt-6">
-                            <p className="text-[13px] text-muted-foreground">Total Anak</p>
-                            <p className="mt-1 text-2xl font-medium">{jumlahAnak}</p>
-                        </CardContent>
-                    </Card>
-                    <Card className="rounded-xl">
-                        <CardContent className="pt-6">
-                            <p className="text-[13px] text-muted-foreground">Tagihan Belum Lunas</p>
-                            <p className="mt-1 text-2xl font-medium">{jumlahTagihanBelumLunas}</p>
-                        </CardContent>
-                    </Card>
-                    <Card className="rounded-xl">
-                        <CardContent className="pt-6">
-                            <p className="text-[13px] text-muted-foreground">Total Tunggakan</p>
-                            <p className="mt-1 text-2xl font-medium">{formatRupiah(totalTunggakan)}</p>
-                        </CardContent>
-                    </Card>
+                    <MetricCard icon={Users} tone="blue" label="Total Anak" value={jumlahAnak} />
+                    <MetricCard icon={Receipt} tone="red" label="Tagihan Belum Lunas" value={jumlahTagihanBelumLunas} />
+                    <MetricCard icon={Wallet} tone="gold" label="Total Tunggakan" value={formatRupiah(totalTunggakan)} />
                 </div>
 
                 {anak.length === 0 ? (

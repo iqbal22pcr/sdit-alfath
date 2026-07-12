@@ -1,24 +1,16 @@
 import { EmptyState } from '@/components/empty-state';
 import Heading from '@/components/heading';
-import InputError from '@/components/input-error';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import AppLayout from '@/layouts/app-layout';
 import { formatRupiah, formatTanggal } from '@/lib/format';
 import { statusBadgeClass } from '@/lib/status-badge';
 import { type BreadcrumbItem } from '@/types';
-import { type FormDataConvertible } from '@inertiajs/core';
-import { Head, useForm } from '@inertiajs/react';
-import { FormEventHandler } from 'react';
+import { Head } from '@inertiajs/react';
 
 type StatusTagihan = 'belum_bayar' | 'sebagian' | 'lunas';
 type MetodeTerisi = 'tunai' | 'transfer';
-type Metode = MetodeTerisi | '';
 
 interface PembayaranRow {
     id: number;
@@ -43,14 +35,6 @@ interface TagihanDetail {
     pembayaran: PembayaranRow[];
 }
 
-interface BayarLangsungForm {
-    nominal: string;
-    tanggal_bayar: string;
-    metode: Metode;
-    bukti_transfer: File | null;
-    [key: string]: FormDataConvertible;
-}
-
 const STATUS_LABEL: Record<StatusTagihan, string> = {
     belum_bayar: 'Belum Bayar',
     sebagian: 'Sebagian',
@@ -72,27 +56,9 @@ const breadcrumbs: BreadcrumbItem[] = [
 export default function StafTagihanShow({ tagihan }: { tagihan: TagihanDetail }) {
     const sisa = tagihan.nominal - tagihan.terbayar;
     const jenisMasuk = tagihan.komponen_biaya.jenis === 'masuk';
-    const wajibLunasSekaligus = ! jenisMasuk;
 
     const jatuhTempoTanggal = tagihan.jatuh_tempo ? tagihan.jatuh_tempo.slice(0, 10) : null;
     const terlambat = jenisMasuk && jatuhTempoTanggal !== null && tagihan.status !== 'lunas' && jatuhTempoTanggal < todayInput();
-
-    const bayarForm = useForm<BayarLangsungForm>({
-        nominal: wajibLunasSekaligus ? String(sisa) : '',
-        tanggal_bayar: todayInput(),
-        metode: '',
-        bukti_transfer: null,
-    });
-
-    const submitBayarLangsung: FormEventHandler = (e) => {
-        e.preventDefault();
-        bayarForm.post(route('staf.tagihan.bayar-langsung.store', tagihan.id), {
-            preserveScroll: true,
-            onSuccess: () => bayarForm.reset(),
-        });
-    };
-
-    const bisaBayar = tagihan.status !== 'lunas';
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -132,90 +98,6 @@ export default function StafTagihanShow({ tagihan }: { tagihan: TagihanDetail })
                         )}
                     </CardContent>
                 </Card>
-
-                {bisaBayar ? (
-                    <Card className="rounded-xl">
-                        <CardHeader>
-                            <CardTitle>Bayar Tagihan</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <form onSubmit={submitBayarLangsung} className="flex flex-col gap-4">
-                                <div className="grid gap-2">
-                                    <Label htmlFor="nominal">
-                                        {wajibLunasSekaligus ? 'Nominal (lunas sekaligus, tidak bisa sebagian)' : `Nominal (maks. ${formatRupiah(sisa)})`}
-                                    </Label>
-                                    {wajibLunasSekaligus ? (
-                                        <p className="text-sm font-medium">{formatRupiah(sisa)}</p>
-                                    ) : (
-                                        <Input
-                                            id="nominal"
-                                            type="number"
-                                            min={1}
-                                            max={sisa}
-                                            value={bayarForm.data.nominal}
-                                            onChange={(e) => bayarForm.setData('nominal', e.target.value)}
-                                            className="w-48"
-                                        />
-                                    )}
-                                    <InputError message={bayarForm.errors.nominal} />
-                                </div>
-                                <div className="grid gap-2">
-                                    <Label htmlFor="tanggal_bayar">Tanggal Bayar</Label>
-                                    <Input
-                                        id="tanggal_bayar"
-                                        type="date"
-                                        max={todayInput()}
-                                        value={bayarForm.data.tanggal_bayar}
-                                        onChange={(e) => bayarForm.setData('tanggal_bayar', e.target.value)}
-                                        className="w-48"
-                                    />
-                                    <InputError message={bayarForm.errors.tanggal_bayar} />
-                                </div>
-                                <div className="grid gap-2">
-                                    <Label htmlFor="metode">Metode</Label>
-                                    <Select
-                                        value={bayarForm.data.metode}
-                                        onValueChange={(value) => {
-                                            bayarForm.setData('metode', value as Metode);
-                                            if (value !== 'transfer') {
-                                                bayarForm.setData('bukti_transfer', null);
-                                            }
-                                        }}
-                                    >
-                                        <SelectTrigger id="metode" className="w-48">
-                                            <SelectValue placeholder="Pilih metode" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="tunai">Tunai</SelectItem>
-                                            <SelectItem value="transfer">Transfer</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                    <InputError message={bayarForm.errors.metode} />
-                                </div>
-                                {bayarForm.data.metode === 'transfer' && (
-                                    <div className="grid gap-2">
-                                        <Label htmlFor="bukti_transfer">Bukti Transfer</Label>
-                                        <Input
-                                            id="bukti_transfer"
-                                            type="file"
-                                            accept=".pdf,.jpg,.jpeg,.png"
-                                            onChange={(e) => bayarForm.setData('bukti_transfer', e.target.files?.[0] ?? null)}
-                                            className="w-64"
-                                        />
-                                        <InputError message={bayarForm.errors.bukti_transfer} />
-                                    </div>
-                                )}
-                                <div>
-                                    <Button type="submit" disabled={bayarForm.processing}>
-                                        Catat Pembayaran
-                                    </Button>
-                                </div>
-                            </form>
-                        </CardContent>
-                    </Card>
-                ) : (
-                    <p className="text-sm text-muted-foreground">Tagihan ini sudah lunas.</p>
-                )}
 
                 <Card className="rounded-xl">
                     <CardHeader>

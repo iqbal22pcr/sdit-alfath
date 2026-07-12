@@ -109,13 +109,18 @@
     --chart-5: hsl(209, 14.6%, 41.8%); /* slate */
     --radius: 0.5rem;
     --gold: hsl(35.5, 72%, 42%); /* #B8791E - deepened from sampled logo orange #FC7E24, used sparingly */
-    --sidebar-background: hsl(209.4, 77.8%, 37.1%); /* #1560A8, same as primary */
-    --sidebar-foreground: hsl(211.8, 68%, 95.1%); /* #EAF2FB - 5.68:1 on sidebar-background */
-    --sidebar-primary: hsl(0, 0%, 100%); /* #FFFFFF - white chip behind logo mark */
-    --sidebar-primary-foreground: hsl(210, 37.5%, 12.5%); /* #14202C */
-    --sidebar-accent: hsl(210.9, 52.8%, 48.2%); /* #3A79BC - hover/active tint */
-    --sidebar-accent-foreground: hsl(0, 0%, 100%); /* #FFFFFF - 4.52:1 on sidebar-accent */
-    --sidebar-border: hsl(209, 81.1%, 29%); /* #0E4C86 */
+    /* Sidebar now mirrors the neutral card/page surface instead of a
+       solid brand-navy fill (admin-dashboard-template direction) --
+       this is what makes the active nav item's primary/10 tint +
+       primary text actually readable; on the old navy fill, primary
+       text was nearly invisible since sidebar-background === primary. */
+    --sidebar-background: hsl(0, 0%, 100%); /* #FFFFFF, matches --card */
+    --sidebar-foreground: hsl(210, 37.5%, 12.5%); /* #14202C, matches --foreground */
+    --sidebar-primary: hsl(209.4, 77.8%, 37.1%); /* #1560A8, matches --primary - logo chip bg */
+    --sidebar-primary-foreground: hsl(0, 0%, 100%); /* #FFFFFF, matches --primary-foreground */
+    --sidebar-accent: hsl(210, 41.2%, 93.3%); /* #E7EEF5, matches --accent - neutral hover tint */
+    --sidebar-accent-foreground: hsl(210, 37.5%, 12.5%); /* #14202C, matches --accent-foreground */
+    --sidebar-border: hsl(212.7, 18.6%, 88.4%); /* #DCE1E7, matches --border */
     --sidebar-ring: hsl(35.5, 72%, 42%); /* gold */
 }
 
@@ -140,18 +145,23 @@
     --input: hsl(210.7, 41.7%, 20.2%); /* #1E3349 */
     --ring: hsl(209.4, 77.8%, 44.5%); /* #1973CA */
     --chart-1: hsl(209.4, 77.8%, 44.5%); /* blue */
-    --chart-2: hsl(36.5, 65.1%, 53.9%); /* gold */
+    /* chart-2/chart-4 are deliberately deeper than --gold/text-amber
+       tones: this pair is a large-area chart FILL (donut/bar), and the
+       brighter values used for small text/borders elsewhere sit above
+       the ~0.48-0.67 OKLCH lightness band a dark-surface chart mark
+       needs to read as a solid color instead of a washed-out tint. */
+    --chart-2: hsl(36.5, 65%, 42%); /* gold, deepened for chart fill on dark surface */
     --chart-3: hsl(151.9, 60%, 38%); /* green, brightened for dark bg */
-    --chart-4: hsl(26, 85%, 50%); /* amber, brightened for dark bg */
-    --chart-5: hsl(209.2, 21.3%, 64.1%); /* slate */
+    --chart-4: hsl(26, 85%, 40%); /* amber, deepened for chart fill on dark surface */
+    --chart-5: hsl(209.2, 21.3%, 64.1%); /* slate - intentionally muted, used only as a neutral/"other" chart color */
     --gold: hsl(36.5, 65.1%, 53.9%); /* #D69A3D - brightened for dark-bg legibility */
-    --sidebar-background: hsl(208.9, 75.2%, 22.2%); /* #0E3A63 - deep navy, distinct from page background */
-    --sidebar-foreground: hsl(211.2, 55.6%, 91.2%); /* #DCE8F5 - 9.37:1 on sidebar-background */
-    --sidebar-primary: hsl(0, 0%, 100%); /* #FFFFFF - white chip behind logo mark */
-    --sidebar-primary-foreground: hsl(210, 37.5%, 12.5%); /* #14202C */
-    --sidebar-accent: hsl(209.3, 64.5%, 24.3%); /* #163F66 - hover/active tint */
-    --sidebar-accent-foreground: hsl(0, 0%, 100%); /* #FFFFFF - 10.84:1 on sidebar-accent */
-    --sidebar-border: hsl(209.5, 64.4%, 19.8%); /* #123353 */
+    --sidebar-background: hsl(209, 49.2%, 12.4%); /* #10202F, matches --card */
+    --sidebar-foreground: hsl(210, 41.2%, 93.3%); /* #E7EEF5, matches --foreground */
+    --sidebar-primary: hsl(209.4, 77.8%, 44.5%); /* #1973CA, matches --primary - logo chip bg */
+    --sidebar-primary-foreground: hsl(0, 0%, 100%); /* #FFFFFF */
+    --sidebar-accent: hsl(209.3, 43.4%, 19.4%); /* #1C3247, matches --accent - neutral hover tint */
+    --sidebar-accent-foreground: hsl(210, 41.2%, 93.3%); /* #E7EEF5, matches --accent-foreground */
+    --sidebar-border: hsl(210.7, 41.7%, 20.2%); /* #1E3349, matches --border */
     --sidebar-ring: hsl(36.5, 65.1%, 53.9%); /* gold */
 }
 

@@ -31,8 +31,40 @@ class TagihanController extends Controller
             ->latest()
             ->get(['id', 'siswa_id', 'komponen_biaya_id', 'nomor_tagihan', 'nominal', 'terbayar', 'status', 'created_at']);
 
+        // Fixed orders (not the raw groupBy result) so chart segments stay
+        // in the same sequence regardless of which statuses/jenis happen
+        // to have rows right now.
+        $statusUrutan = ['belum_bayar', 'sebagian', 'lunas'];
+
+        $jumlahPerStatus = Tagihan::selectRaw('status, count(*) as total')
+            ->groupBy('status')
+            ->pluck('total', 'status');
+
+        $statusBreakdown = collect($statusUrutan)
+            ->map(fn (string $status) => [
+                'name' => $status,
+                'value' => $jumlahPerStatus->get($status, 0),
+            ])
+            ->values();
+
+        $jenisUrutan = ['masuk', 'buku', 'seragam', 'spp'];
+
+        $nominalPerJenis = Tagihan::join('komponen_biaya', 'komponen_biaya.id', '=', 'tagihan.komponen_biaya_id')
+            ->selectRaw('komponen_biaya.jenis as jenis, sum(tagihan.nominal) as total')
+            ->groupBy('komponen_biaya.jenis')
+            ->pluck('total', 'jenis');
+
+        $nominalPerJenisBreakdown = collect($jenisUrutan)
+            ->map(fn (string $jenis) => [
+                'name' => $jenis,
+                'value' => (int) $nominalPerJenis->get($jenis, 0),
+            ])
+            ->values();
+
         return Inertia::render('staf/tagihan-index', [
             'tagihan' => $tagihan,
+            'statusBreakdown' => $statusBreakdown,
+            'nominalPerJenis' => $nominalPerJenisBreakdown,
         ]);
     }
 
@@ -98,7 +130,7 @@ class TagihanController extends Controller
             $this->cobaAktivasiOtomatis($tagihan);
         });
 
-        return to_route('staf.tagihan.show', $tagihan)->with('success', 'Pembayaran berhasil dicatat.');
+        return to_route('staf.tagihan.index')->with('success', 'Pembayaran berhasil dicatat.');
     }
 
     /**

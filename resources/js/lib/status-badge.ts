@@ -38,3 +38,19 @@ export function statusBadgeClass(status: string): string {
     const tone = STATUS_TONE[status] ?? 'gray';
     return TONE_CLASSES[tone];
 }
+
+// Chart fill colors share the same status -> tone mapping as the badges
+// above, so a donut/bar segment for a given status always matches the
+// color of that status's badge elsewhere on the same page.
+const TONE_CHART_COLOR: Record<StatusTone, string> = {
+    gray: 'var(--muted-foreground)',
+    blue: 'var(--chart-1)',
+    amber: 'var(--chart-4)',
+    green: 'var(--chart-3)',
+    red: 'var(--destructive)',
+};
+
+export function statusChartColor(status: string): string {
+    const tone = STATUS_TONE[status] ?? 'gray';
+    return TONE_CHART_COLOR[tone];
+}

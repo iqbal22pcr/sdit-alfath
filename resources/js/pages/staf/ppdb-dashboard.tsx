@@ -1,3 +1,4 @@
+import { DonutChart, type DonutSlice } from '@/components/charts/donut-chart';
 import { EmptyState } from '@/components/empty-state';
 import Heading from '@/components/heading';
 import { Badge } from '@/components/ui/badge';
@@ -7,10 +8,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import AppLayout from '@/layouts/app-layout';
 import { formatTanggal } from '@/lib/format';
-import { statusBadgeClass } from '@/lib/status-badge';
+import { statusBadgeClass, statusChartColor } from '@/lib/status-badge';
 import { cn } from '@/lib/utils';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link } from '@inertiajs/react';
+import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { useMemo, useState } from 'react';
 
 type Status = 'draft' | 'diajukan' | 'diverifikasi' | 'perlu_perbaikan' | 'diterima' | 'ditolak';
@@ -20,6 +22,11 @@ interface KuotaKategoriSummary {
     total: number;
     terpakai: number;
     sisa: number;
+}
+
+interface StatusBreakdownRow {
+    name: Status;
+    value: number;
 }
 
 interface PendaftaranRow {
@@ -46,10 +53,12 @@ const breadcrumbs: BreadcrumbItem[] = [{ title: 'Dashboard PPDB', href: '/staf/p
 export default function StafPpdbDashboard({
     gelombang,
     kuotaPerKategori,
+    statusBreakdown,
     pendaftaran,
 }: {
     gelombang: { id: number; nama: string } | null;
     kuotaPerKategori: KuotaKategoriSummary[];
+    statusBreakdown: StatusBreakdownRow[];
     pendaftaran: PendaftaranRow[];
 }) {
     const [statusFilter, setStatusFilter] = useState<Status | 'semua'>('semua');
@@ -83,6 +92,39 @@ export default function StafPpdbDashboard({
 
             <div className="flex flex-col gap-6 p-4">
                 <Heading title="Dashboard PPDB" description={`Gelombang: ${gelombang.nama}`} />
+
+                <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                    <Card className="rounded-xl">
+                        <CardHeader>
+                            <CardTitle className="text-base">Breakdown Status Pendaftaran</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <DonutChart
+                                data={statusBreakdown.map((row) => ({
+                                    key: row.name,
+                                    label: STATUS_LABEL[row.name],
+                                    value: row.value,
+                                    color: statusChartColor(row.name),
+                                }))}
+                            />
+                        </CardContent>
+                    </Card>
+
+                    <Card className="rounded-xl">
+                        <CardHeader>
+                            <CardTitle className="text-base">Kuota Terpakai vs Sisa per Kategori</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            {kuotaPerKategori.length === 0 ? (
+                                <p className="flex h-48 items-center justify-center text-sm text-muted-foreground">
+                                    Belum ada kuota yang diatur untuk gelombang ini.
+                                </p>
+                            ) : (
+                                <KuotaBarChart data={kuotaPerKategori} />
+                            )}
+                        </CardContent>
+                    </Card>
+                </div>
 
                 <div>
                     <h2 className="mb-3 text-sm font-medium text-muted-foreground">Status Kuota per Kategori</h2>
@@ -168,6 +210,58 @@ export default function StafPpdbDashboard({
                 </div>
             </div>
         </AppLayout>
+    );
+}
+
+function KuotaBarTooltip({ active, payload }: { active?: boolean; payload?: Array<{ payload: KuotaKategoriSummary }> }) {
+    if (!active || !payload?.length) return null;
+
+    const row = payload[0].payload;
+
+    return (
+        <div className="rounded-lg border bg-popover px-3 py-2 text-sm text-popover-foreground shadow-md">
+            <p className="font-medium">{row.kategori}</p>
+            <p className="text-muted-foreground">
+                Terpakai: <span className="font-medium text-foreground">{row.terpakai}</span>
+            </p>
+            <p className="text-muted-foreground">
+                Sisa: <span className="font-medium text-foreground">{row.sisa}</span>
+            </p>
+        </div>
+    );
+}
+
+function KuotaBarChart({ data }: { data: KuotaKategoriSummary[] }) {
+    return (
+        <div className="flex flex-col gap-3">
+            <ResponsiveContainer width="100%" height={Math.max(160, data.length * 48)}>
+                <BarChart data={data} layout="vertical" margin={{ top: 4, right: 16, bottom: 4, left: 4 }}>
+                    <XAxis type="number" hide />
+                    <YAxis
+                        type="category"
+                        dataKey="kategori"
+                        width={96}
+                        tickLine={false}
+                        axisLine={false}
+                        tick={{ fill: 'var(--muted-foreground)', fontSize: 12 }}
+                    />
+                    <Tooltip content={<KuotaBarTooltip />} cursor={{ fill: 'var(--accent)' }} />
+                    <Bar dataKey="terpakai" stackId="kuota" fill="var(--chart-1)" radius={[4, 0, 0, 4]} barSize={20} isAnimationActive={false} />
+                    <Bar dataKey="sisa" stackId="kuota" fill="var(--chart-5)" radius={[0, 4, 4, 0]} barSize={20} isAnimationActive={false} />
+                </BarChart>
+            </ResponsiveContainer>
+
+            <div className="flex flex-wrap gap-4 text-sm">
+                <span className="flex items-center gap-2">
+                    <span className="size-2.5 shrink-0 rounded-full" style={{ backgroundColor: 'var(--chart-1)' }} />
+                    Terpakai
+                </span>
+                <span className="flex items-center gap-2">
+                    <span className="size-2.5 shrink-0 rounded-full" style={{ backgroundColor: 'var(--chart-5)' }} />
+                    Sisa
+                </span>
+            </div>
+        </div>
     );
 }
 
