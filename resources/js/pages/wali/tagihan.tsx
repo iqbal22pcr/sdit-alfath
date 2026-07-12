@@ -30,6 +30,7 @@ const STATUS_LABEL: Record<StatusTagihan, string> = {
 const breadcrumbs: BreadcrumbItem[] = [{ title: 'Tagihan', href: '/wali/tagihan' }];
 
 export default function WaliTagihanIndex({ tagihan }: { tagihan: TagihanRow[] }) {
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Tagihan" />

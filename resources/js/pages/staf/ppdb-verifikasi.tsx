@@ -129,7 +129,7 @@ export default function StafPpdbVerifikasi({
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title={`Verifikasi ${pendaftaran.nomor_pendaftaran}`} />
 
-            <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 p-4">
+            <div className="flex w-full flex-col gap-6 p-4">
                 <div className="flex items-center justify-between">
                     <Heading title={pendaftaran.nomor_pendaftaran} description={`Gelombang: ${pendaftaran.gelombang_ppdb.nama}`} />
                     <Badge variant="outline" className={statusBadgeClass(pendaftaran.status)}>
@@ -137,16 +137,16 @@ export default function StafPpdbVerifikasi({
                     </Badge>
                 </div>
 
-                <Card>
+                <Card className="rounded-xl">
                     <CardHeader>
                         <CardTitle>Data Anak</CardTitle>
                     </CardHeader>
-                    <CardContent className="grid grid-cols-2 gap-x-4 gap-y-3 text-sm">
+                    <CardContent className="grid grid-cols-1 gap-x-4 gap-y-3 text-sm sm:grid-cols-3">
                         <Field label="Nama Lengkap" value={pendaftaran.nama_pendaftar} />
                         <Field label="Akun Wali (Login)" value={`${pendaftaran.user.name} (${pendaftaran.user.email})`} />
                         <Field label="Tempat, Tanggal Lahir" value={`${pendaftaran.tempat_lahir}, ${formatTanggal(pendaftaran.tanggal_lahir)}`} />
                         <Field label="Jenis Kelamin" value={JENIS_KELAMIN_LABEL[pendaftaran.jenis_kelamin]} />
-                        <Field label="Alamat" value={pendaftaran.alamat} className="col-span-2" />
+                        <Field label="Alamat" value={pendaftaran.alamat} className="sm:col-span-2" />
                         <Field label="Status Ayah" value={STATUS_AYAH_LABEL[pendaftaran.status_ayah]} />
                         <Field label="Penghasilan Tetap" value={pendaftaran.penghasilan_tetap ? 'Ya' : 'Tidak'} />
                         <Field
@@ -158,7 +158,7 @@ export default function StafPpdbVerifikasi({
                     </CardContent>
                 </Card>
 
-                <Card>
+                <Card className="rounded-xl">
                     <CardHeader>
                         <CardTitle>Data Wali</CardTitle>
                     </CardHeader>
@@ -175,7 +175,7 @@ export default function StafPpdbVerifikasi({
                     </CardContent>
                 </Card>
 
-                <Card>
+                <Card className="rounded-xl">
                     <CardHeader>
                         <CardTitle>Dokumen</CardTitle>
                     </CardHeader>
@@ -200,7 +200,7 @@ export default function StafPpdbVerifikasi({
                 </Card>
 
                 {statusFinal ? (
-                    <Card>
+                    <Card className="rounded-xl">
                         <CardHeader>
                             <CardTitle>Status Verifikasi</CardTitle>
                         </CardHeader>
@@ -218,7 +218,7 @@ export default function StafPpdbVerifikasi({
                         </CardContent>
                     </Card>
                 ) : (
-                    <Card>
+                    <Card className="rounded-xl">
                         <CardHeader>
                             <CardTitle>Aksi Verifikasi</CardTitle>
                         </CardHeader>

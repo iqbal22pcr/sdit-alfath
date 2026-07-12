@@ -10,8 +10,8 @@ export default function PpdbBelumDibuka() {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="PPDB Belum Dibuka" />
 
-            <div className="mx-auto w-full max-w-xl p-4">
-                <Card>
+            <div className="flex w-full flex-col gap-4 p-4">
+                <Card className="rounded-xl">
                     <CardHeader>
                         <CardTitle>PPDB Belum Dibuka</CardTitle>
                         <CardDescription>

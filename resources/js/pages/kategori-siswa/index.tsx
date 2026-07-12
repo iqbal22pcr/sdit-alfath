@@ -146,7 +146,7 @@ export default function KategoriSiswaIndex({ kategoriSiswa }: { kategoriSiswa: K
 
                                 <DialogFooter>
                                     <DialogClose asChild>
-                                        <Button type="button" variant="secondary">
+                                        <Button type="button" variant="outline">
                                             Batal
                                         </Button>
                                     </DialogClose>
@@ -251,7 +251,7 @@ export default function KategoriSiswaIndex({ kategoriSiswa }: { kategoriSiswa: K
 
                         <DialogFooter>
                             <DialogClose asChild>
-                                <Button type="button" variant="secondary">
+                                <Button type="button" variant="outline">
                                     Batal
                                 </Button>
                             </DialogClose>
@@ -275,7 +275,7 @@ export default function KategoriSiswaIndex({ kategoriSiswa }: { kategoriSiswa: K
 
                     <DialogFooter>
                         <DialogClose asChild>
-                            <Button type="button" variant="secondary">
+                            <Button type="button" variant="outline">
                                 Batal
                             </Button>
                         </DialogClose>

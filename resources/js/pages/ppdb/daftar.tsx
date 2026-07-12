@@ -1,5 +1,6 @@
 import Heading from '@/components/heading';
 import InputError from '@/components/input-error';
+import { Stepper } from '@/components/stepper';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -247,16 +248,16 @@ export default function PpdbDaftar({ gelombang }: { gelombang: { id: number; nam
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Pendaftaran PPDB" />
 
-            <form onSubmit={submit} className="mx-auto flex w-full max-w-3xl flex-col gap-6 p-4">
+            <form onSubmit={submit} className="flex w-full flex-col gap-4 p-4">
                 <Heading title="Formulir Pendaftaran PPDB" description={`Gelombang: ${gelombang.nama}`} />
 
-                <p className="text-sm font-medium text-muted-foreground">
-                    Langkah {step} dari 2: {step === 1 ? 'Data & Akun' : 'Upload Dokumen'}
-                </p>
+                <div className="max-w-md py-2">
+                    <Stepper steps={['Data & Akun', 'Upload Dokumen']} currentStep={step} />
+                </div>
 
                 {step === 1 && (
                     <>
-                        <Card>
+                        <Card className="rounded-xl">
                             <CardHeader>
                                 <CardTitle>1. Data Anak</CardTitle>
                                 <CardDescription>Data diri calon siswa yang didaftarkan.</CardDescription>
@@ -317,58 +318,60 @@ export default function PpdbDaftar({ gelombang }: { gelombang: { id: number; nam
                             </CardContent>
                         </Card>
 
-                        <Card>
+                        <Card className="rounded-xl">
                             <CardHeader>
                                 <CardTitle>2. Kondisi Keluarga</CardTitle>
                                 <CardDescription>Dipakai untuk menentukan kategori dan dokumen pendukung yang dibutuhkan.</CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-4">
-                                <div className="grid gap-2">
-                                    <Label htmlFor="status-ayah">Status Ayah</Label>
-                                    <Select value={form.data.status_ayah} onValueChange={(value) => form.setData('status_ayah', value as never)}>
-                                        <SelectTrigger id="status-ayah">
-                                            <SelectValue placeholder="Pilih status ayah" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="hidup">Hidup</SelectItem>
-                                            <SelectItem value="meninggal">Meninggal</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                    <InputError message={fieldError('status_ayah')} />
-                                </div>
+                                <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                                    <div className="grid gap-2">
+                                        <Label htmlFor="status-ayah">Status Ayah</Label>
+                                        <Select value={form.data.status_ayah} onValueChange={(value) => form.setData('status_ayah', value as never)}>
+                                            <SelectTrigger id="status-ayah">
+                                                <SelectValue placeholder="Pilih status ayah" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="hidup">Hidup</SelectItem>
+                                                <SelectItem value="meninggal">Meninggal</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                        <InputError message={fieldError('status_ayah')} />
+                                    </div>
 
-                                <div className="grid gap-2">
-                                    <Label htmlFor="penghasilan-tetap">Apakah orang tua memiliki penghasilan tetap?</Label>
-                                    <Select
-                                        value={form.data.penghasilan_tetap}
-                                        onValueChange={(value) => form.setData('penghasilan_tetap', value as never)}
-                                    >
-                                        <SelectTrigger id="penghasilan-tetap">
-                                            <SelectValue placeholder="Pilih jawaban" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="1">Ya</SelectItem>
-                                            <SelectItem value="0">Tidak</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                    <InputError message={fieldError('penghasilan_tetap')} />
-                                </div>
+                                    <div className="grid gap-2">
+                                        <Label htmlFor="penghasilan-tetap">Apakah orang tua memiliki penghasilan tetap?</Label>
+                                        <Select
+                                            value={form.data.penghasilan_tetap}
+                                            onValueChange={(value) => form.setData('penghasilan_tetap', value as never)}
+                                        >
+                                            <SelectTrigger id="penghasilan-tetap">
+                                                <SelectValue placeholder="Pilih jawaban" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="1">Ya</SelectItem>
+                                                <SelectItem value="0">Tidak</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                        <InputError message={fieldError('penghasilan_tetap')} />
+                                    </div>
 
-                                <div className="grid gap-2">
-                                    <Label htmlFor="punya-saudara-di-sekolah">Apakah punya saudara kandung di sekolah ini?</Label>
-                                    <Select
-                                        value={form.data.punya_saudara_di_sekolah}
-                                        onValueChange={(value) => form.setData('punya_saudara_di_sekolah', value as never)}
-                                    >
-                                        <SelectTrigger id="punya-saudara-di-sekolah">
-                                            <SelectValue placeholder="Pilih jawaban" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="1">Ya</SelectItem>
-                                            <SelectItem value="0">Tidak</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                    <InputError message={fieldError('punya_saudara_di_sekolah')} />
+                                    <div className="grid gap-2">
+                                        <Label htmlFor="punya-saudara-di-sekolah">Apakah punya saudara kandung di sekolah ini?</Label>
+                                        <Select
+                                            value={form.data.punya_saudara_di_sekolah}
+                                            onValueChange={(value) => form.setData('punya_saudara_di_sekolah', value as never)}
+                                        >
+                                            <SelectTrigger id="punya-saudara-di-sekolah">
+                                                <SelectValue placeholder="Pilih jawaban" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="1">Ya</SelectItem>
+                                                <SelectItem value="0">Tidak</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                        <InputError message={fieldError('punya_saudara_di_sekolah')} />
+                                    </div>
                                 </div>
 
                                 {form.data.punya_saudara_di_sekolah === '1' && (
@@ -385,7 +388,7 @@ export default function PpdbDaftar({ gelombang }: { gelombang: { id: number; nam
                             </CardContent>
                         </Card>
 
-                        <Card>
+                        <Card className="rounded-xl">
                             <CardHeader>
                                 <CardTitle>3. Data Wali</CardTitle>
                                 <CardDescription>Minimal satu wali (ayah, ibu, atau wali lainnya).</CardDescription>
@@ -458,25 +461,25 @@ export default function PpdbDaftar({ gelombang }: { gelombang: { id: number; nam
                             </CardContent>
                         </Card>
 
-                        <Card>
+                        <Card className="rounded-xl">
                             <CardHeader>
                                 <CardTitle>4. Buat Akun untuk Anak</CardTitle>
                                 <CardDescription>Dipakai anak untuk login ke akun akademiknya sendiri nanti.</CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-4">
-                                <div className="grid gap-2">
-                                    <Label htmlFor="username-siswa">Username</Label>
-                                    <Input
-                                        id="username-siswa"
-                                        value={form.data.username_siswa}
-                                        onChange={(e) => form.setData('username_siswa', e.target.value)}
-                                        autoComplete="off"
-                                        placeholder="mis. budi2026"
-                                    />
-                                    <InputError message={fieldError('username_siswa')} />
-                                </div>
+                                <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                                    <div className="grid gap-2">
+                                        <Label htmlFor="username-siswa">Username</Label>
+                                        <Input
+                                            id="username-siswa"
+                                            value={form.data.username_siswa}
+                                            onChange={(e) => form.setData('username_siswa', e.target.value)}
+                                            autoComplete="off"
+                                            placeholder="mis. budi2026"
+                                        />
+                                        <InputError message={fieldError('username_siswa')} />
+                                    </div>
 
-                                <div className="grid grid-cols-2 gap-4">
                                     <div className="grid gap-2">
                                         <Label htmlFor="password-siswa">Password</Label>
                                         <Input
@@ -514,7 +517,7 @@ export default function PpdbDaftar({ gelombang }: { gelombang: { id: number; nam
 
                 {step === 2 && (
                     <>
-                        <Card>
+                        <Card className="rounded-xl">
                             <CardHeader>
                                 <CardTitle>5. Upload Dokumen</CardTitle>
                                 <CardDescription>Format PDF, JPG, atau PNG, maksimal 2MB per file.</CardDescription>

@@ -98,7 +98,7 @@ export default function StafTagihanShow({ tagihan }: { tagihan: TagihanDetail })
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title={`Tagihan ${tagihan.nomor_tagihan}`} />
 
-            <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 p-4">
+            <div className="flex w-full flex-col gap-6 p-4">
                 <div className="flex items-center justify-between">
                     <Heading title={tagihan.nomor_tagihan} description={`${tagihan.siswa.nama} (${tagihan.siswa.nis})`} />
                     <Badge variant="outline" className={statusBadgeClass(tagihan.status)}>
@@ -106,11 +106,11 @@ export default function StafTagihanShow({ tagihan }: { tagihan: TagihanDetail })
                     </Badge>
                 </div>
 
-                <Card>
+                <Card className="rounded-xl">
                     <CardHeader>
                         <CardTitle>Detail Tagihan</CardTitle>
                     </CardHeader>
-                    <CardContent className="grid grid-cols-2 gap-x-4 gap-y-3 text-sm">
+                    <CardContent className="grid grid-cols-1 gap-x-4 gap-y-3 text-sm sm:grid-cols-3">
                         <Field label="Komponen Biaya" value={tagihan.komponen_biaya.nama} />
                         <Field label="Tahun Tagihan" value={String(tagihan.tahun_tagihan)} />
                         <Field label="Bulan Tagihan" value={tagihan.bulan_tagihan ? String(tagihan.bulan_tagihan) : '-'} />
@@ -134,7 +134,7 @@ export default function StafTagihanShow({ tagihan }: { tagihan: TagihanDetail })
                 </Card>
 
                 {bisaBayar ? (
-                    <Card>
+                    <Card className="rounded-xl">
                         <CardHeader>
                             <CardTitle>Bayar Tagihan</CardTitle>
                         </CardHeader>
@@ -217,7 +217,7 @@ export default function StafTagihanShow({ tagihan }: { tagihan: TagihanDetail })
                     <p className="text-sm text-muted-foreground">Tagihan ini sudah lunas.</p>
                 )}
 
-                <Card>
+                <Card className="rounded-xl">
                     <CardHeader>
                         <CardTitle>Riwayat Pembayaran</CardTitle>
                     </CardHeader>

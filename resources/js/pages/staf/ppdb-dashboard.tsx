@@ -10,8 +10,8 @@ import { formatTanggal } from '@/lib/format';
 import { statusBadgeClass } from '@/lib/status-badge';
 import { cn } from '@/lib/utils';
 import { type BreadcrumbItem } from '@/types';
-import { Head, Link, router } from '@inertiajs/react';
-import { useEffect, useMemo, useState } from 'react';
+import { Head, Link } from '@inertiajs/react';
+import { useMemo, useState } from 'react';
 
 type Status = 'draft' | 'diajukan' | 'diverifikasi' | 'perlu_perbaikan' | 'diterima' | 'ditolak';
 
@@ -53,23 +53,6 @@ export default function StafPpdbDashboard({
     pendaftaran: PendaftaranRow[];
 }) {
     const [statusFilter, setStatusFilter] = useState<Status | 'semua'>('semua');
-
-    // Browsers restore this page from the back-forward cache (bfcache)
-    // on browser-back navigation instead of hitting the server, which
-    // would otherwise show stale kuota/pendaftaran data from before a
-    // verifikasi action. The "pageshow" event with persisted === true
-    // fires specifically on that bfcache restore, so force an Inertia
-    // reload to fetch fresh props at that moment.
-    useEffect(() => {
-        const handlePageShow = (event: PageTransitionEvent) => {
-            if (event.persisted) {
-                router.reload();
-            }
-        };
-
-        window.addEventListener('pageshow', handlePageShow);
-        return () => window.removeEventListener('pageshow', handlePageShow);
-    }, []);
 
     const filteredPendaftaran = useMemo(
         () => (statusFilter === 'semua' ? pendaftaran : pendaftaran.filter((p) => p.status === statusFilter)),

@@ -141,7 +141,7 @@ export default function GelombangPpdbIndex({ gelombangPpdb, tahunAjaran }: { gel
 
                                 <DialogFooter>
                                     <DialogClose asChild>
-                                        <Button type="button" variant="secondary">
+                                        <Button type="button" variant="outline">
                                             Batal
                                         </Button>
                                     </DialogClose>
@@ -232,7 +232,7 @@ export default function GelombangPpdbIndex({ gelombangPpdb, tahunAjaran }: { gel
 
                         <DialogFooter>
                             <DialogClose asChild>
-                                <Button type="button" variant="secondary">
+                                <Button type="button" variant="outline">
                                     Batal
                                 </Button>
                             </DialogClose>
@@ -257,7 +257,7 @@ export default function GelombangPpdbIndex({ gelombangPpdb, tahunAjaran }: { gel
 
                     <DialogFooter>
                         <DialogClose asChild>
-                            <Button type="button" variant="secondary">
+                            <Button type="button" variant="outline">
                                 Batal
                             </Button>
                         </DialogClose>

@@ -4,8 +4,8 @@ const TONE_CLASSES: Record<StatusTone, string> = {
     gray: 'border-transparent bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300',
     blue: 'border-transparent bg-blue-50 text-blue-900 dark:bg-blue-950 dark:text-blue-200',
     amber: 'border-transparent bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300',
-    green: 'border-transparent bg-green-100 text-[#157347] dark:bg-green-950 dark:text-green-300',
-    red: 'border-transparent bg-red-100 text-[#B42318] dark:bg-red-950 dark:text-red-300',
+    green: 'border-transparent bg-green-100 text-green-800 dark:bg-green-950 dark:text-green-300',
+    red: 'border-transparent bg-red-100 text-red-800 dark:bg-red-950 dark:text-red-300',
 };
 
 const STATUS_TONE: Record<string, StatusTone> = {

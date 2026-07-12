@@ -161,7 +161,7 @@ export default function PpdbPerbaiki({ pendaftaran }: { pendaftaran: Pendaftaran
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title={`Perbaiki ${pendaftaran.nomor_pendaftaran}`} />
 
-            <form onSubmit={submit} className="mx-auto flex w-full max-w-3xl flex-col gap-6 p-4">
+            <form onSubmit={submit} className="flex w-full flex-col gap-4 p-4">
                 <Heading title="Perbaiki Pendaftaran" description={pendaftaran.nomor_pendaftaran} />
 
                 {pendaftaran.catatan_verifikasi && (
@@ -171,7 +171,7 @@ export default function PpdbPerbaiki({ pendaftaran }: { pendaftaran: Pendaftaran
                     </Alert>
                 )}
 
-                <Card>
+                <Card className="rounded-xl">
                     <CardHeader>
                         <CardTitle>1. Data Anak</CardTitle>
                         <CardDescription>Data diri calon siswa yang didaftarkan.</CardDescription>
@@ -232,58 +232,60 @@ export default function PpdbPerbaiki({ pendaftaran }: { pendaftaran: Pendaftaran
                     </CardContent>
                 </Card>
 
-                <Card>
+                <Card className="rounded-xl">
                     <CardHeader>
                         <CardTitle>2. Kondisi Keluarga</CardTitle>
                         <CardDescription>Dipakai untuk menentukan kategori dan dokumen pendukung yang dibutuhkan.</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                        <div className="grid gap-2">
-                            <Label htmlFor="status-ayah">Status Ayah</Label>
-                            <Select value={form.data.status_ayah} onValueChange={(value) => form.setData('status_ayah', value as never)}>
-                                <SelectTrigger id="status-ayah">
-                                    <SelectValue placeholder="Pilih status ayah" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="hidup">Hidup</SelectItem>
-                                    <SelectItem value="meninggal">Meninggal</SelectItem>
-                                </SelectContent>
-                            </Select>
-                            <InputError message={form.errors.status_ayah} />
-                        </div>
+                        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                            <div className="grid gap-2">
+                                <Label htmlFor="status-ayah">Status Ayah</Label>
+                                <Select value={form.data.status_ayah} onValueChange={(value) => form.setData('status_ayah', value as never)}>
+                                    <SelectTrigger id="status-ayah">
+                                        <SelectValue placeholder="Pilih status ayah" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="hidup">Hidup</SelectItem>
+                                        <SelectItem value="meninggal">Meninggal</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                                <InputError message={form.errors.status_ayah} />
+                            </div>
 
-                        <div className="grid gap-2">
-                            <Label htmlFor="penghasilan-tetap">Apakah orang tua memiliki penghasilan tetap?</Label>
-                            <Select
-                                value={form.data.penghasilan_tetap}
-                                onValueChange={(value) => form.setData('penghasilan_tetap', value as never)}
-                            >
-                                <SelectTrigger id="penghasilan-tetap">
-                                    <SelectValue placeholder="Pilih jawaban" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="1">Ya</SelectItem>
-                                    <SelectItem value="0">Tidak</SelectItem>
-                                </SelectContent>
-                            </Select>
-                            <InputError message={form.errors.penghasilan_tetap} />
-                        </div>
+                            <div className="grid gap-2">
+                                <Label htmlFor="penghasilan-tetap">Apakah orang tua memiliki penghasilan tetap?</Label>
+                                <Select
+                                    value={form.data.penghasilan_tetap}
+                                    onValueChange={(value) => form.setData('penghasilan_tetap', value as never)}
+                                >
+                                    <SelectTrigger id="penghasilan-tetap">
+                                        <SelectValue placeholder="Pilih jawaban" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="1">Ya</SelectItem>
+                                        <SelectItem value="0">Tidak</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                                <InputError message={form.errors.penghasilan_tetap} />
+                            </div>
 
-                        <div className="grid gap-2">
-                            <Label htmlFor="punya-saudara-di-sekolah">Apakah punya saudara kandung di sekolah ini?</Label>
-                            <Select
-                                value={form.data.punya_saudara_di_sekolah}
-                                onValueChange={(value) => form.setData('punya_saudara_di_sekolah', value as never)}
-                            >
-                                <SelectTrigger id="punya-saudara-di-sekolah">
-                                    <SelectValue placeholder="Pilih jawaban" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="1">Ya</SelectItem>
-                                    <SelectItem value="0">Tidak</SelectItem>
-                                </SelectContent>
-                            </Select>
-                            <InputError message={form.errors.punya_saudara_di_sekolah} />
+                            <div className="grid gap-2">
+                                <Label htmlFor="punya-saudara-di-sekolah">Apakah punya saudara kandung di sekolah ini?</Label>
+                                <Select
+                                    value={form.data.punya_saudara_di_sekolah}
+                                    onValueChange={(value) => form.setData('punya_saudara_di_sekolah', value as never)}
+                                >
+                                    <SelectTrigger id="punya-saudara-di-sekolah">
+                                        <SelectValue placeholder="Pilih jawaban" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="1">Ya</SelectItem>
+                                        <SelectItem value="0">Tidak</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                                <InputError message={form.errors.punya_saudara_di_sekolah} />
+                            </div>
                         </div>
 
                         {form.data.punya_saudara_di_sekolah === '1' && (
@@ -300,7 +302,7 @@ export default function PpdbPerbaiki({ pendaftaran }: { pendaftaran: Pendaftaran
                     </CardContent>
                 </Card>
 
-                <Card>
+                <Card className="rounded-xl">
                     <CardHeader>
                         <CardTitle>3. Data Wali</CardTitle>
                         <CardDescription>Minimal satu wali (ayah, ibu, atau wali lainnya).</CardDescription>
@@ -373,7 +375,7 @@ export default function PpdbPerbaiki({ pendaftaran }: { pendaftaran: Pendaftaran
                     </CardContent>
                 </Card>
 
-                <Card>
+                <Card className="rounded-xl">
                     <CardHeader>
                         <CardTitle>4. Upload Dokumen</CardTitle>
                         <CardDescription>
