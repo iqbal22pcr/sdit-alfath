@@ -17,15 +17,6 @@ class PendaftaranPpdb extends Model
     protected $table = 'pendaftaran_ppdb';
 
     /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
-    protected $hidden = [
-        'password_siswa',
-    ];
-
-    /**
      * The attributes that are mass assignable.
      *
      * @var list<string>
@@ -47,8 +38,6 @@ class PendaftaranPpdb extends Model
         'nama_saudara',
         'status',
         'catatan_verifikasi',
-        'username_siswa',
-        'password_siswa',
     ];
 
     /**
@@ -62,7 +51,6 @@ class PendaftaranPpdb extends Model
             'tanggal_lahir' => 'date',
             'penghasilan_tetap' => 'boolean',
             'punya_saudara_di_sekolah' => 'boolean',
-            'password_siswa' => 'hashed',
         ];
     }
 

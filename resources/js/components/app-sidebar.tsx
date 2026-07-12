@@ -4,19 +4,7 @@ import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem, type SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
-import {
-    AlertTriangle,
-    BookMarked,
-    BookOpen,
-    Calendar,
-    CalendarRange,
-    ClipboardList,
-    FileText,
-    Folder,
-    LayoutGrid,
-    Receipt,
-    Tags,
-} from 'lucide-react';
+import { BookOpen, Calendar, CalendarRange, ClipboardList, FileText, Folder, GraduationCap, LayoutGrid, Receipt, Tags } from 'lucide-react';
 import AppLogo from './app-logo';
 
 const footerNavItems: NavItem[] = [
@@ -34,7 +22,7 @@ const footerNavItems: NavItem[] = [
 
 // Roles that land on their own dedicated dashboard after login don't
 // need the generic starter-kit "Dashboard" link cluttering the sidebar.
-const ROLES_WITH_OWN_DASHBOARD = ['staf_ppdb', 'staf_keuangan', 'wali_murid', 'siswa'];
+const ROLES_WITH_OWN_DASHBOARD = ['staf_ppdb', 'staf_keuangan', 'wali_murid'];
 
 export function AppSidebar() {
     const { auth } = usePage<SharedData>().props;
@@ -75,11 +63,6 @@ export function AppSidebar() {
                       url: route('staf.ppdb-dashboard'),
                       icon: ClipboardList,
                   },
-                  {
-                      title: 'Monitoring Aktivasi',
-                      url: route('staf.aktivasi-bermasalah'),
-                      icon: AlertTriangle,
-                  },
               ]
             : []),
         ...(auth.user.role === 'staf_keuangan'
@@ -94,28 +77,19 @@ export function AppSidebar() {
         ...(auth.user.role === 'wali_murid'
             ? [
                   {
-                      title: 'Dashboard',
-                      url: route('wali.dashboard'),
-                      icon: LayoutGrid,
-                  },
-                  {
-                      title: 'Pendaftaran',
+                      title: 'PPDB',
                       url: route('ppdb.pendaftaran'),
                       icon: FileText,
+                  },
+                  {
+                      title: 'Akademik',
+                      url: route('wali.akademik'),
+                      icon: GraduationCap,
                   },
                   {
                       title: 'Tagihan',
                       url: route('wali.tagihan.index'),
                       icon: Receipt,
-                  },
-              ]
-            : []),
-        ...(auth.user.role === 'siswa'
-            ? [
-                  {
-                      title: 'Dashboard Akademik',
-                      url: route('siswa.dashboard'),
-                      icon: BookMarked,
                   },
               ]
             : []),

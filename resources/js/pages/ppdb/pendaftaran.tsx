@@ -19,7 +19,6 @@ interface PendaftaranRow {
     nama_pendaftar: string;
     status: Status;
     catatan_verifikasi: string | null;
-    username_siswa: string | null;
     siswa: { status: 'calon' | 'aktif' | 'alumni' | 'keluar' } | null;
     created_at: string;
 }
@@ -105,18 +104,6 @@ export default function PpdbPendaftaran({ pendaftaran }: { pendaftaran: Pendafta
                                         </TableRow>
                                     )}
 
-                                    {p.siswa?.status === 'aktif' && p.username_siswa && (
-                                        <TableRow className="hover:bg-transparent">
-                                            <TableCell colSpan={5} className="pt-0">
-                                                <Alert className="border-green-500/50 bg-green-50 text-green-800 dark:border-green-500/50 dark:bg-green-950/40 dark:text-green-200">
-                                                    <AlertTitle>Akun Anak Sudah Aktif</AlertTitle>
-                                                    <AlertDescription className="text-green-800 dark:text-green-200">
-                                                        Login menggunakan username: {p.username_siswa}
-                                                    </AlertDescription>
-                                                </Alert>
-                                            </TableCell>
-                                        </TableRow>
-                                    )}
                                 </Fragment>
                             ))}
                         </TableBody>

@@ -7,7 +7,6 @@ const ROLE_LABEL: Record<Role, string> = {
     staf_keuangan: 'Staf Keuangan',
     staf_ppdb: 'Staf PPDB',
     wali_murid: 'Wali Murid',
-    siswa: 'Siswa',
 };
 
 export function roleLabel(role: Role): string {

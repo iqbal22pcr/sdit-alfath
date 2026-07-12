@@ -17,6 +17,6 @@ test('new users can register', function () {
     $this->assertAuthenticated();
 
     // Public registration always creates a wali_murid account, so it
-    // should land on the Dashboard page, same as logging in would.
-    $response->assertRedirect(route('wali.dashboard', absolute: false));
+    // should land on the PPDB page, same as logging in would.
+    $response->assertRedirect(route('ppdb.pendaftaran', absolute: false));
 });

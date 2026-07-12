@@ -76,10 +76,6 @@ class PendaftaranPpdbController extends Controller
                 'punya_saudara_di_sekolah' => $request->boolean('punya_saudara_di_sekolah'),
                 'nama_saudara' => $request->validated('nama_saudara'),
                 'status' => 'diajukan',
-                'username_siswa' => $request->validated('username_siswa'),
-                // Cast to 'hashed' on the model, so this is stored as a
-                // hash, never plaintext.
-                'password_siswa' => $request->validated('password_siswa'),
             ]);
 
             $pendaftaran->update([
@@ -235,7 +231,7 @@ class PendaftaranPpdbController extends Controller
         $pendaftaran = PendaftaranPpdb::where('user_id', request()->user()->id)
             ->with('siswa:id,pendaftaran_ppdb_id,status')
             ->latest()
-            ->get(['id', 'nomor_pendaftaran', 'nama_pendaftar', 'status', 'catatan_verifikasi', 'username_siswa', 'created_at']);
+            ->get(['id', 'nomor_pendaftaran', 'nama_pendaftar', 'status', 'catatan_verifikasi', 'created_at']);
 
         return Inertia::render('ppdb/pendaftaran', [
             'pendaftaran' => $pendaftaran,

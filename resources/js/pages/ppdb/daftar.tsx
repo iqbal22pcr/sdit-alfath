@@ -42,9 +42,6 @@ interface PendaftaranForm {
     punya_saudara_di_sekolah: '' | '1' | '0';
     nama_saudara: string;
     wali: WaliInput[];
-    username_siswa: string;
-    password_siswa: string;
-    password_siswa_confirmation: string;
     dokumen: DokumenInput;
     [key: string]: FormDataConvertible;
 }
@@ -62,9 +59,6 @@ const emptyForm: PendaftaranForm = {
     punya_saudara_di_sekolah: '',
     nama_saudara: '',
     wali: [{ ...emptyWali }],
-    username_siswa: '',
-    password_siswa: '',
-    password_siswa_confirmation: '',
     dokumen: {
         akta: null,
         kartu_keluarga: null,
@@ -93,9 +87,6 @@ const STEP_1_FIELDS = [
     'punya_saudara_di_sekolah',
     'nama_saudara',
     'wali',
-    'username_siswa',
-    'password_siswa',
-    'password_siswa_confirmation',
 ];
 
 function stepForField(field: string): 1 | 2 {
@@ -137,26 +128,6 @@ function validateStep1(data: PendaftaranForm): Record<string, string> {
         if (!wali.telepon.trim()) errors[`wali.${index}.telepon`] = 'Telepon wajib diisi.';
         if (!wali.hubungan) errors[`wali.${index}.hubungan`] = 'Hubungan wajib dipilih.';
     });
-
-    if (!data.username_siswa.trim()) {
-        errors.username_siswa = 'Username wajib diisi.';
-    } else if (data.username_siswa.length < 4) {
-        errors.username_siswa = 'Username minimal 4 karakter.';
-    } else if (!/^[A-Za-z0-9_-]+$/.test(data.username_siswa)) {
-        errors.username_siswa = 'Username hanya boleh huruf, angka, garis bawah (_), dan tanda hubung (-).';
-    }
-
-    if (!data.password_siswa) {
-        errors.password_siswa = 'Password wajib diisi.';
-    } else if (data.password_siswa.length < 6) {
-        errors.password_siswa = 'Password minimal 6 karakter.';
-    }
-
-    if (!data.password_siswa_confirmation) {
-        errors.password_siswa_confirmation = 'Konfirmasi password wajib diisi.';
-    } else if (data.password_siswa_confirmation !== data.password_siswa) {
-        errors.password_siswa_confirmation = 'Konfirmasi password tidak sama dengan password di atas.';
-    }
 
     return errors;
 }
@@ -205,17 +176,7 @@ export default function PpdbDaftar({ gelombang }: { gelombang: { id: number; nam
                 } else {
                     scrollToField(firstKey);
                 }
-
-                // Only clear the password fields when the error actually
-                // concerns them (e.g. confirmation mismatch) -- an
-                // unrelated error elsewhere in Step 1 (say, tanggal_lahir)
-                // shouldn't wipe out a password the user already filled
-                // in correctly.
-                if ('password_siswa' in errors || 'password_siswa_confirmation' in errors) {
-                    form.reset('password_siswa', 'password_siswa_confirmation');
-                }
             },
-            onSuccess: () => form.reset('password_siswa', 'password_siswa_confirmation'),
         });
     };
 
@@ -461,52 +422,6 @@ export default function PpdbDaftar({ gelombang }: { gelombang: { id: number; nam
                             </CardContent>
                         </Card>
 
-                        <Card className="rounded-xl">
-                            <CardHeader>
-                                <CardTitle>4. Buat Akun untuk Anak</CardTitle>
-                                <CardDescription>Dipakai anak untuk login ke akun akademiknya sendiri nanti.</CardDescription>
-                            </CardHeader>
-                            <CardContent className="space-y-4">
-                                <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-                                    <div className="grid gap-2">
-                                        <Label htmlFor="username-siswa">Username</Label>
-                                        <Input
-                                            id="username-siswa"
-                                            value={form.data.username_siswa}
-                                            onChange={(e) => form.setData('username_siswa', e.target.value)}
-                                            autoComplete="off"
-                                            placeholder="mis. budi2026"
-                                        />
-                                        <InputError message={fieldError('username_siswa')} />
-                                    </div>
-
-                                    <div className="grid gap-2">
-                                        <Label htmlFor="password-siswa">Password</Label>
-                                        <Input
-                                            id="password-siswa"
-                                            type="password"
-                                            value={form.data.password_siswa}
-                                            onChange={(e) => form.setData('password_siswa', e.target.value)}
-                                            autoComplete="new-password"
-                                        />
-                                        <InputError message={fieldError('password_siswa')} />
-                                    </div>
-
-                                    <div className="grid gap-2">
-                                        <Label htmlFor="password-siswa-confirmation">Konfirmasi Password</Label>
-                                        <Input
-                                            id="password-siswa-confirmation"
-                                            type="password"
-                                            value={form.data.password_siswa_confirmation}
-                                            onChange={(e) => form.setData('password_siswa_confirmation', e.target.value)}
-                                            autoComplete="new-password"
-                                        />
-                                        <InputError message={fieldError('password_siswa_confirmation')} />
-                                    </div>
-                                </div>
-                            </CardContent>
-                        </Card>
-
                         <div className="flex justify-end">
                             <Button type="button" onClick={handleNext}>
                                 Lanjut
@@ -519,7 +434,7 @@ export default function PpdbDaftar({ gelombang }: { gelombang: { id: number; nam
                     <>
                         <Card className="rounded-xl">
                             <CardHeader>
-                                <CardTitle>5. Upload Dokumen</CardTitle>
+                                <CardTitle>4. Upload Dokumen</CardTitle>
                                 <CardDescription>Format PDF, JPG, atau PNG, maksimal 2MB per file.</CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-4">

@@ -5,25 +5,29 @@ import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/react';
 
-const breadcrumbs: BreadcrumbItem[] = [{ title: 'Dashboard Akademik', href: '/siswa/dashboard' }];
-
-interface SiswaDashboardProps {
-    siswa: { nama: string };
+interface SiswaDetail {
+    id: number;
+    nama: string;
 }
 
-export default function SiswaDashboard({ siswa }: SiswaDashboardProps) {
+export default function WaliAkademikDetail({ siswa }: { siswa: SiswaDetail }) {
+    const breadcrumbs: BreadcrumbItem[] = [
+        { title: 'Akademik', href: '/wali/akademik' },
+        { title: siswa.nama, href: `/wali/akademik/${siswa.id}` },
+    ];
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Dashboard Akademik" />
+            <Head title={`Akademik - ${siswa.nama}`} />
 
             <div className="flex flex-col gap-4 p-4">
-                <Heading title={`Selamat datang, ${siswa.nama}`} description="Ringkasan akademik untuk siswa." />
+                <Heading title={`Akademik ${siswa.nama}`} description="Ringkasan akademik anak Anda." />
 
-                <Card>
+                <Card className="rounded-xl">
                     <CardContent>
                         <EmptyState
                             title="Modul Akademik Sedang Dalam Pengembangan"
-                            description="Modul Akademik (jadwal, absensi, nilai) sedang dalam pengembangan dan akan tersedia di sini."
+                            description="Modul akademik (jadwal, absensi, nilai) sedang dalam pengembangan dan akan tersedia di sini."
                         />
                     </CardContent>
                 </Card>

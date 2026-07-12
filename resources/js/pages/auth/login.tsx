@@ -96,13 +96,6 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                         Sign up
                     </TextLink>
                 </div>
-
-                <div className="text-muted-foreground text-center text-sm">
-                    Login sebagai siswa?{' '}
-                    <TextLink href={route('login-siswa')} tabIndex={6}>
-                        Login sebagai siswa
-                    </TextLink>
-                </div>
             </form>
 
             {status && <div className="mb-4 text-center text-sm font-medium text-green-600">{status}</div>}

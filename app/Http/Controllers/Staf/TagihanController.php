@@ -139,7 +139,7 @@ class TagihanController extends Controller
      *
      * Failures here must never undo the payment that was just
      * recorded -- they're caught, logged, and surfaced to staf as a
-     * warning to investigate on the monitoring page instead.
+     * warning instead.
      */
     private function cobaAktivasiOtomatis(Tagihan $tagihan): void
     {
@@ -165,7 +165,7 @@ class TagihanController extends Controller
 
             session()->flash(
                 'warning',
-                'Pembayaran berhasil, tapi aktivasi otomatis siswa gagal. Cek halaman Monitoring Aktivasi untuk detail.'
+                'Pembayaran berhasil, tapi aktivasi otomatis siswa gagal. Cek log server untuk detail.'
             );
         }
     }

@@ -26,7 +26,6 @@ class Siswa extends Model
     protected $fillable = [
         'pendaftaran_ppdb_id',
         'kategori_siswa_id',
-        'user_id',
         'nama',
         'nis',
         'nisn',
@@ -39,15 +38,6 @@ class Siswa extends Model
     public function pendaftaranPpdb(): BelongsTo
     {
         return $this->belongsTo(PendaftaranPpdb::class);
-    }
-
-    /**
-     * Get the login account for this siswa, if one has been created
-     * yet (only happens once aktivasiOtomatis() activates the siswa).
-     */
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(User::class);
     }
 
     /**
@@ -67,29 +57,39 @@ class Siswa extends Model
     }
 
     /**
-     * Create the initial onboarding tagihan for this siswa: uang
-     * masuk, uang buku, and uang seragam.
+     * Create the initial onboarding tagihan for this siswa: uang buku
+     * and uang seragam. Uang masuk is intentionally NOT created here
+     * anymore -- it's only generated once the siswa is activated, by
+     * buatTagihanMasuk().
      *
      * Titik ekstensi resmi untuk logic tagihan awal -- JANGAN taruh
      * logic ini di controller manapun.
      *
-     * Each of the three is independently idempotent: calling this
-     * more than once (e.g. re-triggered via konversiJadiSiswa() on a
+     * Each of the two is independently idempotent: calling this more
+     * than once (e.g. re-triggered via konversiJadiSiswa() on a
      * double-clicked button) never creates duplicate tagihan, it just
      * leaves whichever ones already exist untouched.
      */
     public function buatTagihanAwal(): void
     {
         DB::transaction(function () {
-            // Uang masuk: nominal comes from gelombang_ppdb.biaya_masuk,
-            // NOT komponen_biaya.nominal_dasar (which is unused for
-            // jenis "masuk").
-            $this->buatTagihanUntukJenis('masuk', fn () => $this->pendaftaranPpdb->gelombangPpdb->biaya_masuk);
-
-            // Uang buku and uang seragam: komponen_biaya.nominal_dasar
-            // is the only source of price for these.
             $this->buatTagihanUntukJenis('buku', fn (KomponenBiaya $komponen) => $komponen->nominal_dasar);
             $this->buatTagihanUntukJenis('seragam', fn (KomponenBiaya $komponen) => $komponen->nominal_dasar);
+        });
+    }
+
+    /**
+     * Create the uang masuk tagihan for this siswa. Called once the
+     * siswa is activated, not at initial registration -- nominal
+     * comes from gelombang_ppdb.biaya_masuk, NOT
+     * komponen_biaya.nominal_dasar (which is unused for jenis
+     * "masuk"). Idempotent, same as buatTagihanUntukJenis() guarantees
+     * for every jenis.
+     */
+    public function buatTagihanMasuk(): void
+    {
+        DB::transaction(function () {
+            $this->buatTagihanUntukJenis('masuk', fn () => $this->pendaftaranPpdb->gelombangPpdb->biaya_masuk);
         });
     }
 
@@ -142,10 +142,10 @@ class Siswa extends Model
 
     /**
      * Check whether this siswa is ready for automatic activation:
-     * still "calon", has no login account yet, and has at least one
-     * uang buku tagihan AND at least one uang seragam tagihan, all of
-     * which are already lunas -- uang masuk is intentionally NOT part
-     * of this check, only the two onboarding-gate components are.
+     * still "calon", and has at least one uang buku tagihan AND at
+     * least one uang seragam tagihan, all of which are already lunas
+     * -- uang masuk is intentionally NOT part of this check, only the
+     * two onboarding-gate components are.
      *
      * The "both jenis must actually exist" check is deliberate and not
      * redundant: "every remaining tagihan is lunas" is vacuously true
@@ -160,7 +160,7 @@ class Siswa extends Model
      */
     public function bisaAktivasiOtomatis(): bool
     {
-        if ($this->status !== 'calon' || $this->user_id !== null) {
+        if ($this->status !== 'calon') {
             return false;
         }
 
@@ -179,9 +179,8 @@ class Siswa extends Model
     }
 
     /**
-     * Activate this siswa: create its login account from the
-     * username/password the wali set up during PPDB registration,
-     * link it, and flip status to "aktif".
+     * Activate this siswa: flip status to "aktif" and generate its
+     * uang masuk tagihan.
      *
      * Callers are expected to check bisaAktivasiOtomatis() first; it's
      * re-checked here defensively so a caller mistake can never
@@ -194,28 +193,9 @@ class Siswa extends Model
         }
 
         DB::transaction(function () {
-            $pendaftaran = $this->pendaftaranPpdb;
+            $this->update(['status' => 'aktif']);
 
-            $user = new User;
-            $user->name = $this->nama;
-            $user->username = $pendaftaran->username_siswa;
-            // Already a hash, produced when the wali filled in
-            // password_siswa during PPDB registration -- User::password
-            // also casts as 'hashed', which detects an already-hashed
-            // value and stores it as-is instead of hashing it again.
-            $user->password = $pendaftaran->password_siswa;
-            $user->email = null;
-            $user->role = 'siswa';
-            $user->save();
-
-            $this->update([
-                'user_id' => $user->id,
-                'status' => 'aktif',
-            ]);
-
-            // The hash now lives on users.password; no need to keep a
-            // second copy here. username_siswa stays, for reference.
-            $pendaftaran->update(['password_siswa' => null]);
+            $this->buatTagihanMasuk();
         });
     }
 }

@@ -1,6 +1,7 @@
 import { DonutChart, type DonutSlice } from '@/components/charts/donut-chart';
 import { EmptyState } from '@/components/empty-state';
 import Heading from '@/components/heading';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -11,7 +12,8 @@ import { formatTanggal } from '@/lib/format';
 import { statusBadgeClass, statusChartColor } from '@/lib/status-badge';
 import { cn } from '@/lib/utils';
 import { type BreadcrumbItem } from '@/types';
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, useForm } from '@inertiajs/react';
+import { AlertTriangle } from 'lucide-react';
 import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { useMemo, useState } from 'react';
 
@@ -39,6 +41,11 @@ interface PendaftaranRow {
     kategori_siswa: { nama: string } | null;
 }
 
+interface SiswaPerluAktivasi {
+    id: number;
+    nama: string;
+}
+
 const STATUS_LABEL: Record<Status, string> = {
     draft: 'Draft',
     diajukan: 'Diajukan',
@@ -55,11 +62,13 @@ export default function StafPpdbDashboard({
     kuotaPerKategori,
     statusBreakdown,
     pendaftaran,
+    siswaPerluAktivasi,
 }: {
     gelombang: { id: number; nama: string } | null;
     kuotaPerKategori: KuotaKategoriSummary[];
     statusBreakdown: StatusBreakdownRow[];
     pendaftaran: PendaftaranRow[];
+    siswaPerluAktivasi: SiswaPerluAktivasi[];
 }) {
     const [statusFilter, setStatusFilter] = useState<Status | 'semua'>('semua');
 
@@ -92,6 +101,23 @@ export default function StafPpdbDashboard({
 
             <div className="flex flex-col gap-6 p-4">
                 <Heading title="Dashboard PPDB" description={`Gelombang: ${gelombang.nama}`} />
+
+                {siswaPerluAktivasi.length > 0 && (
+                    <Alert className="border-amber-500/50 bg-amber-50 text-amber-800 dark:border-amber-500/50 dark:bg-amber-950/40 dark:text-amber-200">
+                        <AlertTriangle className="size-4 text-amber-600 dark:text-amber-400" />
+                        <AlertTitle>{siswaPerluAktivasi.length} Siswa Perlu Aktivasi Manual</AlertTitle>
+                        <AlertDescription className="text-amber-800 dark:text-amber-200">
+                            <p className="mb-2">
+                                Sudah lunas uang buku dan uang seragam tapi masih berstatus calon -- aktivasi otomatis kemungkinan pernah gagal.
+                            </p>
+                            <ul className="space-y-1.5">
+                                {siswaPerluAktivasi.map((s) => (
+                                    <SiswaPerluAktivasiRow key={s.id} siswa={s} />
+                                ))}
+                            </ul>
+                        </AlertDescription>
+                    </Alert>
+                )}
 
                 <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
                     <Card className="rounded-xl">
@@ -210,6 +236,23 @@ export default function StafPpdbDashboard({
                 </div>
             </div>
         </AppLayout>
+    );
+}
+
+function SiswaPerluAktivasiRow({ siswa }: { siswa: SiswaPerluAktivasi }) {
+    const form = useForm({});
+
+    const cobaAktivasi = () => {
+        form.post(route('staf.ppdb-dashboard.coba-aktivasi', siswa.id), { preserveScroll: true });
+    };
+
+    return (
+        <li className="flex items-center justify-between gap-2">
+            <span className="font-medium">{siswa.nama}</span>
+            <Button variant="outline" size="sm" disabled={form.processing} onClick={cobaAktivasi}>
+                Coba Aktivasi
+            </Button>
+        </li>
     );
 }
 

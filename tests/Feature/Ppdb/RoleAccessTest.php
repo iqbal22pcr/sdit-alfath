@@ -2,12 +2,6 @@
 
 use App\Models\User;
 
-test('siswa cannot access the ppdb registration page', function () {
-    $siswa = User::factory()->create(['role' => 'siswa']);
-
-    $this->actingAs($siswa)->get('/ppdb/daftar')->assertForbidden();
-});
-
 test('staf_ppdb cannot access the ppdb registration page', function () {
     $stafPpdb = User::factory()->create(['role' => 'staf_ppdb']);
 

@@ -15,10 +15,10 @@ class DashboardController extends Controller
 {
     /**
      * Every other role already has its own dedicated dashboard
-     * (staf_ppdb, staf_keuangan, wali_murid, siswa). guru has no
-     * dashboard of its own yet, so it keeps landing on the plain
-     * starter-kit placeholder below -- only admin and kepala_sekolah
-     * get the school-wide snapshot this method builds.
+     * (staf_ppdb, staf_keuangan, wali_murid). guru has no dashboard of
+     * its own yet, so it keeps landing on the plain starter-kit
+     * placeholder below -- only admin and kepala_sekolah get the
+     * school-wide snapshot this method builds.
      */
     public function index(Request $request): Response
     {
