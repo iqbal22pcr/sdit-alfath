@@ -64,7 +64,7 @@ export default function StafTagihanShow({ tagihan }: { tagihan: TagihanDetail })
         <>
             <Head title={`Tagihan ${tagihan.nomor_tagihan}`} />
 
-            <div className="flex w-full flex-col gap-6 p-4">
+            <div className="flex w-full flex-col gap-6">
                 <div className="flex items-center justify-between">
                     <Heading title={tagihan.nomor_tagihan} description={`${tagihan.siswa.nama} (${tagihan.siswa.nis})`} />
                     <Badge variant="outline" className={statusBadgeClass(tagihan.status)}>
@@ -85,7 +85,7 @@ export default function StafTagihanShow({ tagihan }: { tagihan: TagihanDetail })
                         <Field label="Sisa" value={formatRupiah(sisa)} />
                         {jenisMasuk && (
                             <div>
-                                <p className="text-xs text-muted-foreground">Jatuh Tempo</p>
+                                <p className="text-muted-foreground text-xs">Jatuh Tempo</p>
                                 <div className="flex items-center gap-2">
                                     <p>{jatuhTempoTanggal ? formatTanggal(tagihan.jatuh_tempo as string) : '-'}</p>
                                     {terlambat && (
@@ -159,7 +159,7 @@ StafTagihanShow.layout = (page: React.ReactNode) => <AppLayout breadcrumbs={brea
 function Field({ label, value, className }: { label: string; value: string; className?: string }) {
     return (
         <div className={className}>
-            <p className="text-xs text-muted-foreground">{label}</p>
+            <p className="text-muted-foreground text-xs">{label}</p>
             <p>{value}</p>
         </div>
     );

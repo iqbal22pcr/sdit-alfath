@@ -95,14 +95,13 @@ export default function StafKeuanganDashboard({
     const setScope = (value: string) => navigate({ tahun_ajaran: value });
     const setStatusJenisScope = (value: string) => navigate({ status_jenis: value });
 
-    const detailHref = (params: Record<string, string>) =>
-        route('staf.tagihan.index', { tahun_ajaran_id: tahunAjaranIdUntukLink, ...params });
+    const detailHref = (params: Record<string, string>) => route('staf.tagihan.index', { tahun_ajaran_id: tahunAjaranIdUntukLink, ...params });
 
     return (
         <>
             <Head title="Dashboard Keuangan" />
 
-            <div className="flex flex-col gap-6 p-4">
+            <div className="flex flex-col gap-6">
                 <div className="flex items-center justify-between">
                     <Heading title="Dashboard Keuangan" description="Ringkasan tagihan dan pembayaran siswa." />
 

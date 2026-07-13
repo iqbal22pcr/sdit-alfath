@@ -209,7 +209,7 @@ export default function PpdbDaftar({ gelombang }: { gelombang: { id: number; nam
         <>
             <Head title="Pendaftaran PPDB" />
 
-            <form onSubmit={submit} className="flex w-full flex-col gap-4 p-4">
+            <form onSubmit={submit} className="flex w-full flex-col gap-4">
                 <Heading title="Formulir Pendaftaran PPDB" description={`Gelombang: ${gelombang.nama}`} />
 
                 <div className="flex w-full justify-center py-2">
@@ -502,17 +502,7 @@ export default function PpdbDaftar({ gelombang }: { gelombang: { id: number; nam
 
 PpdbDaftar.layout = (page: React.ReactNode) => <AppLayout breadcrumbs={breadcrumbs}>{page}</AppLayout>;
 
-function DokumenField({
-    id,
-    label,
-    error,
-    onChange,
-}: {
-    id: string;
-    label: string;
-    error?: string;
-    onChange: (file: File | null) => void;
-}) {
+function DokumenField({ id, label, error, onChange }: { id: string; label: string; error?: string; onChange: (file: File | null) => void }) {
     return (
         <div className="grid gap-2">
             <Label htmlFor={id}>{label}</Label>

@@ -5,7 +5,16 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import {
+    Dialog,
+    DialogClose,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -114,7 +123,7 @@ export default function GelombangPpdbIndex({ gelombangPpdb, tahunAjaran }: { gel
         <>
             <Head title="Gelombang PPDB" />
 
-            <div className="flex flex-col gap-4 p-4">
+            <div className="flex flex-col gap-4">
                 <div className="flex items-center justify-between">
                     <Heading title="Gelombang PPDB" description="Kelola gelombang penerimaan siswa baru beserta kuota tiap kategori." />
 
@@ -156,10 +165,10 @@ export default function GelombangPpdbIndex({ gelombangPpdb, tahunAjaran }: { gel
                 </div>
 
                 <Card className="rounded-xl">
-                    <CardContent>
+                    <CardContent className="p-6">
                         <Table>
                             <TableHeader>
-                                <TableRow>
+                                <TableRow className="bg-muted">
                                     <TableHead>Nama</TableHead>
                                     <TableHead>Tahun Ajaran</TableHead>
                                     <TableHead>Periode</TableHead>
@@ -253,8 +262,8 @@ export default function GelombangPpdbIndex({ gelombangPpdb, tahunAjaran }: { gel
                     <DialogHeader>
                         <DialogTitle>Hapus Gelombang PPDB</DialogTitle>
                         <DialogDescription>
-                            Apakah Anda yakin ingin menghapus gelombang &quot;{deleting?.nama}&quot;? Kuota kategori yang terkait juga akan
-                            terhapus. Tindakan ini tidak dapat dibatalkan.
+                            Apakah Anda yakin ingin menghapus gelombang &quot;{deleting?.nama}&quot;? Kuota kategori yang terkait juga akan terhapus.
+                            Tindakan ini tidak dapat dibatalkan.
                         </DialogDescription>
                     </DialogHeader>
 

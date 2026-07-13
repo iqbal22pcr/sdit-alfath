@@ -49,7 +49,7 @@ export default function PpdbPendaftaran({ pendaftaran, ringkasan }: { pendaftara
         <>
             <Head title="Pendaftaran" />
 
-            <div className="flex flex-col gap-4 p-4">
+            <div className="flex flex-col gap-4">
                 <div className="flex items-center justify-between">
                     <Heading title="Pendaftaran" description="Pantau status pendaftaran PPDB anak Anda dari waktu ke waktu." />
 
@@ -78,10 +78,10 @@ export default function PpdbPendaftaran({ pendaftaran, ringkasan }: { pendaftara
                 )}
 
                 <Card className="rounded-xl">
-                    <CardContent>
+                    <CardContent className="p-6">
                         <Table>
                             <TableHeader>
-                                <TableRow>
+                                <TableRow className="bg-muted">
                                     <TableHead>Nomor Pendaftaran</TableHead>
                                     <TableHead>Nama Pendaftar</TableHead>
                                     <TableHead>Status</TableHead>

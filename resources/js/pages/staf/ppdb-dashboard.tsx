@@ -1,4 +1,4 @@
-import { DonutChart, type DonutSlice } from '@/components/charts/donut-chart';
+import { DonutChart } from '@/components/charts/donut-chart';
 import { EmptyState } from '@/components/empty-state';
 import Heading from '@/components/heading';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -14,8 +14,8 @@ import { cn } from '@/lib/utils';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { AlertTriangle } from 'lucide-react';
-import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { useMemo, useState } from 'react';
+import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
 type Status = 'draft' | 'diajukan' | 'diverifikasi' | 'perlu_perbaikan' | 'diterima' | 'ditolak';
 
@@ -77,11 +77,11 @@ export default function StafPpdbDashboard({
         [pendaftaran, statusFilter],
     );
 
-    if (! gelombang) {
+    if (!gelombang) {
         return (
             <>
                 <Head title="Dashboard PPDB" />
-                <div className="p-4">
+                <div>
                     <Card>
                         <CardContent>
                             <EmptyState
@@ -99,7 +99,7 @@ export default function StafPpdbDashboard({
         <>
             <Head title="Dashboard PPDB" />
 
-            <div className="flex flex-col gap-6 p-4">
+            <div className="flex flex-col gap-6">
                 <Heading title="Dashboard PPDB" description={`Gelombang: ${gelombang.nama}`} />
 
                 {siswaPerluAktivasi.length > 0 && (
@@ -142,7 +142,7 @@ export default function StafPpdbDashboard({
                         </CardHeader>
                         <CardContent>
                             {kuotaPerKategori.length === 0 ? (
-                                <p className="flex h-48 items-center justify-center text-sm text-muted-foreground">
+                                <p className="text-muted-foreground flex h-48 items-center justify-center text-sm">
                                     Belum ada kuota yang diatur untuk gelombang ini.
                                 </p>
                             ) : (
@@ -153,10 +153,10 @@ export default function StafPpdbDashboard({
                 </div>
 
                 <div>
-                    <h2 className="mb-3 text-sm font-medium text-muted-foreground">Status Kuota per Kategori</h2>
+                    <h2 className="text-muted-foreground mb-3 text-sm font-medium">Status Kuota per Kategori</h2>
 
                     {kuotaPerKategori.length === 0 ? (
-                        <p className="text-sm text-muted-foreground">Belum ada kuota yang diatur untuk gelombang ini.</p>
+                        <p className="text-muted-foreground text-sm">Belum ada kuota yang diatur untuk gelombang ini.</p>
                     ) : (
                         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
                             {kuotaPerKategori.map((kuota) => (
@@ -168,7 +168,7 @@ export default function StafPpdbDashboard({
 
                 <div>
                     <div className="mb-3 flex items-center justify-between">
-                        <h2 className="text-sm font-medium text-muted-foreground">
+                        <h2 className="text-muted-foreground text-sm font-medium">
                             Daftar Pendaftar <span className="text-xs">(maks. 50 terbaru)</span>
                         </h2>
 
@@ -215,7 +215,11 @@ export default function StafPpdbDashboard({
                                         <TableCell>{p.nama_pendaftar}</TableCell>
                                         <TableCell>{p.user.name}</TableCell>
                                         <TableCell>
-                                            {p.kategori_siswa ? p.kategori_siswa.nama : <span className="text-muted-foreground">Belum ditentukan</span>}
+                                            {p.kategori_siswa ? (
+                                                p.kategori_siswa.nama
+                                            ) : (
+                                                <span className="text-muted-foreground">Belum ditentukan</span>
+                                            )}
                                         </TableCell>
                                         <TableCell>
                                             <Badge variant="outline" className={statusBadgeClass(p.status)}>
@@ -264,13 +268,13 @@ function KuotaBarTooltip({ active, payload }: { active?: boolean; payload?: Arra
     const row = payload[0].payload;
 
     return (
-        <div className="rounded-lg border bg-popover px-3 py-2 text-sm text-popover-foreground shadow-md">
+        <div className="bg-popover text-popover-foreground rounded-lg border px-3 py-2 text-sm shadow-md">
             <p className="font-medium">{row.kategori}</p>
             <p className="text-muted-foreground">
-                Terpakai: <span className="font-medium text-foreground">{row.terpakai}</span>
+                Terpakai: <span className="text-foreground font-medium">{row.terpakai}</span>
             </p>
             <p className="text-muted-foreground">
-                Sisa: <span className="font-medium text-foreground">{row.sisa}</span>
+                Sisa: <span className="text-foreground font-medium">{row.sisa}</span>
             </p>
         </div>
     );
@@ -326,15 +330,15 @@ function KuotaCard({ kategori, total, terpakai, sisa }: KuotaKategoriSummary) {
             </CardHeader>
             <CardContent>
                 <p className="text-2xl font-semibold">
-                    {terpakai} <span className="text-sm font-normal text-muted-foreground">/ {total}</span>
+                    {terpakai} <span className="text-muted-foreground text-sm font-normal">/ {total}</span>
                 </p>
-                <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-muted">
+                <div className="bg-muted mt-2 h-2 w-full overflow-hidden rounded-full">
                     <div
                         className={cn('h-full rounded-full transition-all', penuh ? 'bg-destructive' : 'bg-primary')}
                         style={{ width: `${persentase}%` }}
                     />
                 </div>
-                <p className="mt-1 text-xs text-muted-foreground">Sisa: {sisa}</p>
+                <p className="text-muted-foreground mt-1 text-xs">Sisa: {sisa}</p>
             </CardContent>
         </Card>
     );

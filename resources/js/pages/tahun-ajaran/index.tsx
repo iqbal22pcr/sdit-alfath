@@ -5,7 +5,16 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import {
+    Dialog,
+    DialogClose,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -88,7 +97,7 @@ export default function TahunAjaranIndex({ tahunAjaran }: { tahunAjaran: TahunAj
         <>
             <Head title="Tahun Ajaran" />
 
-            <div className="flex flex-col gap-4 p-4">
+            <div className="flex flex-col gap-4">
                 <div className="flex items-center justify-between">
                     <Heading title="Tahun Ajaran" description="Kelola daftar tahun ajaran dan tentukan tahun ajaran yang sedang aktif." />
 
@@ -162,10 +171,10 @@ export default function TahunAjaranIndex({ tahunAjaran }: { tahunAjaran: TahunAj
                 </div>
 
                 <Card className="rounded-xl">
-                    <CardContent>
+                    <CardContent className="p-6">
                         <Table>
                             <TableHeader>
-                                <TableRow>
+                                <TableRow className="bg-muted">
                                     <TableHead>Nama</TableHead>
                                     <TableHead>Tahun Mulai</TableHead>
                                     <TableHead>Status</TableHead>

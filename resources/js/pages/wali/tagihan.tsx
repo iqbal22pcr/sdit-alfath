@@ -57,7 +57,7 @@ export default function WaliTagihanIndex({
         <>
             <Head title="Tagihan" />
 
-            <div className="flex flex-col gap-4 p-4">
+            <div className="flex flex-col gap-4">
                 <Heading title="Tagihan" description="Pantau tagihan dan status pembayaran seluruh anak Anda." />
 
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
@@ -83,10 +83,10 @@ export default function WaliTagihanIndex({
                 )}
 
                 <Card className="rounded-xl">
-                    <CardContent>
+                    <CardContent className="p-6">
                         <Table>
                             <TableHeader>
-                                <TableRow>
+                                <TableRow className="bg-muted">
                                     <TableHead>Nama Anak</TableHead>
                                     <TableHead>Komponen Biaya</TableHead>
                                     <TableHead>Nominal</TableHead>
@@ -105,11 +105,7 @@ export default function WaliTagihanIndex({
                                 )}
 
                                 {tagihan.map((t) => (
-                                    <TableRow
-                                        key={t.id}
-                                        className="cursor-pointer"
-                                        onClick={() => router.visit(route('wali.tagihan.show', t.id))}
-                                    >
+                                    <TableRow key={t.id} className="cursor-pointer" onClick={() => router.visit(route('wali.tagihan.show', t.id))}>
                                         <TableCell className="font-medium">{t.siswa.nama}</TableCell>
                                         <TableCell>{t.komponen_biaya.nama}</TableCell>
                                         <TableCell>{formatRupiah(t.nominal)}</TableCell>

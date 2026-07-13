@@ -52,7 +52,7 @@ export default function WaliTagihanShow({ tagihan }: { tagihan: TagihanDetail })
         <>
             <Head title={`Tagihan ${tagihan.nomor_tagihan}`} />
 
-            <div className="flex w-full flex-col gap-6 p-4">
+            <div className="flex w-full flex-col gap-6">
                 <div className="flex items-center justify-between">
                     <Heading title={tagihan.nomor_tagihan} description={`${tagihan.siswa.nama} (${tagihan.siswa.nis})`} />
                     <Badge variant="outline" className={statusBadgeClass(tagihan.status)}>
@@ -128,7 +128,7 @@ WaliTagihanShow.layout = (page: React.ReactElement<{ tagihan: TagihanDetail }>) 
 function Field({ label, value }: { label: string; value: string }) {
     return (
         <div>
-            <p className="text-xs text-muted-foreground">{label}</p>
+            <p className="text-muted-foreground text-xs">{label}</p>
             <p>{value}</p>
         </div>
     );

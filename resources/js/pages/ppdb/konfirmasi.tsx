@@ -11,22 +11,22 @@ export default function PpdbKonfirmasi({ nomorPendaftaran, namaPendaftar }: { no
         <>
             <Head title="Pendaftaran Berhasil" />
 
-            <div className="flex w-full flex-col gap-4 p-4">
+            <div className="flex w-full flex-col gap-4">
                 <Card className="rounded-xl">
                     <CardHeader>
                         <CardTitle>Pendaftaran Berhasil Dikirim</CardTitle>
                         <CardDescription>
-                            Pendaftaran atas nama <span className="font-medium text-foreground">{namaPendaftar}</span> telah kami terima dan
-                            sedang menunggu verifikasi.
+                            Pendaftaran atas nama <span className="text-foreground font-medium">{namaPendaftar}</span> telah kami terima dan sedang
+                            menunggu verifikasi.
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
                         <div className="space-y-2">
-                            <p className="text-sm text-muted-foreground">Nomor pendaftaran Anda:</p>
-                            <p className="rounded-md border bg-muted px-4 py-3 text-lg font-semibold tracking-wide">{nomorPendaftaran}</p>
-                            <p className="text-sm text-muted-foreground">
-                                Nomor ini berguna sebagai referensi kalau Anda perlu menghubungi pihak sekolah. Anda bisa memantau status
-                                pendaftaran kapan saja lewat menu Pendaftaran.
+                            <p className="text-muted-foreground text-sm">Nomor pendaftaran Anda:</p>
+                            <p className="bg-muted rounded-md border px-4 py-3 text-lg font-semibold tracking-wide">{nomorPendaftaran}</p>
+                            <p className="text-muted-foreground text-sm">
+                                Nomor ini berguna sebagai referensi kalau Anda perlu menghubungi pihak sekolah. Anda bisa memantau status pendaftaran
+                                kapan saja lewat menu Pendaftaran.
                             </p>
                         </div>
 

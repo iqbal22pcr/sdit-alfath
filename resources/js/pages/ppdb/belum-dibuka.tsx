@@ -10,13 +10,13 @@ export default function PpdbBelumDibuka() {
         <>
             <Head title="PPDB Belum Dibuka" />
 
-            <div className="flex w-full flex-col gap-4 p-4">
+            <div className="flex w-full flex-col gap-4">
                 <Card className="rounded-xl">
                     <CardHeader>
                         <CardTitle>PPDB Belum Dibuka</CardTitle>
                         <CardDescription>
-                            Saat ini tidak ada gelombang pendaftaran yang sedang berlangsung. Silakan cek kembali nanti atau hubungi pihak
-                            sekolah untuk informasi jadwal PPDB berikutnya.
+                            Saat ini tidak ada gelombang pendaftaran yang sedang berlangsung. Silakan cek kembali nanti atau hubungi pihak sekolah
+                            untuk informasi jadwal PPDB berikutnya.
                         </CardDescription>
                     </CardHeader>
                 </Card>

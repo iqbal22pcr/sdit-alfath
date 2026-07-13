@@ -57,11 +57,11 @@ function kategoriDonutData(rows: KategoriSiswaBreakdown[]): DonutSlice[] {
 const breadcrumbs: BreadcrumbItem[] = [{ title: 'Dashboard', href: '/dashboard' }];
 
 export default function Dashboard({ ringkasan }: { ringkasan?: Ringkasan }) {
-    if (! ringkasan) {
+    if (!ringkasan) {
         return (
             <>
                 <Head title="Dashboard" />
-                <div className="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
+                <div className="flex h-full flex-1 flex-col gap-4 rounded-xl">
                     <div className="grid auto-rows-min gap-4 md:grid-cols-3">
                         <div className="border-sidebar-border/70 dark:border-sidebar-border relative aspect-video overflow-hidden rounded-xl border">
                             <PlaceholderPattern className="absolute inset-0 size-full stroke-neutral-900/20 dark:stroke-neutral-100/20" />
@@ -92,7 +92,7 @@ export default function Dashboard({ ringkasan }: { ringkasan?: Ringkasan }) {
         <>
             <Head title="Dashboard" />
 
-            <div className="flex flex-col gap-6 p-4">
+            <div className="flex flex-col gap-6">
                 <Heading title="Dashboard Sekolah" description="Ringkasan kondisi sekolah saat ini." />
 
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">

@@ -161,7 +161,7 @@ export default function PpdbPerbaiki({ pendaftaran }: { pendaftaran: Pendaftaran
         <>
             <Head title={`Perbaiki ${pendaftaran.nomor_pendaftaran}`} />
 
-            <form onSubmit={submit} className="flex w-full flex-col gap-4 p-4">
+            <form onSubmit={submit} className="flex w-full flex-col gap-4">
                 <Heading title="Perbaiki Pendaftaran" description={pendaftaran.nomor_pendaftaran} />
 
                 {pendaftaran.catatan_verifikasi && (
@@ -321,22 +321,14 @@ export default function PpdbPerbaiki({ pendaftaran }: { pendaftaran: Pendaftaran
 
                                 <div className="grid gap-2">
                                     <Label htmlFor={`wali-${index}-nama`}>Nama</Label>
-                                    <Input
-                                        id={`wali-${index}-nama`}
-                                        value={wali.nama}
-                                        onChange={(e) => updateWali(index, 'nama', e.target.value)}
-                                    />
+                                    <Input id={`wali-${index}-nama`} value={wali.nama} onChange={(e) => updateWali(index, 'nama', e.target.value)} />
                                     <InputError message={form.errors[`wali.${index}.nama`]} />
                                 </div>
 
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="grid gap-2">
                                         <Label htmlFor={`wali-${index}-nik`}>NIK</Label>
-                                        <Input
-                                            id={`wali-${index}-nik`}
-                                            value={wali.nik}
-                                            onChange={(e) => updateWali(index, 'nik', e.target.value)}
-                                        />
+                                        <Input id={`wali-${index}-nik`} value={wali.nik} onChange={(e) => updateWali(index, 'nik', e.target.value)} />
                                         <InputError message={form.errors[`wali.${index}.nik`]} />
                                     </div>
 
@@ -463,7 +455,7 @@ function DokumenField({
         <div className="grid gap-2">
             <Label htmlFor={id}>{label}</Label>
             {existing && (
-                <p className="text-sm text-muted-foreground">
+                <p className="text-muted-foreground text-sm">
                     File saat ini:{' '}
                     <a
                         href={`/storage/${existing.berkas}`}

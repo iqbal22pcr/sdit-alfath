@@ -15,7 +15,7 @@ export default function WaliAkademikDetail({ siswa }: { siswa: SiswaDetail }) {
         <>
             <Head title={`Akademik - ${siswa.nama}`} />
 
-            <div className="flex flex-col gap-4 p-4">
+            <div className="flex flex-col gap-4">
                 <Heading title={`Akademik ${siswa.nama}`} description="Ringkasan akademik anak Anda." />
 
                 <Card className="rounded-xl">

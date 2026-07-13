@@ -69,9 +69,9 @@ export default function GelombangPpdbShow({
         <>
             <Head title={`Kelola Kuota - ${gelombangPpdb.nama}`} />
 
-            <form onSubmit={submit} className="flex flex-col gap-4 p-4">
+            <form onSubmit={submit} className="flex flex-col gap-4">
                 <div>
-                    <Link href={route('gelombang-ppdb.index')} className="text-sm text-muted-foreground hover:underline">
+                    <Link href={route('gelombang-ppdb.index')} className="text-muted-foreground text-sm hover:underline">
                         &larr; Kembali ke daftar gelombang
                     </Link>
                     <div className="mt-2">

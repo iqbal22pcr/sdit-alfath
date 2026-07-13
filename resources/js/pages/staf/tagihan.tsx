@@ -5,7 +5,16 @@ import { SimplePagination } from '@/components/simple-pagination';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import {
+    Dialog,
+    DialogClose,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -157,8 +166,7 @@ export default function StafTagihanIndex({
     // the skeleton over a table that isn't actually changing. Only
     // react to real (non-prefetch) visits targeting this page's own URL.
     useEffect(() => {
-        const isOwnRealVisit = (visit: { prefetch: boolean; url: URL }) =>
-            !visit.prefetch && visit.url.pathname === window.location.pathname;
+        const isOwnRealVisit = (visit: { prefetch: boolean; url: URL }) => !visit.prefetch && visit.url.pathname === window.location.pathname;
 
         const stopStart = router.on('start', (event) => {
             if (isOwnRealVisit(event.detail.visit)) setLoading(true);
@@ -275,7 +283,7 @@ export default function StafTagihanIndex({
         <>
             <Head title="Tagihan" />
 
-            <div className="flex flex-col gap-6 p-4">
+            <div className="flex flex-col gap-6">
                 <div className="flex items-center justify-between">
                     <Heading title="Tagihan" description="Kelola tagihan pembayaran siswa dan pantau status pelunasannya." />
 
@@ -395,129 +403,131 @@ export default function StafTagihanIndex({
                     </Dialog>
                 </div>
 
-                <Card className="overflow-hidden rounded-xl">
-                    <div className="flex flex-wrap items-center gap-2 border-b p-4">
-                        <Input
-                            placeholder="Cari nama siswa atau nomor tagihan..."
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
-                            className="w-72"
-                        />
+                <Card className="overflow-hidden rounded-xl p-6">
+                    <div className="flex flex-col gap-4">
+                        <div className="flex flex-wrap items-center gap-2 border-b pb-4">
+                            <Input
+                                placeholder="Cari nama siswa atau nomor tagihan..."
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                                className="w-72"
+                            />
 
-                        <Select value={filters.status} onValueChange={(value) => goToQuery({ status: value as Filters['status'] })}>
-                            <SelectTrigger className="w-48">
-                                <SelectValue placeholder="Filter status" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="semua">Semua Status</SelectItem>
-                                <SelectItem value="belum_lunas">Belum Lunas (semua)</SelectItem>
-                                {(Object.keys(STATUS_LABEL) as StatusTagihan[]).map((status) => (
-                                    <SelectItem key={status} value={status}>
-                                        {STATUS_LABEL[status]}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
+                            <Select value={filters.status} onValueChange={(value) => goToQuery({ status: value as Filters['status'] })}>
+                                <SelectTrigger className="w-48">
+                                    <SelectValue placeholder="Filter status" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="semua">Semua Status</SelectItem>
+                                    <SelectItem value="belum_lunas">Belum Lunas (semua)</SelectItem>
+                                    {(Object.keys(STATUS_LABEL) as StatusTagihan[]).map((status) => (
+                                        <SelectItem key={status} value={status}>
+                                            {STATUS_LABEL[status]}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
 
-                        <Select value={filters.jenis} onValueChange={(value) => goToQuery({ jenis: value as Filters['jenis'] })}>
-                            <SelectTrigger className="w-44">
-                                <SelectValue placeholder="Jenis komponen" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="semua">Semua Jenis</SelectItem>
-                                {(Object.keys(JENIS_LABEL) as JenisKomponen[]).map((jenis) => (
-                                    <SelectItem key={jenis} value={jenis}>
-                                        {JENIS_LABEL[jenis]}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
+                            <Select value={filters.jenis} onValueChange={(value) => goToQuery({ jenis: value as Filters['jenis'] })}>
+                                <SelectTrigger className="w-44">
+                                    <SelectValue placeholder="Jenis komponen" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="semua">Semua Jenis</SelectItem>
+                                    {(Object.keys(JENIS_LABEL) as JenisKomponen[]).map((jenis) => (
+                                        <SelectItem key={jenis} value={jenis}>
+                                            {JENIS_LABEL[jenis]}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
 
-                        <Select value={filters.tahun_ajaran_id} onValueChange={(value) => goToQuery({ tahun_ajaran_id: value })}>
-                            <SelectTrigger className="w-44">
-                                <SelectValue placeholder="Tahun Ajaran" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="semua">Semua Tahun Ajaran</SelectItem>
-                                {tahunAjaran.map((t) => (
-                                    <SelectItem key={t.id} value={String(t.id)}>
-                                        {t.nama}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
+                            <Select value={filters.tahun_ajaran_id} onValueChange={(value) => goToQuery({ tahun_ajaran_id: value })}>
+                                <SelectTrigger className="w-44">
+                                    <SelectValue placeholder="Tahun Ajaran" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="semua">Semua Tahun Ajaran</SelectItem>
+                                    {tahunAjaran.map((t) => (
+                                        <SelectItem key={t.id} value={String(t.id)}>
+                                            {t.nama}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
 
-                        <Select value={filters.bulan} onValueChange={(value) => goToQuery({ bulan: value })}>
-                            <SelectTrigger className="w-40">
-                                <SelectValue placeholder="Bulan" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="semua">Semua Bulan</SelectItem>
-                                {Object.entries(BULAN_LABEL).map(([value, label]) => (
-                                    <SelectItem key={value} value={value}>
-                                        {label}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
+                            <Select value={filters.bulan} onValueChange={(value) => goToQuery({ bulan: value })}>
+                                <SelectTrigger className="w-40">
+                                    <SelectValue placeholder="Bulan" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="semua">Semua Bulan</SelectItem>
+                                    {Object.entries(BULAN_LABEL).map(([value, label]) => (
+                                        <SelectItem key={value} value={value}>
+                                            {label}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
 
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>No</TableHead>
-                                <TableHead>Nomor Tagihan</TableHead>
-                                <TableHead>Nama Siswa</TableHead>
-                                <TableHead>Komponen Biaya</TableHead>
-                                <TableHead>Nominal</TableHead>
-                                <TableHead>Terbayar</TableHead>
-                                <TableHead>Status</TableHead>
-                                <TableHead className="text-right">Aksi</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {loading ? (
-                                Array.from({ length: SKELETON_ROWS }).map((_, index) => <SkeletonRow key={index} />)
-                            ) : tagihan.data.length === 0 ? (
-                                <TableRow>
-                                    <TableCell colSpan={8}>
-                                        <EmptyState title="Belum ada tagihan." />
-                                    </TableCell>
+                        <Table>
+                            <TableHeader>
+                                <TableRow className="bg-muted">
+                                    <TableHead>No</TableHead>
+                                    <TableHead>Nomor Tagihan</TableHead>
+                                    <TableHead>Nama Siswa</TableHead>
+                                    <TableHead>Komponen Biaya</TableHead>
+                                    <TableHead>Nominal</TableHead>
+                                    <TableHead>Terbayar</TableHead>
+                                    <TableHead>Status</TableHead>
+                                    <TableHead className="text-right">Aksi</TableHead>
                                 </TableRow>
-                            ) : (
-                                tagihan.data.map((t, index) => (
-                                    <TableRow key={t.id}>
-                                        <TableCell>{(tagihan.from ?? 1) + index}</TableCell>
-                                        <TableCell className="font-medium">{t.nomor_tagihan}</TableCell>
-                                        <TableCell>{t.siswa.nama}</TableCell>
-                                        <TableCell>{t.komponen_biaya.nama}</TableCell>
-                                        <TableCell>{formatRupiah(t.nominal)}</TableCell>
-                                        <TableCell>{formatRupiah(t.terbayar)}</TableCell>
-                                        <TableCell>
-                                            <Badge variant="outline" className={statusBadgeClass(t.status)}>
-                                                {STATUS_LABEL[t.status]}
-                                            </Badge>
-                                        </TableCell>
-                                        <TableCell className="text-right">
-                                            <div className="flex justify-end gap-2">
-                                                <Button variant="outline" size="sm" asChild>
-                                                    <Link href={route('staf.tagihan.show', t.id)}>Detail</Link>
-                                                </Button>
-                                                {t.status !== 'lunas' && (
-                                                    <Button size="sm" onClick={() => openBayar(t)}>
-                                                        Bayar
-                                                    </Button>
-                                                )}
-                                            </div>
+                            </TableHeader>
+                            <TableBody>
+                                {loading ? (
+                                    Array.from({ length: SKELETON_ROWS }).map((_, index) => <SkeletonRow key={index} />)
+                                ) : tagihan.data.length === 0 ? (
+                                    <TableRow>
+                                        <TableCell colSpan={8}>
+                                            <EmptyState title="Belum ada tagihan." />
                                         </TableCell>
                                     </TableRow>
-                                ))
-                            )}
-                        </TableBody>
-                    </Table>
+                                ) : (
+                                    tagihan.data.map((t, index) => (
+                                        <TableRow key={t.id}>
+                                            <TableCell>{(tagihan.from ?? 1) + index}</TableCell>
+                                            <TableCell className="font-medium">{t.nomor_tagihan}</TableCell>
+                                            <TableCell>{t.siswa.nama}</TableCell>
+                                            <TableCell>{t.komponen_biaya.nama}</TableCell>
+                                            <TableCell>{formatRupiah(t.nominal)}</TableCell>
+                                            <TableCell>{formatRupiah(t.terbayar)}</TableCell>
+                                            <TableCell>
+                                                <Badge variant="outline" className={statusBadgeClass(t.status)}>
+                                                    {STATUS_LABEL[t.status]}
+                                                </Badge>
+                                            </TableCell>
+                                            <TableCell className="text-right">
+                                                <div className="flex justify-end gap-2">
+                                                    <Button variant="outline" size="sm" asChild>
+                                                        <Link href={route('staf.tagihan.show', t.id)}>Detail</Link>
+                                                    </Button>
+                                                    {t.status !== 'lunas' && (
+                                                        <Button size="sm" onClick={() => openBayar(t)}>
+                                                            Bayar
+                                                        </Button>
+                                                    )}
+                                                </div>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))
+                                )}
+                            </TableBody>
+                        </Table>
 
-                    <div className="border-t p-4">
-                        <SimplePagination meta={tagihan} itemLabel="tagihan" />
+                        <div className="border-t pt-4">
+                            <SimplePagination meta={tagihan} itemLabel="tagihan" />
+                        </div>
                     </div>
                 </Card>
             </div>

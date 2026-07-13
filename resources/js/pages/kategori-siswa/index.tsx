@@ -3,7 +3,16 @@ import Heading from '@/components/heading';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import {
+    Dialog,
+    DialogClose,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -86,7 +95,7 @@ export default function KategoriSiswaIndex({ kategoriSiswa }: { kategoriSiswa: K
         <>
             <Head title="Kategori Siswa" />
 
-            <div className="flex flex-col gap-4 p-4">
+            <div className="flex flex-col gap-4">
                 <div className="flex items-center justify-between">
                     <Heading title="Kategori Siswa" description="Kelola kategori siswa beserta persentase potongan biaya untuk tiap kategori." />
 
@@ -161,10 +170,10 @@ export default function KategoriSiswaIndex({ kategoriSiswa }: { kategoriSiswa: K
                 </div>
 
                 <Card className="rounded-xl">
-                    <CardContent>
+                    <CardContent className="p-6">
                         <Table>
                             <TableHeader>
-                                <TableRow>
+                                <TableRow className="bg-muted">
                                     <TableHead>Nama</TableHead>
                                     <TableHead>Persentase Diskon</TableHead>
                                     <TableHead>Deskripsi</TableHead>
@@ -187,7 +196,7 @@ export default function KategoriSiswaIndex({ kategoriSiswa }: { kategoriSiswa: K
                                     <TableRow key={kategori.id}>
                                         <TableCell className="font-medium">{kategori.nama}</TableCell>
                                         <TableCell>{kategori.persentase_diskon}%</TableCell>
-                                        <TableCell className="max-w-md text-muted-foreground">{kategori.deskripsi}</TableCell>
+                                        <TableCell className="text-muted-foreground max-w-md">{kategori.deskripsi}</TableCell>
                                         <TableCell className="text-right">
                                             <div className="flex justify-end gap-2">
                                                 <Button variant="outline" size="sm" onClick={() => openEdit(kategori)}>

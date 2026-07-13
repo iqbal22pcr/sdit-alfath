@@ -104,13 +104,7 @@ const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Detail Verifikasi', href: '#' },
 ];
 
-export default function StafPpdbVerifikasi({
-    pendaftaran,
-    kuotaKategori,
-}: {
-    pendaftaran: PendaftaranDetail;
-    kuotaKategori: KuotaKategoriOption[];
-}) {
+export default function StafPpdbVerifikasi({ pendaftaran, kuotaKategori }: { pendaftaran: PendaftaranDetail; kuotaKategori: KuotaKategoriOption[] }) {
     const form = useForm<VerifikasiForm>({
         status: '',
         kategori_siswa_id: pendaftaran.kategori_siswa_id ? String(pendaftaran.kategori_siswa_id) : '',
@@ -129,7 +123,7 @@ export default function StafPpdbVerifikasi({
         <>
             <Head title={`Verifikasi ${pendaftaran.nomor_pendaftaran}`} />
 
-            <div className="flex w-full flex-col gap-6 p-4">
+            <div className="flex w-full flex-col gap-6">
                 <div className="flex items-center justify-between">
                     <Heading title={pendaftaran.nomor_pendaftaran} description={`Gelombang: ${pendaftaran.gelombang_ppdb.nama}`} />
                     <Badge variant="outline" className={statusBadgeClass(pendaftaran.status)}>
@@ -163,7 +157,7 @@ export default function StafPpdbVerifikasi({
                         <CardTitle>Data Wali</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                        {pendaftaran.wali_ppdb.length === 0 && <p className="text-sm text-muted-foreground">Belum ada data wali.</p>}
+                        {pendaftaran.wali_ppdb.length === 0 && <p className="text-muted-foreground text-sm">Belum ada data wali.</p>}
                         {pendaftaran.wali_ppdb.map((wali) => (
                             <div key={wali.id} className="grid grid-cols-2 gap-x-4 gap-y-1 rounded-md border p-3 text-sm">
                                 <Field label="Nama" value={wali.nama} />
@@ -180,7 +174,7 @@ export default function StafPpdbVerifikasi({
                         <CardTitle>Dokumen</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        {pendaftaran.dokumen_ppdb.length === 0 && <p className="text-sm text-muted-foreground">Belum ada dokumen diunggah.</p>}
+                        {pendaftaran.dokumen_ppdb.length === 0 && <p className="text-muted-foreground text-sm">Belum ada dokumen diunggah.</p>}
                         <ul className="space-y-2">
                             {pendaftaran.dokumen_ppdb.map((dok) => (
                                 <li key={dok.id} className="flex items-center justify-between text-sm">
@@ -204,7 +198,7 @@ export default function StafPpdbVerifikasi({
                         <CardHeader>
                             <CardTitle>Status Verifikasi</CardTitle>
                         </CardHeader>
-                        <CardContent className="space-y-2 text-sm text-muted-foreground">
+                        <CardContent className="text-muted-foreground space-y-2 text-sm">
                             <p>
                                 Pendaftaran ini sudah final dengan status{' '}
                                 <Badge variant="outline" className={statusBadgeClass(pendaftaran.status)}>
@@ -213,7 +207,7 @@ export default function StafPpdbVerifikasi({
                                 , tidak bisa diverifikasi ulang lewat form ini.
                             </p>
                             <p>
-                                Diverifikasi oleh: <span className="font-medium text-foreground">{pendaftaran.verifikator?.name ?? '-'}</span>
+                                Diverifikasi oleh: <span className="text-foreground font-medium">{pendaftaran.verifikator?.name ?? '-'}</span>
                             </p>
                         </CardContent>
                     </Card>
@@ -225,10 +219,7 @@ export default function StafPpdbVerifikasi({
                         <CardContent className="space-y-4">
                             <div className="grid gap-2">
                                 <Label htmlFor="kategori_siswa_id">Kategori (wajib dipilih untuk menerima)</Label>
-                                <Select
-                                    value={form.data.kategori_siswa_id}
-                                    onValueChange={(value) => form.setData('kategori_siswa_id', value)}
-                                >
+                                <Select value={form.data.kategori_siswa_id} onValueChange={(value) => form.setData('kategori_siswa_id', value)}>
                                     <SelectTrigger id="kategori_siswa_id">
                                         <SelectValue placeholder="Pilih kategori" />
                                     </SelectTrigger>
@@ -240,7 +231,9 @@ export default function StafPpdbVerifikasi({
                                         ))}
                                     </SelectContent>
                                 </Select>
-                                {form.errors.kategori_siswa_id && <p className="text-sm text-red-600 dark:text-red-400">{form.errors.kategori_siswa_id}</p>}
+                                {form.errors.kategori_siswa_id && (
+                                    <p className="text-sm text-red-600 dark:text-red-400">{form.errors.kategori_siswa_id}</p>
+                                )}
                                 {form.errors.status && <p className="text-sm text-red-600 dark:text-red-400">{form.errors.status}</p>}
                             </div>
 
@@ -258,17 +251,18 @@ export default function StafPpdbVerifikasi({
                             </div>
 
                             <div className="flex flex-wrap gap-2">
-                                <Button
-                                    type="button"
-                                    disabled={form.processing || ! kategoriDipilih}
-                                    onClick={() => submitVerifikasi('diterima')}
-                                >
+                                <Button type="button" disabled={form.processing || !kategoriDipilih} onClick={() => submitVerifikasi('diterima')}>
                                     Terima
                                 </Button>
                                 <Button type="button" variant="destructive" disabled={form.processing} onClick={() => submitVerifikasi('ditolak')}>
                                     Tolak
                                 </Button>
-                                <Button type="button" variant="outline" disabled={form.processing} onClick={() => submitVerifikasi('perlu_perbaikan')}>
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    disabled={form.processing}
+                                    onClick={() => submitVerifikasi('perlu_perbaikan')}
+                                >
                                     Minta Perbaikan
                                 </Button>
                             </div>
@@ -285,7 +279,7 @@ StafPpdbVerifikasi.layout = (page: React.ReactNode) => <AppLayout breadcrumbs={b
 function Field({ label, value, className }: { label: string; value: string; className?: string }) {
     return (
         <div className={className}>
-            <p className="text-xs text-muted-foreground">{label}</p>
+            <p className="text-muted-foreground text-xs">{label}</p>
             <p>{value}</p>
         </div>
     );

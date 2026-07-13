@@ -14,7 +14,7 @@ export default function AppSidebarLayout({ children, breadcrumbs = [] }: { child
 
                 <FlashMessage />
 
-                {children}
+                <div className="p-4">{children}</div>
             </AppContent>
         </AppShell>
     );
