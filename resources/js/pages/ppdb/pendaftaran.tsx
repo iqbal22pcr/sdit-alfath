@@ -83,7 +83,7 @@ export default function PpdbPendaftaran({ pendaftaran, ringkasan }: { pendaftara
                     <CardContent className="p-6">
                         <Table>
                             <TableHeader>
-                                <TableRow className="bg-muted">
+                                <TableRow>
                                     <TableHead>No</TableHead>
                                     <TableHead>Nomor Pendaftaran</TableHead>
                                     <TableHead>Nama Pendaftar</TableHead>

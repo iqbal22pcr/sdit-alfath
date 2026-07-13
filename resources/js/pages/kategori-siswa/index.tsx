@@ -179,7 +179,7 @@ export default function KategoriSiswaIndex({ kategoriSiswa }: { kategoriSiswa: K
                     <CardContent className="p-6">
                         <Table>
                             <TableHeader>
-                                <TableRow className="bg-muted">
+                                <TableRow>
                                     <TableHead>No</TableHead>
                                     <TableHead>Nama</TableHead>
                                     <TableHead>Persentase Diskon</TableHead>

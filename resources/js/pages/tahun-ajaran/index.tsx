@@ -180,7 +180,7 @@ export default function TahunAjaranIndex({ tahunAjaran }: { tahunAjaran: TahunAj
                     <CardContent className="p-6">
                         <Table>
                             <TableHeader>
-                                <TableRow className="bg-muted">
+                                <TableRow>
                                     <TableHead>No</TableHead>
                                     <TableHead>Nama</TableHead>
                                     <TableHead>Tahun Mulai</TableHead>

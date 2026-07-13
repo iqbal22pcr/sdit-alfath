@@ -86,12 +86,12 @@ export default function WaliTagihanIndex({
                     <CardContent className="p-6">
                         <Table>
                             <TableHeader>
-                                <TableRow className="bg-muted">
+                                <TableRow>
                                     <TableHead>No</TableHead>
                                     <TableHead>Nama Anak</TableHead>
                                     <TableHead>Komponen Biaya</TableHead>
-                                    <TableHead>Nominal</TableHead>
-                                    <TableHead>Terbayar</TableHead>
+                                    <TableHead className="text-right">Nominal</TableHead>
+                                    <TableHead className="pr-6 text-right">Terbayar</TableHead>
                                     <TableHead>Status</TableHead>
                                     <TableHead>Jatuh Tempo</TableHead>
                                 </TableRow>
@@ -110,8 +110,8 @@ export default function WaliTagihanIndex({
                                         <TableCell>{index + 1}</TableCell>
                                         <TableCell className="font-medium">{t.siswa.nama}</TableCell>
                                         <TableCell>{t.komponen_biaya.nama}</TableCell>
-                                        <TableCell>{formatRupiah(t.nominal)}</TableCell>
-                                        <TableCell>{formatRupiah(t.terbayar)}</TableCell>
+                                        <TableCell className="text-right tabular-nums">{formatRupiah(t.nominal)}</TableCell>
+                                        <TableCell className="pr-6 text-right tabular-nums">{formatRupiah(t.terbayar)}</TableCell>
                                         <TableCell>
                                             <Badge variant="outline" className={statusBadgeClass(t.status)}>
                                                 {STATUS_LABEL[t.status]}

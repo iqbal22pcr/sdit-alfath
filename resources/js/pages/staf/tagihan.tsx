@@ -26,6 +26,7 @@ import { statusBadgeClass } from '@/lib/status-badge';
 import { type BreadcrumbItem } from '@/types';
 import { type FormDataConvertible } from '@inertiajs/core';
 import { Head, Link, router, useForm } from '@inertiajs/react';
+import { Search } from 'lucide-react';
 import { FormEventHandler, useEffect, useState } from 'react';
 
 type StatusTagihan = 'belum_bayar' | 'sebagian' | 'lunas';
@@ -405,13 +406,16 @@ export default function StafTagihanIndex({
 
                 <Card className="overflow-hidden rounded-xl p-6">
                     <div className="flex flex-col gap-4">
-                        <div className="flex flex-wrap items-center gap-2 border-b pb-4">
-                            <Input
-                                placeholder="Cari nama siswa atau nomor tagihan..."
-                                value={search}
-                                onChange={(e) => setSearch(e.target.value)}
-                                className="w-72"
-                            />
+                        <div className="flex flex-wrap items-center gap-3 border-b pb-4">
+                            <div className="relative min-w-[240px] flex-1">
+                                <Search className="text-muted-foreground pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2" />
+                                <Input
+                                    placeholder="Cari nama siswa atau nomor tagihan..."
+                                    value={search}
+                                    onChange={(e) => setSearch(e.target.value)}
+                                    className="pl-9"
+                                />
+                            </div>
 
                             <Select value={filters.status} onValueChange={(value) => goToQuery({ status: value as Filters['status'] })}>
                                 <SelectTrigger className="w-48">
@@ -457,15 +461,15 @@ export default function StafTagihanIndex({
                             </Select>
                         </div>
 
-                        <Table>
+                        <Table className="[&_td]:px-2.5 [&_th]:px-2.5">
                             <TableHeader>
-                                <TableRow className="bg-muted">
+                                <TableRow>
                                     <TableHead>No</TableHead>
                                     <TableHead>Nomor Tagihan</TableHead>
                                     <TableHead>Nama Siswa</TableHead>
                                     <TableHead>Komponen Biaya</TableHead>
-                                    <TableHead>Nominal</TableHead>
-                                    <TableHead>Terbayar</TableHead>
+                                    <TableHead className="text-right">Nominal</TableHead>
+                                    <TableHead className="pr-6 text-right">Terbayar</TableHead>
                                     <TableHead>Status</TableHead>
                                     <TableHead className="text-right">Aksi</TableHead>
                                 </TableRow>
@@ -483,11 +487,11 @@ export default function StafTagihanIndex({
                                     tagihan.data.map((t, index) => (
                                         <TableRow key={t.id}>
                                             <TableCell>{(tagihan.from ?? 1) + index}</TableCell>
-                                            <TableCell className="font-medium">{t.nomor_tagihan}</TableCell>
+                                            <TableCell className="font-medium whitespace-nowrap">{t.nomor_tagihan}</TableCell>
                                             <TableCell>{t.siswa.nama}</TableCell>
                                             <TableCell>{t.komponen_biaya.nama}</TableCell>
-                                            <TableCell>{formatRupiah(t.nominal)}</TableCell>
-                                            <TableCell>{formatRupiah(t.terbayar)}</TableCell>
+                                            <TableCell className="text-right tabular-nums">{formatRupiah(t.nominal)}</TableCell>
+                                            <TableCell className="pr-6 text-right tabular-nums">{formatRupiah(t.terbayar)}</TableCell>
                                             <TableCell>
                                                 <Badge variant="outline" className={statusBadgeClass(t.status)}>
                                                     {STATUS_LABEL[t.status]}
