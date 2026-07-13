@@ -396,7 +396,14 @@ export default function StafTagihanIndex({
                 </div>
 
                 <Card className="overflow-hidden rounded-xl">
-                    <div className="flex flex-wrap items-center gap-3 border-b p-4">
+                    <div className="flex flex-wrap items-center gap-2 border-b p-4">
+                        <Input
+                            placeholder="Cari nama siswa atau nomor tagihan..."
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            className="w-72"
+                        />
+
                         <Select value={filters.status} onValueChange={(value) => goToQuery({ status: value as Filters['status'] })}>
                             <SelectTrigger className="w-48">
                                 <SelectValue placeholder="Filter status" />
@@ -453,18 +460,12 @@ export default function StafTagihanIndex({
                                 ))}
                             </SelectContent>
                         </Select>
-
-                        <Input
-                            placeholder="Cari nama siswa atau nomor tagihan..."
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
-                            className="ml-auto w-72"
-                        />
                     </div>
 
                     <Table>
                         <TableHeader>
                             <TableRow>
+                                <TableHead>No</TableHead>
                                 <TableHead>Nomor Tagihan</TableHead>
                                 <TableHead>Nama Siswa</TableHead>
                                 <TableHead>Komponen Biaya</TableHead>
@@ -479,13 +480,14 @@ export default function StafTagihanIndex({
                                 Array.from({ length: SKELETON_ROWS }).map((_, index) => <SkeletonRow key={index} />)
                             ) : tagihan.data.length === 0 ? (
                                 <TableRow>
-                                    <TableCell colSpan={7}>
+                                    <TableCell colSpan={8}>
                                         <EmptyState title="Belum ada tagihan." />
                                     </TableCell>
                                 </TableRow>
                             ) : (
-                                tagihan.data.map((t) => (
+                                tagihan.data.map((t, index) => (
                                     <TableRow key={t.id}>
+                                        <TableCell>{(tagihan.from ?? 1) + index}</TableCell>
                                         <TableCell className="font-medium">{t.nomor_tagihan}</TableCell>
                                         <TableCell>{t.siswa.nama}</TableCell>
                                         <TableCell>{t.komponen_biaya.nama}</TableCell>
@@ -616,6 +618,9 @@ StafTagihanIndex.layout = (page: React.ReactNode) => <AppLayout breadcrumbs={bre
 function SkeletonRow() {
     return (
         <TableRow>
+            <TableCell>
+                <Skeleton className="h-4 w-6" />
+            </TableCell>
             <TableCell>
                 <Skeleton className="h-4 w-28" />
             </TableCell>
