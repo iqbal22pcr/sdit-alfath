@@ -29,10 +29,10 @@ class TagihanController extends Controller
      * both live on this same list -- the status/jenis breakdown
      * charts moved to the staf_keuangan dashboard and stay there.
      *
-     * search/status/jenis/tahun_ajaran_id/bulan/overdue all come from
-     * the query string (not client-side filtering) and are echoed back
-     * as `filters` so the page can keep its inputs in sync with the
-     * URL across pagination/search round-trips.
+     * search/status/jenis/tahun_ajaran_id/overdue all come from the
+     * query string (not client-side filtering) and are echoed back as
+     * `filters` so the page can keep its inputs in sync with the URL
+     * across pagination/search round-trips.
      *
      * status accepts "semua", "belum_lunas" (a pseudo-value covering
      * both belum_bayar and sebagian at once, for the staf_keuangan
@@ -42,12 +42,6 @@ class TagihanController extends Controller
      * status != lunas, and jatuh_tempo already past -- used by the
      * dashboard's "Uang Masuk Terlambat" card link. It composes with
      * whatever else is in the query string rather than replacing it.
-     *
-     * The bulan filter matching against bulan_tagihan is deliberate,
-     * not an oversight: bulan_tagihan is only ever populated for
-     * berulang (SPP) komponen (see Siswa::buatTagihanUntukJenis()), so
-     * filtering by a specific bulan correctly excludes every buku/
-     * seragam/masuk tagihan, which have no month of their own.
      */
     public function index(Request $request): Response
     {
@@ -55,7 +49,6 @@ class TagihanController extends Controller
         $status = $request->query('status', 'semua');
         $jenis = $request->query('jenis', 'semua');
         $tahunAjaranId = $request->query('tahun_ajaran_id', 'semua');
-        $bulan = $request->query('bulan', 'semua');
         $overdue = $request->boolean('overdue');
 
         $tagihan = Tagihan::query()
@@ -69,7 +62,6 @@ class TagihanController extends Controller
             ->when($status !== 'semua' && $status !== 'belum_lunas', fn ($query) => $query->where('status', $status))
             ->when($jenis !== 'semua', fn ($query) => $query->whereHas('komponenBiaya', fn ($q) => $q->where('jenis', $jenis)))
             ->when($tahunAjaranId !== 'semua', fn ($query) => $query->where('tahun_ajaran_id', $tahunAjaranId))
-            ->when($bulan !== 'semua', fn ($query) => $query->where('bulan_tagihan', $bulan))
             ->when($overdue, fn ($query) => $query->where('status', '!=', 'lunas')
                 ->whereNotNull('jatuh_tempo')
                 ->where('jatuh_tempo', '<', now()->startOfDay())
@@ -85,7 +77,6 @@ class TagihanController extends Controller
                 'status' => $status,
                 'jenis' => $jenis,
                 'tahun_ajaran_id' => $tahunAjaranId,
-                'bulan' => $bulan,
                 'overdue' => $overdue,
             ],
             'siswaAktif' => Siswa::where('status', 'aktif')->orderBy('nama')->get(['id', 'nama']),

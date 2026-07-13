@@ -124,44 +124,50 @@ export default function GelombangPpdbIndex({ gelombangPpdb, tahunAjaran }: { gel
             <Head title="Gelombang PPDB" />
 
             <div className="flex flex-col gap-4">
-                <div className="flex items-center justify-between">
-                    <Heading title="Gelombang PPDB" description="Kelola gelombang penerimaan siswa baru beserta kuota tiap kategori." />
+                <div className="flex flex-col gap-4">
+                    <Heading
+                        title="Gelombang PPDB"
+                        description="Kelola gelombang penerimaan siswa baru beserta kuota tiap kategori."
+                        withSidebarTrigger
+                    />
 
-                    <Dialog
-                        open={addOpen}
-                        onOpenChange={(open) => {
-                            setAddOpen(open);
-                            if (!open) {
-                                addForm.reset();
-                                addForm.clearErrors();
-                            }
-                        }}
-                    >
-                        <DialogTrigger asChild>
-                            <Button>Tambah Gelombang</Button>
-                        </DialogTrigger>
-                        <DialogContent>
-                            <DialogHeader>
-                                <DialogTitle>Tambah Gelombang PPDB</DialogTitle>
-                                <DialogDescription>Buat gelombang penerimaan siswa baru.</DialogDescription>
-                            </DialogHeader>
+                    <div className="flex justify-end">
+                        <Dialog
+                            open={addOpen}
+                            onOpenChange={(open) => {
+                                setAddOpen(open);
+                                if (!open) {
+                                    addForm.reset();
+                                    addForm.clearErrors();
+                                }
+                            }}
+                        >
+                            <DialogTrigger asChild>
+                                <Button>Tambah Gelombang</Button>
+                            </DialogTrigger>
+                            <DialogContent>
+                                <DialogHeader>
+                                    <DialogTitle>Tambah Gelombang PPDB</DialogTitle>
+                                    <DialogDescription>Buat gelombang penerimaan siswa baru.</DialogDescription>
+                                </DialogHeader>
 
-                            <form className="space-y-4" onSubmit={submitAdd}>
-                                <GelombangFields form={addForm} tahunAjaran={tahunAjaran} idPrefix="add" />
+                                <form className="space-y-4" onSubmit={submitAdd}>
+                                    <GelombangFields form={addForm} tahunAjaran={tahunAjaran} idPrefix="add" />
 
-                                <DialogFooter>
-                                    <DialogClose asChild>
-                                        <Button type="button" variant="outline">
-                                            Batal
+                                    <DialogFooter>
+                                        <DialogClose asChild>
+                                            <Button type="button" variant="outline">
+                                                Batal
+                                            </Button>
+                                        </DialogClose>
+                                        <Button type="submit" disabled={addForm.processing}>
+                                            Simpan
                                         </Button>
-                                    </DialogClose>
-                                    <Button type="submit" disabled={addForm.processing}>
-                                        Simpan
-                                    </Button>
-                                </DialogFooter>
-                            </form>
-                        </DialogContent>
-                    </Dialog>
+                                    </DialogFooter>
+                                </form>
+                            </DialogContent>
+                        </Dialog>
+                    </div>
                 </div>
 
                 <Card className="rounded-xl">
@@ -169,6 +175,7 @@ export default function GelombangPpdbIndex({ gelombangPpdb, tahunAjaran }: { gel
                         <Table>
                             <TableHeader>
                                 <TableRow className="bg-muted">
+                                    <TableHead>No</TableHead>
                                     <TableHead>Nama</TableHead>
                                     <TableHead>Tahun Ajaran</TableHead>
                                     <TableHead>Periode</TableHead>
@@ -180,7 +187,7 @@ export default function GelombangPpdbIndex({ gelombangPpdb, tahunAjaran }: { gel
                             <TableBody>
                                 {gelombangPpdb.length === 0 && (
                                     <TableRow>
-                                        <TableCell colSpan={6}>
+                                        <TableCell colSpan={7}>
                                             <EmptyState
                                                 title="Belum ada gelombang PPDB."
                                                 action={{ label: 'Tambah Gelombang', onClick: () => setAddOpen(true) }}
@@ -189,8 +196,9 @@ export default function GelombangPpdbIndex({ gelombangPpdb, tahunAjaran }: { gel
                                     </TableRow>
                                 )}
 
-                                {gelombangPpdb.map((gelombang) => (
+                                {gelombangPpdb.map((gelombang, index) => (
                                     <TableRow key={gelombang.id}>
+                                        <TableCell>{index + 1}</TableCell>
                                         <TableCell className="font-medium">{gelombang.nama}</TableCell>
                                         <TableCell>{gelombang.tahun_ajaran.nama}</TableCell>
                                         <TableCell>

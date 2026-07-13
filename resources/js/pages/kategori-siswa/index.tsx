@@ -96,77 +96,83 @@ export default function KategoriSiswaIndex({ kategoriSiswa }: { kategoriSiswa: K
             <Head title="Kategori Siswa" />
 
             <div className="flex flex-col gap-4">
-                <div className="flex items-center justify-between">
-                    <Heading title="Kategori Siswa" description="Kelola kategori siswa beserta persentase potongan biaya untuk tiap kategori." />
+                <div className="flex flex-col gap-4">
+                    <Heading
+                        title="Kategori Siswa"
+                        description="Kelola kategori siswa beserta persentase potongan biaya untuk tiap kategori."
+                        withSidebarTrigger
+                    />
 
-                    <Dialog
-                        open={addOpen}
-                        onOpenChange={(open) => {
-                            setAddOpen(open);
-                            if (!open) {
-                                addForm.reset();
-                                addForm.clearErrors();
-                            }
-                        }}
-                    >
-                        <DialogTrigger asChild>
-                            <Button>Tambah Kategori</Button>
-                        </DialogTrigger>
-                        <DialogContent>
-                            <DialogHeader>
-                                <DialogTitle>Tambah Kategori Siswa</DialogTitle>
-                                <DialogDescription>Buat kategori/golongan siswa baru beserta persentase potongan biaya.</DialogDescription>
-                            </DialogHeader>
+                    <div className="flex justify-end">
+                        <Dialog
+                            open={addOpen}
+                            onOpenChange={(open) => {
+                                setAddOpen(open);
+                                if (!open) {
+                                    addForm.reset();
+                                    addForm.clearErrors();
+                                }
+                            }}
+                        >
+                            <DialogTrigger asChild>
+                                <Button>Tambah Kategori</Button>
+                            </DialogTrigger>
+                            <DialogContent>
+                                <DialogHeader>
+                                    <DialogTitle>Tambah Kategori Siswa</DialogTitle>
+                                    <DialogDescription>Buat kategori/golongan siswa baru beserta persentase potongan biaya.</DialogDescription>
+                                </DialogHeader>
 
-                            <form className="space-y-4" onSubmit={submitAdd}>
-                                <div className="grid gap-2">
-                                    <Label htmlFor="add-nama">Nama</Label>
-                                    <Input
-                                        id="add-nama"
-                                        value={addForm.data.nama}
-                                        onChange={(e) => addForm.setData('nama', e.target.value)}
-                                        placeholder="mis. Reguler"
-                                    />
-                                    <InputError message={addForm.errors.nama} />
-                                </div>
+                                <form className="space-y-4" onSubmit={submitAdd}>
+                                    <div className="grid gap-2">
+                                        <Label htmlFor="add-nama">Nama</Label>
+                                        <Input
+                                            id="add-nama"
+                                            value={addForm.data.nama}
+                                            onChange={(e) => addForm.setData('nama', e.target.value)}
+                                            placeholder="mis. Reguler"
+                                        />
+                                        <InputError message={addForm.errors.nama} />
+                                    </div>
 
-                                <div className="grid gap-2">
-                                    <Label htmlFor="add-persentase">Persentase Diskon (%)</Label>
-                                    <Input
-                                        id="add-persentase"
-                                        type="number"
-                                        min={0}
-                                        max={100}
-                                        value={addForm.data.persentase_diskon}
-                                        onChange={(e) => addForm.setData('persentase_diskon', e.target.value)}
-                                    />
-                                    <InputError message={addForm.errors.persentase_diskon} />
-                                </div>
+                                    <div className="grid gap-2">
+                                        <Label htmlFor="add-persentase">Persentase Diskon (%)</Label>
+                                        <Input
+                                            id="add-persentase"
+                                            type="number"
+                                            min={0}
+                                            max={100}
+                                            value={addForm.data.persentase_diskon}
+                                            onChange={(e) => addForm.setData('persentase_diskon', e.target.value)}
+                                        />
+                                        <InputError message={addForm.errors.persentase_diskon} />
+                                    </div>
 
-                                <div className="grid gap-2">
-                                    <Label htmlFor="add-deskripsi">Deskripsi</Label>
-                                    <Textarea
-                                        id="add-deskripsi"
-                                        value={addForm.data.deskripsi}
-                                        onChange={(e) => addForm.setData('deskripsi', e.target.value)}
-                                        placeholder="Penjelasan singkat kategori (opsional)"
-                                    />
-                                    <InputError message={addForm.errors.deskripsi} />
-                                </div>
+                                    <div className="grid gap-2">
+                                        <Label htmlFor="add-deskripsi">Deskripsi</Label>
+                                        <Textarea
+                                            id="add-deskripsi"
+                                            value={addForm.data.deskripsi}
+                                            onChange={(e) => addForm.setData('deskripsi', e.target.value)}
+                                            placeholder="Penjelasan singkat kategori (opsional)"
+                                        />
+                                        <InputError message={addForm.errors.deskripsi} />
+                                    </div>
 
-                                <DialogFooter>
-                                    <DialogClose asChild>
-                                        <Button type="button" variant="outline">
-                                            Batal
+                                    <DialogFooter>
+                                        <DialogClose asChild>
+                                            <Button type="button" variant="outline">
+                                                Batal
+                                            </Button>
+                                        </DialogClose>
+                                        <Button type="submit" disabled={addForm.processing}>
+                                            Simpan
                                         </Button>
-                                    </DialogClose>
-                                    <Button type="submit" disabled={addForm.processing}>
-                                        Simpan
-                                    </Button>
-                                </DialogFooter>
-                            </form>
-                        </DialogContent>
-                    </Dialog>
+                                    </DialogFooter>
+                                </form>
+                            </DialogContent>
+                        </Dialog>
+                    </div>
                 </div>
 
                 <Card className="rounded-xl">
@@ -174,6 +180,7 @@ export default function KategoriSiswaIndex({ kategoriSiswa }: { kategoriSiswa: K
                         <Table>
                             <TableHeader>
                                 <TableRow className="bg-muted">
+                                    <TableHead>No</TableHead>
                                     <TableHead>Nama</TableHead>
                                     <TableHead>Persentase Diskon</TableHead>
                                     <TableHead>Deskripsi</TableHead>
@@ -183,7 +190,7 @@ export default function KategoriSiswaIndex({ kategoriSiswa }: { kategoriSiswa: K
                             <TableBody>
                                 {kategoriSiswa.length === 0 && (
                                     <TableRow>
-                                        <TableCell colSpan={4}>
+                                        <TableCell colSpan={5}>
                                             <EmptyState
                                                 title="Belum ada kategori siswa."
                                                 action={{ label: 'Tambah Kategori', onClick: () => setAddOpen(true) }}
@@ -192,8 +199,9 @@ export default function KategoriSiswaIndex({ kategoriSiswa }: { kategoriSiswa: K
                                     </TableRow>
                                 )}
 
-                                {kategoriSiswa.map((kategori) => (
+                                {kategoriSiswa.map((kategori, index) => (
                                     <TableRow key={kategori.id}>
+                                        <TableCell>{index + 1}</TableCell>
                                         <TableCell className="font-medium">{kategori.nama}</TableCell>
                                         <TableCell>{kategori.persentase_diskon}%</TableCell>
                                         <TableCell className="text-muted-foreground max-w-md">{kategori.deskripsi}</TableCell>

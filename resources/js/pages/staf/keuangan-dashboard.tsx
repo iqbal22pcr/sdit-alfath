@@ -103,7 +103,7 @@ export default function StafKeuanganDashboard({
 
             <div className="flex flex-col gap-6">
                 <div className="flex items-center justify-between">
-                    <Heading title="Dashboard Keuangan" description="Ringkasan tagihan dan pembayaran siswa." />
+                    <Heading title="Dashboard Keuangan" description="Ringkasan tagihan dan pembayaran siswa." withSidebarTrigger />
 
                     <Select value={tahunAjaranScope} onValueChange={setScope}>
                         <SelectTrigger className="w-56">

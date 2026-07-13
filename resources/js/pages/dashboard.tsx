@@ -93,7 +93,7 @@ export default function Dashboard({ ringkasan }: { ringkasan?: Ringkasan }) {
             <Head title="Dashboard" />
 
             <div className="flex flex-col gap-6">
-                <Heading title="Dashboard Sekolah" description="Ringkasan kondisi sekolah saat ini." />
+                <Heading title="Dashboard Sekolah" description="Ringkasan kondisi sekolah saat ini." withSidebarTrigger />
 
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
                     <MetricCard icon={Users} tone="blue" label="Siswa Aktif" value={ringkasan.totalSiswaAktif} />

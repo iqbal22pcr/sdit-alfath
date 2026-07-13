@@ -50,12 +50,14 @@ export default function PpdbPendaftaran({ pendaftaran, ringkasan }: { pendaftara
             <Head title="Pendaftaran" />
 
             <div className="flex flex-col gap-4">
-                <div className="flex items-center justify-between">
-                    <Heading title="Pendaftaran" description="Pantau status pendaftaran PPDB anak Anda dari waktu ke waktu." />
+                <div className="flex flex-col gap-4">
+                    <Heading title="Pendaftaran" description="Pantau status pendaftaran PPDB anak Anda dari waktu ke waktu." withSidebarTrigger />
 
-                    <Button asChild>
-                        <Link href={route('ppdb.create')}>+ Tambah Pendaftaran</Link>
-                    </Button>
+                    <div className="flex justify-end">
+                        <Button asChild>
+                            <Link href={route('ppdb.create')}>+ Tambah Pendaftaran</Link>
+                        </Button>
+                    </div>
                 </div>
 
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
@@ -82,6 +84,7 @@ export default function PpdbPendaftaran({ pendaftaran, ringkasan }: { pendaftara
                         <Table>
                             <TableHeader>
                                 <TableRow className="bg-muted">
+                                    <TableHead>No</TableHead>
                                     <TableHead>Nomor Pendaftaran</TableHead>
                                     <TableHead>Nama Pendaftar</TableHead>
                                     <TableHead>Status</TableHead>
@@ -92,7 +95,7 @@ export default function PpdbPendaftaran({ pendaftaran, ringkasan }: { pendaftara
                             <TableBody>
                                 {pendaftaran.length === 0 && (
                                     <TableRow>
-                                        <TableCell colSpan={5}>
+                                        <TableCell colSpan={6}>
                                             <EmptyState
                                                 title="Belum ada pendaftaran."
                                                 action={{ label: 'Daftar PPDB', href: route('ppdb.create') }}
@@ -101,8 +104,9 @@ export default function PpdbPendaftaran({ pendaftaran, ringkasan }: { pendaftara
                                     </TableRow>
                                 )}
 
-                                {pendaftaran.map((p) => (
+                                {pendaftaran.map((p, index) => (
                                     <TableRow key={p.id}>
+                                        <TableCell>{index + 1}</TableCell>
                                         <TableCell className="font-medium">{p.nomor_pendaftaran}</TableCell>
                                         <TableCell>{p.nama_pendaftar}</TableCell>
                                         <TableCell>

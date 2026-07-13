@@ -100,7 +100,7 @@ export default function StafPpdbDashboard({
             <Head title="Dashboard PPDB" />
 
             <div className="flex flex-col gap-6">
-                <Heading title="Dashboard PPDB" description={`Gelombang: ${gelombang.nama}`} />
+                <Heading title="Dashboard PPDB" description={`Gelombang: ${gelombang.nama}`} withSidebarTrigger />
 
                 {siswaPerluAktivasi.length > 0 && (
                     <Alert className="border-[var(--border-warning)] bg-[var(--bg-warning)] text-[var(--text-warning)]">
@@ -191,6 +191,7 @@ export default function StafPpdbDashboard({
                         <Table>
                             <TableHeader>
                                 <TableRow>
+                                    <TableHead>No</TableHead>
                                     <TableHead>Nomor Pendaftaran</TableHead>
                                     <TableHead>Nama Pendaftar</TableHead>
                                     <TableHead>Akun Wali</TableHead>
@@ -203,14 +204,15 @@ export default function StafPpdbDashboard({
                             <TableBody>
                                 {filteredPendaftaran.length === 0 && (
                                     <TableRow>
-                                        <TableCell colSpan={7}>
+                                        <TableCell colSpan={8}>
                                             <EmptyState title="Tidak ada pendaftar." />
                                         </TableCell>
                                     </TableRow>
                                 )}
 
-                                {filteredPendaftaran.map((p) => (
+                                {filteredPendaftaran.map((p, index) => (
                                     <TableRow key={p.id}>
+                                        <TableCell>{index + 1}</TableCell>
                                         <TableCell className="font-medium">{p.nomor_pendaftaran}</TableCell>
                                         <TableCell>{p.nama_pendaftar}</TableCell>
                                         <TableCell>{p.user.name}</TableCell>

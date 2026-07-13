@@ -60,7 +60,6 @@ interface Filters {
     status: StatusTagihan | 'semua' | 'belum_lunas';
     jenis: JenisKomponen | 'semua';
     tahun_ajaran_id: string;
-    bulan: string;
     overdue: boolean;
 }
 
@@ -202,7 +201,6 @@ export default function StafTagihanIndex({
                 status: overrides.status ?? filters.status,
                 jenis: overrides.jenis ?? filters.jenis,
                 tahun_ajaran_id: overrides.tahun_ajaran_id ?? filters.tahun_ajaran_id,
-                bulan: overrides.bulan ?? filters.bulan,
                 overdue: (overrides.overdue ?? filters.overdue) ? '1' : undefined,
             },
             { preserveState: true, preserveScroll: true, replace: true },
@@ -284,123 +282,125 @@ export default function StafTagihanIndex({
             <Head title="Tagihan" />
 
             <div className="flex flex-col gap-6">
-                <div className="flex items-center justify-between">
-                    <Heading title="Tagihan" description="Kelola tagihan pembayaran siswa dan pantau status pelunasannya." />
+                <div className="flex flex-col gap-4">
+                    <Heading title="Tagihan" description="Kelola tagihan pembayaran siswa dan pantau status pelunasannya." withSidebarTrigger />
 
-                    <Dialog
-                        open={addOpen}
-                        onOpenChange={(open) => {
-                            setAddOpen(open);
-                            if (!open) {
-                                addForm.reset();
-                                addForm.clearErrors();
-                            }
-                        }}
-                    >
-                        <DialogTrigger asChild>
-                            <Button>+ Buat Tagihan</Button>
-                        </DialogTrigger>
-                        <DialogContent>
-                            <DialogHeader>
-                                <DialogTitle>Buat Tagihan</DialogTitle>
-                                <DialogDescription>Buat tagihan baru untuk satu siswa.</DialogDescription>
-                            </DialogHeader>
+                    <div className="flex justify-end">
+                        <Dialog
+                            open={addOpen}
+                            onOpenChange={(open) => {
+                                setAddOpen(open);
+                                if (!open) {
+                                    addForm.reset();
+                                    addForm.clearErrors();
+                                }
+                            }}
+                        >
+                            <DialogTrigger asChild>
+                                <Button>+ Buat Tagihan</Button>
+                            </DialogTrigger>
+                            <DialogContent>
+                                <DialogHeader>
+                                    <DialogTitle>Buat Tagihan</DialogTitle>
+                                    <DialogDescription>Buat tagihan baru untuk satu siswa.</DialogDescription>
+                                </DialogHeader>
 
-                            <form className="flex flex-col gap-4" onSubmit={submitAdd}>
-                                <div className="grid gap-2">
-                                    <Label htmlFor="siswa_id">Siswa</Label>
-                                    <Select value={addForm.data.siswa_id} onValueChange={(value) => addForm.setData('siswa_id', value)}>
-                                        <SelectTrigger id="siswa_id">
-                                            <SelectValue placeholder="Pilih siswa" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {siswaAktif.map((s) => (
-                                                <SelectItem key={s.id} value={String(s.id)}>
-                                                    {s.nama}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                    <InputError message={addForm.errors.siswa_id} />
-                                </div>
-
-                                <div className="grid gap-2">
-                                    <Label htmlFor="komponen_biaya_id">Komponen Biaya</Label>
-                                    <Select value={addForm.data.komponen_biaya_id} onValueChange={handleKomponenChange}>
-                                        <SelectTrigger id="komponen_biaya_id">
-                                            <SelectValue placeholder="Pilih komponen biaya" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {komponenBiaya.map((k) => (
-                                                <SelectItem key={k.id} value={String(k.id)}>
-                                                    {k.nama}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                    <InputError message={addForm.errors.komponen_biaya_id} />
-                                </div>
-
-                                {butuhBulanTahun && (
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div className="grid gap-2">
-                                            <Label htmlFor="bulan_tagihan">Bulan Tagihan</Label>
-                                            <Select
-                                                value={addForm.data.bulan_tagihan}
-                                                onValueChange={(value) => addForm.setData('bulan_tagihan', value)}
-                                            >
-                                                <SelectTrigger id="bulan_tagihan">
-                                                    <SelectValue placeholder="Pilih bulan" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    {Object.entries(BULAN_LABEL).map(([value, label]) => (
-                                                        <SelectItem key={value} value={value}>
-                                                            {label}
-                                                        </SelectItem>
-                                                    ))}
-                                                </SelectContent>
-                                            </Select>
-                                            <InputError message={addForm.errors.bulan_tagihan} />
-                                        </div>
-
-                                        <div className="grid gap-2">
-                                            <Label htmlFor="tahun_tagihan">Tahun Tagihan</Label>
-                                            <Input
-                                                id="tahun_tagihan"
-                                                type="number"
-                                                value={addForm.data.tahun_tagihan}
-                                                onChange={(e) => addForm.setData('tahun_tagihan', e.target.value)}
-                                            />
-                                            <InputError message={addForm.errors.tahun_tagihan} />
-                                        </div>
+                                <form className="flex flex-col gap-4" onSubmit={submitAdd}>
+                                    <div className="grid gap-2">
+                                        <Label htmlFor="siswa_id">Siswa</Label>
+                                        <Select value={addForm.data.siswa_id} onValueChange={(value) => addForm.setData('siswa_id', value)}>
+                                            <SelectTrigger id="siswa_id">
+                                                <SelectValue placeholder="Pilih siswa" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {siswaAktif.map((s) => (
+                                                    <SelectItem key={s.id} value={String(s.id)}>
+                                                        {s.nama}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                        <InputError message={addForm.errors.siswa_id} />
                                     </div>
-                                )}
 
-                                <div className="grid gap-2">
-                                    <Label htmlFor="nominal">Nominal</Label>
-                                    <Input
-                                        id="nominal"
-                                        type="number"
-                                        min={1}
-                                        value={addForm.data.nominal}
-                                        onChange={(e) => addForm.setData('nominal', e.target.value)}
-                                    />
-                                    <InputError message={addForm.errors.nominal} />
-                                </div>
+                                    <div className="grid gap-2">
+                                        <Label htmlFor="komponen_biaya_id">Komponen Biaya</Label>
+                                        <Select value={addForm.data.komponen_biaya_id} onValueChange={handleKomponenChange}>
+                                            <SelectTrigger id="komponen_biaya_id">
+                                                <SelectValue placeholder="Pilih komponen biaya" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {komponenBiaya.map((k) => (
+                                                    <SelectItem key={k.id} value={String(k.id)}>
+                                                        {k.nama}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                        <InputError message={addForm.errors.komponen_biaya_id} />
+                                    </div>
 
-                                <DialogFooter>
-                                    <DialogClose asChild>
-                                        <Button type="button" variant="outline">
-                                            Batal
+                                    {butuhBulanTahun && (
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div className="grid gap-2">
+                                                <Label htmlFor="bulan_tagihan">Bulan Tagihan</Label>
+                                                <Select
+                                                    value={addForm.data.bulan_tagihan}
+                                                    onValueChange={(value) => addForm.setData('bulan_tagihan', value)}
+                                                >
+                                                    <SelectTrigger id="bulan_tagihan">
+                                                        <SelectValue placeholder="Pilih bulan" />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        {Object.entries(BULAN_LABEL).map(([value, label]) => (
+                                                            <SelectItem key={value} value={value}>
+                                                                {label}
+                                                            </SelectItem>
+                                                        ))}
+                                                    </SelectContent>
+                                                </Select>
+                                                <InputError message={addForm.errors.bulan_tagihan} />
+                                            </div>
+
+                                            <div className="grid gap-2">
+                                                <Label htmlFor="tahun_tagihan">Tahun Tagihan</Label>
+                                                <Input
+                                                    id="tahun_tagihan"
+                                                    type="number"
+                                                    value={addForm.data.tahun_tagihan}
+                                                    onChange={(e) => addForm.setData('tahun_tagihan', e.target.value)}
+                                                />
+                                                <InputError message={addForm.errors.tahun_tagihan} />
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    <div className="grid gap-2">
+                                        <Label htmlFor="nominal">Nominal</Label>
+                                        <Input
+                                            id="nominal"
+                                            type="number"
+                                            min={1}
+                                            value={addForm.data.nominal}
+                                            onChange={(e) => addForm.setData('nominal', e.target.value)}
+                                        />
+                                        <InputError message={addForm.errors.nominal} />
+                                    </div>
+
+                                    <DialogFooter>
+                                        <DialogClose asChild>
+                                            <Button type="button" variant="outline">
+                                                Batal
+                                            </Button>
+                                        </DialogClose>
+                                        <Button type="submit" disabled={addForm.processing}>
+                                            Simpan
                                         </Button>
-                                    </DialogClose>
-                                    <Button type="submit" disabled={addForm.processing}>
-                                        Simpan
-                                    </Button>
-                                </DialogFooter>
-                            </form>
-                        </DialogContent>
-                    </Dialog>
+                                    </DialogFooter>
+                                </form>
+                            </DialogContent>
+                        </Dialog>
+                    </div>
                 </div>
 
                 <Card className="overflow-hidden rounded-xl p-6">
@@ -451,20 +451,6 @@ export default function StafTagihanIndex({
                                     {tahunAjaran.map((t) => (
                                         <SelectItem key={t.id} value={String(t.id)}>
                                             {t.nama}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-
-                            <Select value={filters.bulan} onValueChange={(value) => goToQuery({ bulan: value })}>
-                                <SelectTrigger className="w-40">
-                                    <SelectValue placeholder="Bulan" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="semua">Semua Bulan</SelectItem>
-                                    {Object.entries(BULAN_LABEL).map(([value, label]) => (
-                                        <SelectItem key={value} value={value}>
-                                            {label}
                                         </SelectItem>
                                     ))}
                                 </SelectContent>

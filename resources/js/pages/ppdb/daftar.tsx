@@ -210,7 +210,7 @@ export default function PpdbDaftar({ gelombang }: { gelombang: { id: number; nam
             <Head title="Pendaftaran PPDB" />
 
             <form onSubmit={submit} className="flex w-full flex-col gap-4">
-                <Heading title="Formulir Pendaftaran PPDB" description={`Gelombang: ${gelombang.nama}`} />
+                <Heading title="Formulir Pendaftaran PPDB" description={`Gelombang: ${gelombang.nama}`} withSidebarTrigger />
 
                 <div className="flex w-full justify-center py-2">
                     <div className="w-full max-w-md">

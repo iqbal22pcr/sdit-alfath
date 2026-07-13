@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { SidebarTrigger } from '@/components/ui/sidebar';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link } from '@inertiajs/react';
@@ -12,6 +13,8 @@ export default function PpdbKonfirmasi({ nomorPendaftaran, namaPendaftar }: { no
             <Head title="Pendaftaran Berhasil" />
 
             <div className="flex w-full flex-col gap-4">
+                <SidebarTrigger className="-ml-1 lg:hidden" />
+
                 <Card className="rounded-xl">
                     <CardHeader>
                         <CardTitle>Pendaftaran Berhasil Dikirim</CardTitle>

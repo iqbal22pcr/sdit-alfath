@@ -22,7 +22,7 @@ export default function WaliAkademik({ siswa }: { siswa: SiswaRow[] }) {
             <Head title="Akademik" />
 
             <div className="flex flex-col gap-4">
-                <Heading title="Akademik" description="Pilih anak untuk melihat informasi akademiknya." />
+                <Heading title="Akademik" description="Pilih anak untuk melihat informasi akademiknya." withSidebarTrigger />
 
                 {siswa.length === 0 ? (
                     <Card className="rounded-xl">

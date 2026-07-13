@@ -58,7 +58,7 @@ export default function WaliTagihanIndex({
             <Head title="Tagihan" />
 
             <div className="flex flex-col gap-4">
-                <Heading title="Tagihan" description="Pantau tagihan dan status pembayaran seluruh anak Anda." />
+                <Heading title="Tagihan" description="Pantau tagihan dan status pembayaran seluruh anak Anda." withSidebarTrigger />
 
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
                     <MetricCard icon={Receipt} tone="red" label="Belum Bayar" value={ringkasan.belumBayar} />
@@ -87,6 +87,7 @@ export default function WaliTagihanIndex({
                         <Table>
                             <TableHeader>
                                 <TableRow className="bg-muted">
+                                    <TableHead>No</TableHead>
                                     <TableHead>Nama Anak</TableHead>
                                     <TableHead>Komponen Biaya</TableHead>
                                     <TableHead>Nominal</TableHead>
@@ -98,14 +99,15 @@ export default function WaliTagihanIndex({
                             <TableBody>
                                 {tagihan.length === 0 && (
                                     <TableRow>
-                                        <TableCell colSpan={6}>
+                                        <TableCell colSpan={7}>
                                             <EmptyState title="Belum ada tagihan." />
                                         </TableCell>
                                     </TableRow>
                                 )}
 
-                                {tagihan.map((t) => (
+                                {tagihan.map((t, index) => (
                                     <TableRow key={t.id} className="cursor-pointer" onClick={() => router.visit(route('wali.tagihan.show', t.id))}>
+                                        <TableCell>{index + 1}</TableCell>
                                         <TableCell className="font-medium">{t.siswa.nama}</TableCell>
                                         <TableCell>{t.komponen_biaya.nama}</TableCell>
                                         <TableCell>{formatRupiah(t.nominal)}</TableCell>

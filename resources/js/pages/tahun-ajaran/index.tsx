@@ -98,76 +98,82 @@ export default function TahunAjaranIndex({ tahunAjaran }: { tahunAjaran: TahunAj
             <Head title="Tahun Ajaran" />
 
             <div className="flex flex-col gap-4">
-                <div className="flex items-center justify-between">
-                    <Heading title="Tahun Ajaran" description="Kelola daftar tahun ajaran dan tentukan tahun ajaran yang sedang aktif." />
+                <div className="flex flex-col gap-4">
+                    <Heading
+                        title="Tahun Ajaran"
+                        description="Kelola daftar tahun ajaran dan tentukan tahun ajaran yang sedang aktif."
+                        withSidebarTrigger
+                    />
 
-                    <Dialog
-                        open={addOpen}
-                        onOpenChange={(open) => {
-                            setAddOpen(open);
-                            if (!open) {
-                                addForm.reset();
-                                addForm.clearErrors();
-                            }
-                        }}
-                    >
-                        <DialogTrigger asChild>
-                            <Button>Tambah Tahun Ajaran</Button>
-                        </DialogTrigger>
-                        <DialogContent>
-                            <DialogHeader>
-                                <DialogTitle>Tambah Tahun Ajaran</DialogTitle>
-                                <DialogDescription>Buat tahun ajaran baru.</DialogDescription>
-                            </DialogHeader>
+                    <div className="flex justify-end">
+                        <Dialog
+                            open={addOpen}
+                            onOpenChange={(open) => {
+                                setAddOpen(open);
+                                if (!open) {
+                                    addForm.reset();
+                                    addForm.clearErrors();
+                                }
+                            }}
+                        >
+                            <DialogTrigger asChild>
+                                <Button>Tambah Tahun Ajaran</Button>
+                            </DialogTrigger>
+                            <DialogContent>
+                                <DialogHeader>
+                                    <DialogTitle>Tambah Tahun Ajaran</DialogTitle>
+                                    <DialogDescription>Buat tahun ajaran baru.</DialogDescription>
+                                </DialogHeader>
 
-                            <form className="space-y-4" onSubmit={submitAdd}>
-                                <div className="grid gap-2">
-                                    <Label htmlFor="add-nama">Nama</Label>
-                                    <Input
-                                        id="add-nama"
-                                        value={addForm.data.nama}
-                                        onChange={(e) => addForm.setData('nama', e.target.value)}
-                                        placeholder="mis. 2026/2027"
-                                    />
-                                    <InputError message={addForm.errors.nama} />
-                                </div>
+                                <form className="space-y-4" onSubmit={submitAdd}>
+                                    <div className="grid gap-2">
+                                        <Label htmlFor="add-nama">Nama</Label>
+                                        <Input
+                                            id="add-nama"
+                                            value={addForm.data.nama}
+                                            onChange={(e) => addForm.setData('nama', e.target.value)}
+                                            placeholder="mis. 2026/2027"
+                                        />
+                                        <InputError message={addForm.errors.nama} />
+                                    </div>
 
-                                <div className="grid gap-2">
-                                    <Label htmlFor="add-tahun-mulai">Tahun Mulai</Label>
-                                    <Input
-                                        id="add-tahun-mulai"
-                                        type="number"
-                                        maxLength={4}
-                                        value={addForm.data.tahun_mulai}
-                                        onChange={(e) => addForm.setData('tahun_mulai', e.target.value)}
-                                        placeholder="mis. 2026"
-                                    />
-                                    <InputError message={addForm.errors.tahun_mulai} />
-                                </div>
+                                    <div className="grid gap-2">
+                                        <Label htmlFor="add-tahun-mulai">Tahun Mulai</Label>
+                                        <Input
+                                            id="add-tahun-mulai"
+                                            type="number"
+                                            maxLength={4}
+                                            value={addForm.data.tahun_mulai}
+                                            onChange={(e) => addForm.setData('tahun_mulai', e.target.value)}
+                                            placeholder="mis. 2026"
+                                        />
+                                        <InputError message={addForm.errors.tahun_mulai} />
+                                    </div>
 
-                                <div className="flex items-center gap-2">
-                                    <Checkbox
-                                        id="add-status-aktif"
-                                        checked={addForm.data.status_aktif}
-                                        onCheckedChange={(checked) => addForm.setData('status_aktif', checked === true)}
-                                    />
-                                    <Label htmlFor="add-status-aktif">Jadikan tahun ajaran aktif</Label>
-                                    <InputError message={addForm.errors.status_aktif} />
-                                </div>
+                                    <div className="flex items-center gap-2">
+                                        <Checkbox
+                                            id="add-status-aktif"
+                                            checked={addForm.data.status_aktif}
+                                            onCheckedChange={(checked) => addForm.setData('status_aktif', checked === true)}
+                                        />
+                                        <Label htmlFor="add-status-aktif">Jadikan tahun ajaran aktif</Label>
+                                        <InputError message={addForm.errors.status_aktif} />
+                                    </div>
 
-                                <DialogFooter>
-                                    <DialogClose asChild>
-                                        <Button type="button" variant="outline">
-                                            Batal
+                                    <DialogFooter>
+                                        <DialogClose asChild>
+                                            <Button type="button" variant="outline">
+                                                Batal
+                                            </Button>
+                                        </DialogClose>
+                                        <Button type="submit" disabled={addForm.processing}>
+                                            Simpan
                                         </Button>
-                                    </DialogClose>
-                                    <Button type="submit" disabled={addForm.processing}>
-                                        Simpan
-                                    </Button>
-                                </DialogFooter>
-                            </form>
-                        </DialogContent>
-                    </Dialog>
+                                    </DialogFooter>
+                                </form>
+                            </DialogContent>
+                        </Dialog>
+                    </div>
                 </div>
 
                 <Card className="rounded-xl">
@@ -175,6 +181,7 @@ export default function TahunAjaranIndex({ tahunAjaran }: { tahunAjaran: TahunAj
                         <Table>
                             <TableHeader>
                                 <TableRow className="bg-muted">
+                                    <TableHead>No</TableHead>
                                     <TableHead>Nama</TableHead>
                                     <TableHead>Tahun Mulai</TableHead>
                                     <TableHead>Status</TableHead>
@@ -184,7 +191,7 @@ export default function TahunAjaranIndex({ tahunAjaran }: { tahunAjaran: TahunAj
                             <TableBody>
                                 {tahunAjaran.length === 0 && (
                                     <TableRow>
-                                        <TableCell colSpan={4}>
+                                        <TableCell colSpan={5}>
                                             <EmptyState
                                                 title="Belum ada tahun ajaran."
                                                 action={{ label: 'Tambah Tahun Ajaran', onClick: () => setAddOpen(true) }}
@@ -193,8 +200,9 @@ export default function TahunAjaranIndex({ tahunAjaran }: { tahunAjaran: TahunAj
                                     </TableRow>
                                 )}
 
-                                {tahunAjaran.map((tahun) => (
+                                {tahunAjaran.map((tahun, index) => (
                                     <TableRow key={tahun.id}>
+                                        <TableCell>{index + 1}</TableCell>
                                         <TableCell className="font-medium">{tahun.nama}</TableCell>
                                         <TableCell>{tahun.tahun_mulai}</TableCell>
                                         <TableCell>
