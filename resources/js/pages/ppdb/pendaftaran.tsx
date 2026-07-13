@@ -46,7 +46,7 @@ export default function PpdbPendaftaran({ pendaftaran, ringkasan }: { pendaftara
     const perluPerbaikan = pendaftaran.filter((p) => p.status === 'perlu_perbaikan' && p.catatan_verifikasi);
 
     return (
-        <AppLayout breadcrumbs={breadcrumbs}>
+        <>
             <Head title="Pendaftaran" />
 
             <div className="flex flex-col gap-4 p-4">
@@ -125,6 +125,8 @@ export default function PpdbPendaftaran({ pendaftaran, ringkasan }: { pendaftara
                     </CardContent>
                 </Card>
             </div>
-        </AppLayout>
+        </>
     );
 }
+
+PpdbPendaftaran.layout = (page: React.ReactNode) => <AppLayout breadcrumbs={breadcrumbs}>{page}</AppLayout>;

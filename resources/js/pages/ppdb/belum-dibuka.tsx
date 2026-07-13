@@ -7,7 +7,7 @@ const breadcrumbs: BreadcrumbItem[] = [{ title: 'Pendaftaran PPDB', href: '/ppdb
 
 export default function PpdbBelumDibuka() {
     return (
-        <AppLayout breadcrumbs={breadcrumbs}>
+        <>
             <Head title="PPDB Belum Dibuka" />
 
             <div className="flex w-full flex-col gap-4 p-4">
@@ -21,6 +21,8 @@ export default function PpdbBelumDibuka() {
                     </CardHeader>
                 </Card>
             </div>
-        </AppLayout>
+        </>
     );
 }
+
+PpdbBelumDibuka.layout = (page: React.ReactNode) => <AppLayout breadcrumbs={breadcrumbs}>{page}</AppLayout>;

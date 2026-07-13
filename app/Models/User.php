@@ -52,7 +52,7 @@ class User extends Authenticatable
     {
         return match ($this->role) {
             'staf_ppdb' => route('staf.ppdb-dashboard', absolute: false),
-            'staf_keuangan' => route('staf.tagihan.index', absolute: false),
+            'staf_keuangan' => route('staf.keuangan-dashboard', absolute: false),
             'wali_murid' => route('ppdb.pendaftaran', absolute: false),
             default => route('dashboard', absolute: false),
         };

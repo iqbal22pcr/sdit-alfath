@@ -85,7 +85,7 @@ export default function TahunAjaranIndex({ tahunAjaran }: { tahunAjaran: TahunAj
     };
 
     return (
-        <AppLayout breadcrumbs={breadcrumbs}>
+        <>
             <Head title="Tahun Ajaran" />
 
             <div className="flex flex-col gap-4 p-4">
@@ -292,6 +292,8 @@ export default function TahunAjaranIndex({ tahunAjaran }: { tahunAjaran: TahunAj
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
-        </AppLayout>
+        </>
     );
 }
+
+TahunAjaranIndex.layout = (page: React.ReactNode) => <AppLayout breadcrumbs={breadcrumbs}>{page}</AppLayout>;

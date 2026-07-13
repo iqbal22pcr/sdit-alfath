@@ -54,7 +54,7 @@ export default function WaliTagihanIndex({
     ringkasan: Ringkasan;
 }) {
     return (
-        <AppLayout breadcrumbs={breadcrumbs}>
+        <>
             <Head title="Tagihan" />
 
             <div className="flex flex-col gap-4 p-4">
@@ -127,6 +127,8 @@ export default function WaliTagihanIndex({
                     </CardContent>
                 </Card>
             </div>
-        </AppLayout>
+        </>
     );
 }
+
+WaliTagihanIndex.layout = (page: React.ReactNode) => <AppLayout breadcrumbs={breadcrumbs}>{page}</AppLayout>;

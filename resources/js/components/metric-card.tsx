@@ -1,5 +1,6 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
+import { Link } from '@inertiajs/react';
 import { type LucideIcon } from 'lucide-react';
 
 export type MetricCardTone = 'blue' | 'gold' | 'green' | 'red';
@@ -16,19 +17,26 @@ interface MetricCardProps {
     tone: MetricCardTone;
     label: string;
     value: string | number;
+    /** Optional -- renders a "Lihat Detail" link under the value when set. */
+    href?: string;
     className?: string;
 }
 
-export function MetricCard({ icon: Icon, tone, label, value, className }: MetricCardProps) {
+export function MetricCard({ icon: Icon, tone, label, value, href, className }: MetricCardProps) {
     return (
         <Card className={cn('rounded-xl', className)}>
             <CardContent className="flex items-center gap-3 pt-6">
                 <div className={cn('flex size-10 shrink-0 items-center justify-center rounded-full', TONE_CLASSES[tone])}>
                     <Icon className="size-5" />
                 </div>
-                <div className="min-w-0">
+                <div className="min-w-0 flex-1">
                     <p className="truncate text-[13px] text-muted-foreground">{label}</p>
                     <p className="mt-0.5 text-2xl font-medium">{value}</p>
+                    {href && (
+                        <Link href={href} className="mt-1 inline-block text-xs font-medium text-primary hover:underline">
+                            Lihat Detail
+                        </Link>
+                    )}
                 </div>
             </CardContent>
         </Card>

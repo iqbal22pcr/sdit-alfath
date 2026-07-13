@@ -11,13 +11,8 @@ interface SiswaDetail {
 }
 
 export default function WaliAkademikDetail({ siswa }: { siswa: SiswaDetail }) {
-    const breadcrumbs: BreadcrumbItem[] = [
-        { title: 'Akademik', href: '/wali/akademik' },
-        { title: siswa.nama, href: `/wali/akademik/${siswa.id}` },
-    ];
-
     return (
-        <AppLayout breadcrumbs={breadcrumbs}>
+        <>
             <Head title={`Akademik - ${siswa.nama}`} />
 
             <div className="flex flex-col gap-4 p-4">
@@ -32,6 +27,15 @@ export default function WaliAkademikDetail({ siswa }: { siswa: SiswaDetail }) {
                     </CardContent>
                 </Card>
             </div>
-        </AppLayout>
+        </>
     );
 }
+
+WaliAkademikDetail.layout = (page: React.ReactElement<{ siswa: SiswaDetail }>) => {
+    const breadcrumbs: BreadcrumbItem[] = [
+        { title: 'Akademik', href: '/wali/akademik' },
+        { title: page.props.siswa.nama, href: `/wali/akademik/${page.props.siswa.id}` },
+    ];
+
+    return <AppLayout breadcrumbs={breadcrumbs}>{page}</AppLayout>;
+};

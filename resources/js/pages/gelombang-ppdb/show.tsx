@@ -46,11 +46,6 @@ export default function GelombangPpdbShow({
     gelombangPpdb: GelombangPpdbDetail;
     kategoriDenganKuota: KategoriDenganKuota[];
 }) {
-    const breadcrumbs: BreadcrumbItem[] = [
-        { title: 'Gelombang PPDB', href: '/gelombang-ppdb' },
-        { title: gelombangPpdb.nama, href: `/gelombang-ppdb/${gelombangPpdb.id}` },
-    ];
-
     const form = useForm<KuotaBatchForm>({
         kuota: kategoriDenganKuota.map((kategori) => ({
             kategori_siswa_id: kategori.kategori_siswa_id,
@@ -71,7 +66,7 @@ export default function GelombangPpdbShow({
     };
 
     return (
-        <AppLayout breadcrumbs={breadcrumbs}>
+        <>
             <Head title={`Kelola Kuota - ${gelombangPpdb.nama}`} />
 
             <form onSubmit={submit} className="flex flex-col gap-4 p-4">
@@ -137,6 +132,15 @@ export default function GelombangPpdbShow({
                     </div>
                 )}
             </form>
-        </AppLayout>
+        </>
     );
 }
+
+GelombangPpdbShow.layout = (page: React.ReactElement<{ gelombangPpdb: GelombangPpdbDetail }>) => {
+    const breadcrumbs: BreadcrumbItem[] = [
+        { title: 'Gelombang PPDB', href: '/gelombang-ppdb' },
+        { title: page.props.gelombangPpdb.nama, href: `/gelombang-ppdb/${page.props.gelombangPpdb.id}` },
+    ];
+
+    return <AppLayout breadcrumbs={breadcrumbs}>{page}</AppLayout>;
+};

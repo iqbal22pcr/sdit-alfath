@@ -79,7 +79,7 @@ export default function StafPpdbDashboard({
 
     if (! gelombang) {
         return (
-            <AppLayout breadcrumbs={breadcrumbs}>
+            <>
                 <Head title="Dashboard PPDB" />
                 <div className="p-4">
                     <Card>
@@ -91,12 +91,12 @@ export default function StafPpdbDashboard({
                         </CardContent>
                     </Card>
                 </div>
-            </AppLayout>
+            </>
         );
     }
 
     return (
-        <AppLayout breadcrumbs={breadcrumbs}>
+        <>
             <Head title="Dashboard PPDB" />
 
             <div className="flex flex-col gap-6 p-4">
@@ -235,9 +235,11 @@ export default function StafPpdbDashboard({
                     </div>
                 </div>
             </div>
-        </AppLayout>
+        </>
     );
 }
+
+StafPpdbDashboard.layout = (page: React.ReactNode) => <AppLayout breadcrumbs={breadcrumbs}>{page}</AppLayout>;
 
 function SiswaPerluAktivasiRow({ siswa }: { siswa: SiswaPerluAktivasi }) {
     const form = useForm({});

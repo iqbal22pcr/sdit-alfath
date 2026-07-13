@@ -126,7 +126,7 @@ export default function StafPpdbVerifikasi({
     const statusFinal = pendaftaran.status === 'diterima' || pendaftaran.status === 'ditolak';
 
     return (
-        <AppLayout breadcrumbs={breadcrumbs}>
+        <>
             <Head title={`Verifikasi ${pendaftaran.nomor_pendaftaran}`} />
 
             <div className="flex w-full flex-col gap-6 p-4">
@@ -276,9 +276,11 @@ export default function StafPpdbVerifikasi({
                     </Card>
                 )}
             </div>
-        </AppLayout>
+        </>
     );
 }
+
+StafPpdbVerifikasi.layout = (page: React.ReactNode) => <AppLayout breadcrumbs={breadcrumbs}>{page}</AppLayout>;
 
 function Field({ label, value, className }: { label: string; value: string; className?: string }) {
     return (

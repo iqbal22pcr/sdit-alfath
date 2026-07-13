@@ -206,7 +206,7 @@ export default function PpdbDaftar({ gelombang }: { gelombang: { id: number; nam
     const butuhSuratTidakMampu = form.data.penghasilan_tetap === '0';
 
     return (
-        <AppLayout breadcrumbs={breadcrumbs}>
+        <>
             <Head title="Pendaftaran PPDB" />
 
             <form onSubmit={submit} className="flex w-full flex-col gap-4 p-4">
@@ -496,9 +496,11 @@ export default function PpdbDaftar({ gelombang }: { gelombang: { id: number; nam
                     </>
                 )}
             </form>
-        </AppLayout>
+        </>
     );
 }
+
+PpdbDaftar.layout = (page: React.ReactNode) => <AppLayout breadcrumbs={breadcrumbs}>{page}</AppLayout>;
 
 function DokumenField({
     id,

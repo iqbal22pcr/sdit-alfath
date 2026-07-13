@@ -158,7 +158,7 @@ export default function PpdbPerbaiki({ pendaftaran }: { pendaftaran: Pendaftaran
     const butuhSuratTidakMampu = form.data.penghasilan_tetap === '0';
 
     return (
-        <AppLayout breadcrumbs={breadcrumbs}>
+        <>
             <Head title={`Perbaiki ${pendaftaran.nomor_pendaftaran}`} />
 
             <form onSubmit={submit} className="flex w-full flex-col gap-4 p-4">
@@ -440,9 +440,11 @@ export default function PpdbPerbaiki({ pendaftaran }: { pendaftaran: Pendaftaran
                     </Button>
                 </div>
             </form>
-        </AppLayout>
+        </>
     );
 }
+
+PpdbPerbaiki.layout = (page: React.ReactNode) => <AppLayout breadcrumbs={breadcrumbs}>{page}</AppLayout>;
 
 function DokumenField({
     id,

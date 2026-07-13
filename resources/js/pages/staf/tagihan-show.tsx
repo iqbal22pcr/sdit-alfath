@@ -49,7 +49,7 @@ const METODE_LABEL: Record<MetodeTerisi, string> = {
 const todayInput = () => new Date().toISOString().slice(0, 10);
 
 const breadcrumbs: BreadcrumbItem[] = [
-    { title: 'Kelola Tagihan', href: '/staf/tagihan' },
+    { title: 'Tagihan', href: '/staf/tagihan' },
     { title: 'Detail Tagihan', href: '#' },
 ];
 
@@ -61,7 +61,7 @@ export default function StafTagihanShow({ tagihan }: { tagihan: TagihanDetail })
     const terlambat = jenisMasuk && jatuhTempoTanggal !== null && tagihan.status !== 'lunas' && jatuhTempoTanggal < todayInput();
 
     return (
-        <AppLayout breadcrumbs={breadcrumbs}>
+        <>
             <Head title={`Tagihan ${tagihan.nomor_tagihan}`} />
 
             <div className="flex w-full flex-col gap-6 p-4">
@@ -150,9 +150,11 @@ export default function StafTagihanShow({ tagihan }: { tagihan: TagihanDetail })
                     </CardContent>
                 </Card>
             </div>
-        </AppLayout>
+        </>
     );
 }
+
+StafTagihanShow.layout = (page: React.ReactNode) => <AppLayout breadcrumbs={breadcrumbs}>{page}</AppLayout>;
 
 function Field({ label, value, className }: { label: string; value: string; className?: string }) {
     return (

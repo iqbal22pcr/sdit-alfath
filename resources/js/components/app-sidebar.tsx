@@ -3,7 +3,7 @@ import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem, type SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
-import { Calendar, CalendarRange, ClipboardList, FileText, GraduationCap, LayoutGrid, Receipt, Tags } from 'lucide-react';
+import { Calendar, CalendarRange, ClipboardList, FileText, GraduationCap, LayoutDashboard, LayoutGrid, Receipt, Tags } from 'lucide-react';
 import AppLogo from './app-logo';
 
 // Roles that land on their own dedicated dashboard after login don't
@@ -54,7 +54,12 @@ export function AppSidebar() {
         ...(auth.user.role === 'staf_keuangan'
             ? [
                   {
-                      title: 'Kelola Tagihan',
+                      title: 'Dashboard',
+                      url: route('staf.keuangan-dashboard'),
+                      icon: LayoutDashboard,
+                  },
+                  {
+                      title: 'Tagihan',
                       url: route('staf.tagihan.index'),
                       icon: Receipt,
                   },

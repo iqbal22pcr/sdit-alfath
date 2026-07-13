@@ -48,13 +48,8 @@ const METODE_LABEL: Record<Metode, string> = {
 export default function WaliTagihanShow({ tagihan }: { tagihan: TagihanDetail }) {
     const sisa = tagihan.nominal - tagihan.terbayar;
 
-    const breadcrumbs: BreadcrumbItem[] = [
-        { title: 'Tagihan', href: '/wali/tagihan' },
-        { title: tagihan.nomor_tagihan, href: '#' },
-    ];
-
     return (
-        <AppLayout breadcrumbs={breadcrumbs}>
+        <>
             <Head title={`Tagihan ${tagihan.nomor_tagihan}`} />
 
             <div className="flex w-full flex-col gap-6 p-4">
@@ -117,9 +112,18 @@ export default function WaliTagihanShow({ tagihan }: { tagihan: TagihanDetail })
                     </CardContent>
                 </Card>
             </div>
-        </AppLayout>
+        </>
     );
 }
+
+WaliTagihanShow.layout = (page: React.ReactElement<{ tagihan: TagihanDetail }>) => {
+    const breadcrumbs: BreadcrumbItem[] = [
+        { title: 'Tagihan', href: '/wali/tagihan' },
+        { title: page.props.tagihan.nomor_tagihan, href: '#' },
+    ];
+
+    return <AppLayout breadcrumbs={breadcrumbs}>{page}</AppLayout>;
+};
 
 function Field({ label, value }: { label: string; value: string }) {
     return (

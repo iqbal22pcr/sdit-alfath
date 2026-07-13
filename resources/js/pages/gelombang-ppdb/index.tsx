@@ -111,7 +111,7 @@ export default function GelombangPpdbIndex({ gelombangPpdb, tahunAjaran }: { gel
     };
 
     return (
-        <AppLayout breadcrumbs={breadcrumbs}>
+        <>
             <Head title="Gelombang PPDB" />
 
             <div className="flex flex-col gap-4 p-4">
@@ -270,9 +270,11 @@ export default function GelombangPpdbIndex({ gelombangPpdb, tahunAjaran }: { gel
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
-        </AppLayout>
+        </>
     );
 }
+
+GelombangPpdbIndex.layout = (page: React.ReactNode) => <AppLayout breadcrumbs={breadcrumbs}>{page}</AppLayout>;
 
 function GelombangFields({
     form,

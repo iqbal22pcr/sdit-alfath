@@ -8,7 +8,7 @@ const breadcrumbs: BreadcrumbItem[] = [{ title: 'Pendaftaran', href: '/ppdb/pend
 
 export default function PpdbKonfirmasi({ nomorPendaftaran, namaPendaftar }: { nomorPendaftaran: string; namaPendaftar: string }) {
     return (
-        <AppLayout breadcrumbs={breadcrumbs}>
+        <>
             <Head title="Pendaftaran Berhasil" />
 
             <div className="flex w-full flex-col gap-4 p-4">
@@ -36,6 +36,8 @@ export default function PpdbKonfirmasi({ nomorPendaftaran, namaPendaftar }: { no
                     </CardContent>
                 </Card>
             </div>
-        </AppLayout>
+        </>
     );
 }
+
+PpdbKonfirmasi.layout = (page: React.ReactNode) => <AppLayout breadcrumbs={breadcrumbs}>{page}</AppLayout>;

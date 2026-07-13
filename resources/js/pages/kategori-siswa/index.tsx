@@ -83,7 +83,7 @@ export default function KategoriSiswaIndex({ kategoriSiswa }: { kategoriSiswa: K
     };
 
     return (
-        <AppLayout breadcrumbs={breadcrumbs}>
+        <>
             <Head title="Kategori Siswa" />
 
             <div className="flex flex-col gap-4 p-4">
@@ -288,6 +288,8 @@ export default function KategoriSiswaIndex({ kategoriSiswa }: { kategoriSiswa: K
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
-        </AppLayout>
+        </>
     );
 }
+
+KategoriSiswaIndex.layout = (page: React.ReactNode) => <AppLayout breadcrumbs={breadcrumbs}>{page}</AppLayout>;

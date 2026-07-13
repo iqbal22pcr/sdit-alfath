@@ -18,7 +18,7 @@ export default function WaliAkademik({ siswa }: { siswa: SiswaRow[] }) {
     const getInitials = useInitials();
 
     return (
-        <AppLayout breadcrumbs={breadcrumbs}>
+        <>
             <Head title="Akademik" />
 
             <div className="flex flex-col gap-4 p-4">
@@ -52,6 +52,8 @@ export default function WaliAkademik({ siswa }: { siswa: SiswaRow[] }) {
                     </div>
                 )}
             </div>
-        </AppLayout>
+        </>
     );
 }
+
+WaliAkademik.layout = (page: React.ReactNode) => <AppLayout breadcrumbs={breadcrumbs}>{page}</AppLayout>;

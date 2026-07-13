@@ -6,8 +6,9 @@ use App\Http\Controllers\KategoriSiswaController;
 use App\Http\Controllers\KuotaKategoriController;
 use App\Http\Controllers\PendaftaranPpdbController;
 use App\Http\Controllers\Staf\DashboardPpdbController;
+use App\Http\Controllers\Staf\KeuanganDashboardController;
 use App\Http\Controllers\Staf\PendaftaranPpdbController as StafPendaftaranPpdbController;
-use App\Http\Controllers\Staf\TagihanController;
+use App\Http\Controllers\Staf\TagihanController as StafTagihanController;
 use App\Http\Controllers\TahunAjaranController;
 use App\Http\Controllers\Wali\AkademikController as WaliAkademikController;
 use App\Http\Controllers\Wali\TagihanController as WaliTagihanController;
@@ -56,9 +57,12 @@ Route::middleware(['auth', 'staf-ppdb'])->group(function () {
 });
 
 Route::middleware(['auth', 'staf-keuangan'])->group(function () {
-    Route::get('staf/tagihan', [TagihanController::class, 'index'])->name('staf.tagihan.index');
-    Route::get('staf/tagihan/{tagihan}', [TagihanController::class, 'show'])->name('staf.tagihan.show');
-    Route::post('staf/tagihan/{tagihan}/bayar-langsung', [TagihanController::class, 'bayarLangsung'])->name('staf.tagihan.bayar-langsung.store');
+    Route::get('staf/keuangan-dashboard', [KeuanganDashboardController::class, 'index'])->name('staf.keuangan-dashboard');
+
+    Route::get('staf/tagihan', [StafTagihanController::class, 'index'])->name('staf.tagihan.index');
+    Route::post('staf/tagihan', [StafTagihanController::class, 'store'])->name('staf.tagihan.store');
+    Route::get('staf/tagihan/{tagihan}', [StafTagihanController::class, 'show'])->name('staf.tagihan.show');
+    Route::post('staf/tagihan/{tagihan}/bayar-langsung', [StafTagihanController::class, 'bayarLangsung'])->name('staf.tagihan.bayar-langsung.store');
 });
 
 require __DIR__.'/settings.php';
