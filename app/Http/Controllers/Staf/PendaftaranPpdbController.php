@@ -48,9 +48,9 @@ class PendaftaranPpdbController extends Controller
 
         $status = $request->validated('status');
         $kategoriSiswaId = $request->validated('kategori_siswa_id');
-        // Only ever meaningful for perlu_perbaikan -- nulled out for
-        // every other status so no stale note lingers from an earlier
-        // verification round.
+        // Catatan verifikasi cuma relevan kalau statusnya perlu_perbaikan.
+        // Untuk status lain sengaja dikosongkan (null) biar catatan lama dari
+        // proses verifikasi sebelumnya nggak nyangkut dan bikin bingung.F
         $catatanVerifikasi = $status === 'perlu_perbaikan' ? $request->validated('catatan_verifikasi') : null;
 
         if ($status === 'diterima') {
